@@ -11,7 +11,7 @@ CriarDATE_TIME <- function(trace.size, population.data){
   # YYYYMMDDhhmm: 201105161615
   start.time <- 1305580500
   date.time <- seq(from=start.time, to=(start.time + (trace.size-1) * 300), by=300)
-  return(date.time)
+  return(as.POSIXct(date.time, origin = "1970-01-01"))
 }
 
 # ------------------------------------------------------------------------------
@@ -156,20 +156,17 @@ for (vm in seq_len(num.vms)){
   vm.table <- data.frame(id_vm=vm,
                          vm_name=paste("VM_", vm, sep = ""))
                            
-  network.table <- data.frame(id_net=id.tables,
-                              id_time=id.time[seq_len(trace.size)], 
+  network.table <- data.frame(id_time=id.time[seq_len(trace.size)], 
                               id_vm=rep(vm, trace.size),
                               net_util=CriarNET_UTIL(trace.size, base.trace$NET_UTIL),
                               pkt_per_sec=CriarPKT_PER_SEC(trace.size, NA))
   
-  disk.table <- data.frame(id_disk=id.tables,
-                           id_time=id.time[seq_len(trace.size)], 
+  disk.table <- data.frame(id_time=id.time[seq_len(trace.size)], 
                            id_vm=rep(vm, trace.size),
                            disk_util=CriarDISK_UTIL(trace.size),
                            ios_per_sec=CriarIOS_PER_SEC(trace.size, NA))
   
-  cpu.table <- data.frame(id_cpu=id.tables,
-                          id_time=id.time[seq_len(trace.size)], 
+  cpu.table <- data.frame(id_time=id.time[seq_len(trace.size)], 
                           id_vm=rep(vm, trace.size),
                           cpu_util=CriarCPU_UTIL(trace.size, base.trace$CPU_UTIL/base.trace$CPU_ALLOC),
                           cpu_alloc=CriarCPU_ALLOC(trace.size, base.trace$CPU_ALLOC),
@@ -177,15 +174,13 @@ for (vm in seq_len(num.vms)){
                           cpu_grow_rate=CriarCPU_GROWRATE(trace.size, NA),
                           cpu_headroom=CriarCPU_HEADROOM(trace.size, NA))
   
-  memory.table <- data.frame(id_mem=id.tables,
-                             id_time=id.time[seq_len(trace.size)], 
+  memory.table <- data.frame(id_time=id.time[seq_len(trace.size)], 
                              id_vm=rep(vm, trace.size),
                              memory_util=CriarMEM_UTIL(trace.size, base.trace$MEM_UTIL/base.trace$MEM_ALLOC),
                              memory_alloc=CriarMEM_ALLOC(trace.size, base.trace$MEM_ALLOC),
                              pages_sec=CriarPAGES_PER_SEC(trace.size, NA))
   
-  other.table <- data.frame(id_other=id.tables,
-                            id_time=id.time[seq_len(trace.size)], 
+  other.table <- data.frame(id_time=id.time[seq_len(trace.size)], 
                             id_vm=rep(vm, trace.size),
                             mem_headroom=CriarMEM_HEADROOM(trace.size, NA),
                             disk_io_headroom=CriarDISK_IO_HEADROOM(trace.size, NA),
