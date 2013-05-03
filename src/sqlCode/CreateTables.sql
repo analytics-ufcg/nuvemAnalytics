@@ -41,8 +41,6 @@ CREATE TABLE IF NOT EXISTS cpu (
 	cpu_util		FLOAT,
 	cpu_alloc		FLOAT,
 	cpu_queue		FLOAT,
-	cpu_growrate	FLOAT,
-	cpu_headroom	FLOAT,
 	PRIMARY KEY (id_cpu),
 	FOREIGN KEY (id_time) REFERENCES time_dim (id_time),
 	FOREIGN KEY (id_vm) REFERENCES vm_dim (id_vm)
@@ -59,18 +57,3 @@ CREATE TABLE IF NOT EXISTS memory (
 	FOREIGN KEY (id_time) REFERENCES time_dim (id_time),
 	FOREIGN KEY (id_vm) REFERENCES vm_dim (id_vm)
 );
-
-CREATE TABLE IF NOT EXISTS other_metrics (
-	id_other			AUTO_INCREMENT,
-	id_time				INTEGER NOT NULL,
-	id_vm				INTEGER NOT NULL,
-	mem_headroom		FLOAT,
-	disk_io_headroom	FLOAT,
-	net_io_headroom		FLOAT,
-	five_star			FLOAT,
-	minutes_sustained	FLOAT,
-	PRIMARY KEY (id_other),
-	FOREIGN KEY (id_time) REFERENCES time_dim (id_time),
-	FOREIGN KEY (id_vm) REFERENCES vm_dim (id_vm)
-);	
-
