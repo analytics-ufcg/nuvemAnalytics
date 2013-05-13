@@ -24,7 +24,7 @@ GetTIME_ID <- function(trace.size){
 # NETWORK Functions
 # ------------------------------------------------------------------------------
 CriarNET_UTIL <- function(trace.size, population.data, num.fail.metrics){
-  net.util = filter(rnorm(trace.size, 0, 1), filter=seq_len(min(length(trace.size), 5)), 
+  net.util = filter(rnorm(trace.size, 0, 1), filter=rep(1, min(trace.size, 50)), 
                     circular=TRUE)
   if (length(net.util) > 1){
     net.util <- (net.util - min(net.util))/(max(net.util)-min(net.util))
@@ -50,8 +50,9 @@ CriarPKT_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
 # DISK Functions
 # ------------------------------------------------------------------------------
 CriarDISK_UTIL <- function(trace.size, population.data, num.fail.metrics){
-  disk.util = filter(rnorm(trace.size, 0, 1), filter=seq_len(min(length(trace.size), 5)), 
+  disk.util = filter(rnorm(trace.size, 0, 1), filter=rep(1, min(trace.size, 50)), 
                      circular=TRUE)
+  
   if (length(disk.util) > 1){
     disk.util <- (disk.util - min(disk.util))/(max(disk.util)-min(disk.util))
   }
@@ -150,20 +151,20 @@ CriarPAGES_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
 args <- commandArgs(trailingOnly = TRUE)
 
 # Input Arguments
-traces.dir <- args[1]                       # "data/traces/"
-output.dir <- args[2]                       # "data/output/"
-initial.vm <- as.integer(args[3])           # 1 (for example)
-final.vm <- as.integer(args[4])             # 100 (for example)
-perc.fail.collect <- as.numeric(args[5])    # 0.01 (for example)
-perc.fail.metric <- as.numeric(args[6])     # 0.05 (for example)
+# traces.dir <- args[1]                       # "data/traces/"
+# output.dir <- args[2]                       # "data/output/"
+# initial.vm <- as.integer(args[3])           # 1 (for example)
+# final.vm <- as.integer(args[4])             # 100 (for example)
+# perc.fail.collect <- as.numeric(args[5])    # 0.01 (for example)
+# perc.fail.metric <- as.numeric(args[6])     # 0.05 (for example)
 
 # Test Arguments
-# traces.dir <- "data/traces/"
-# output.dir <- "data/output/"
-# initial.vm <- 1
-# final.vm <- 2
-# perc.fail.collect <- 0.01
-# perc.fail.metric <- 0.05
+traces.dir <- "data/traces/"
+output.dir <- "data/output/"
+initial.vm <- 1
+final.vm <- 2
+perc.fail.collect <- 0.01
+perc.fail.metric <- 0.05
 
 # Fixed Input Arguments
 min.trace.size <- 105120 # Evandro's Requirement: (60/5) * 24 * 365 * 1 (1 year in minutes) = 105120
@@ -217,10 +218,10 @@ for (vm in seq(initial.vm, final.vm)){
                             pkt_per_sec=CriarPKT_PER_SEC(trace.size, NA, num.fail.metrics),
                             disk_util=CriarDISK_UTIL(trace.size, NA, num.fail.metrics),
                             ios_per_sec=CriarIOS_PER_SEC(trace.size, NA, num.fail.metrics),
-                            cpu_util=CriarCPU_UTIL(trace.size, base.trace$CPU_UTIL/base.trace$CPU_ALLOC, num.fail.metrics),
+                            cpu_util=CriarCPU_UTIL(trace.size, base.trace$CPU_UTIL, num.fail.metrics),
                             cpu_alloc=CriarCPU_ALLOC(trace.size, base.trace$CPU_ALLOC, num.fail.metrics),
                             cpu_queue=CriarCPU_QUEUE(trace.size, NA, num.fail.metrics),
-                            memory_util=CriarMEM_UTIL(trace.size, base.trace$MEM_UTIL/base.trace$MEM_ALLOC, num.fail.metrics),
+                            memory_util=CriarMEM_UTIL(trace.size, base.trace$MEM_UTIL, num.fail.metrics),
                             memory_alloc=CriarMEM_ALLOC(trace.size, base.trace$MEM_ALLOC, num.fail.metrics),
                             pages_per_sec=CriarPAGES_PER_SEC(trace.size, NA, num.fail.metrics))
   
