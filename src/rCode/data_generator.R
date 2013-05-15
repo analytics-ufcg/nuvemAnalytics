@@ -7,7 +7,7 @@ rm(list =ls())
 # ------------------------------------------------------------------------------
 # TIME Functions
 # ------------------------------------------------------------------------------
-CriarDATE_TIME <- function(first.start.time, last.start.time, trace.size){
+DATE_TIME <- function(first.start.time, last.start.time, trace.size){
   date.time <- seq(from=first.start.time, 
                    to=(last.start.time + (trace.size-1) * 300), by=300)
   return(as.POSIXct(date.time, origin = "1970-01-01"))
@@ -23,11 +23,20 @@ GetTIME_ID <- function(trace.size){
 # ------------------------------------------------------------------------------
 # NETWORK Functions
 # ------------------------------------------------------------------------------
-CriarNET_UTIL <- function(trace.size, population.data, num.fail.metrics){
-  net.util = filter(rnorm(trace.size, 0, 1), filter=rep(1, min(trace.size, 50)), 
-                    circular=TRUE)
+
+NET_UTIL <- function(trace.size, population.data, num.fail.metrics){
+  # NET_UTIL: Network bandwidth utilization in Mb/s (10^6 bits, megabits per second)
+  
+  # TODO (Add a daily and weekly pattern here!)
+  net.util <- filter(rpois(trace.size, 10), filter=rep(1, min(trace.size, 5)), 
+                     circular=TRUE)
+  
   if (length(net.util) > 1){
-    net.util <- (net.util - min(net.util))/(max(net.util)-min(net.util))
+    # Normalize to minimum 0
+    net.util <- net.util + min(net.util)
+    
+    # Change the scale to Mega-bits
+    net.util <- net.util/10^6
   }
   
   # Generate the Fail Metrics
@@ -36,7 +45,8 @@ CriarNET_UTIL <- function(trace.size, population.data, num.fail.metrics){
   
   return(round(net.util, round.digits))
 }
-CriarPKT_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
+
+PKT_PER_SEC <- function(trace.size, population.data, num.fail.metrics, net.util){
   pkt.sec = runif(trace.size, 0, 20)
   
   # Generate the Fail Metrics
@@ -49,7 +59,7 @@ CriarPKT_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
 # ------------------------------------------------------------------------------
 # DISK Functions
 # ------------------------------------------------------------------------------
-CriarDISK_UTIL <- function(trace.size, population.data, num.fail.metrics){
+DISK_UTIL <- function(trace.size, population.data, num.fail.metrics){
   disk.util = filter(rnorm(trace.size, 0, 1), filter=rep(1, min(trace.size, 50)), 
                      circular=TRUE)
   
@@ -63,7 +73,7 @@ CriarDISK_UTIL <- function(trace.size, population.data, num.fail.metrics){
   
   return(round(disk.util, round.digits))
 }
-CriarIOS_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
+IOS_PER_SEC <- function(trace.size, population.data, num.fail.metrics, disk.util){
   ios.sec = runif(trace.size, 0, 20)
   
   # Generate the Fail Metrics
@@ -76,7 +86,7 @@ CriarIOS_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
 # ------------------------------------------------------------------------------
 # CPU Functions
 # ------------------------------------------------------------------------------
-CriarCPU_UTIL <- function(trace.size, population.data, num.fail.metrics){
+CPU_UTIL <- function(trace.size, population.data, num.fail.metrics){
   if (trace.size > length(population.data)){
     population.data <- rep(population.data, ceiling(trace.size/length(population.data)))
   }
@@ -88,7 +98,7 @@ CriarCPU_UTIL <- function(trace.size, population.data, num.fail.metrics){
   
   return(round(cpu.util, round.digits))
 }
-CriarCPU_ALLOC <- function(trace.size, population.data, num.fail.metrics){
+CPU_ALLOC <- function(trace.size, population.data, num.fail.metrics){
   if (trace.size > length(population.data)){
     population.data <- rep(population.data, ceiling(trace.size/length(population.data)))
   }
@@ -99,7 +109,7 @@ CriarCPU_ALLOC <- function(trace.size, population.data, num.fail.metrics){
   
   return(population.data[1:trace.size])
 }
-CriarCPU_QUEUE <- function(trace.size, population.data, num.fail.metrics){
+CPU_QUEUE <- function(trace.size, population.data, num.fail.metrics, cpu.util){
   cpu.queue = rep(0, trace.size)
 
   # Generate the Fail Metrics
@@ -112,7 +122,7 @@ CriarCPU_QUEUE <- function(trace.size, population.data, num.fail.metrics){
 # ------------------------------------------------------------------------------
 # MEMORY Functions
 # ------------------------------------------------------------------------------
-CriarMEM_UTIL <- function(trace.size, population.data, num.fail.metrics){
+MEM_UTIL <- function(trace.size, population.data, num.fail.metrics){
   if (trace.size > length(population.data)){
     population.data <- rep(population.data, ceiling(trace.size/length(population.data)))
   }
@@ -124,7 +134,7 @@ CriarMEM_UTIL <- function(trace.size, population.data, num.fail.metrics){
   
   return(round(mem.util, round.digits))
 }
-CriarMEM_ALLOC <- function(trace.size, population.data, num.fail.metrics){
+MEM_ALLOC <- function(trace.size, population.data, num.fail.metrics){
   if (trace.size > length(population.data)){
     population.data <- rep(population.data, ceiling(trace.size/length(population.data)))
   }
@@ -135,7 +145,7 @@ CriarMEM_ALLOC <- function(trace.size, population.data, num.fail.metrics){
   
   return(population.data[1:trace.size])
 }
-CriarPAGES_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
+PAGES_PER_SEC <- function(trace.size, population.data, num.fail.metrics, mem.util){
   pages.sec = runif(trace.size, 0, 20)
   
   # Generate the Fail Metrics
@@ -169,7 +179,7 @@ perc.fail.metric <- 0.05
 # Fixed Input Arguments
 min.trace.size <- 105120 # Evandro's Requirement: (60/5) * 24 * 365 * 1 (1 year in minutes) = 105120
 max.trace.size <- 315360 # Evandro's Requirement: (60/5) * 24 * 365 * 3 (3 year in minutes) = 315360
-round.digits <- 6
+round.digits <- 5
 first.start.time <- 1199145600 # 01/01/2008
 last.start.time <- 1262304000  # 01/01/2010 (the last possible time will be at 01/01/2013)
 
@@ -184,7 +194,7 @@ base.trace.files <- paste(traces.dir, list.files(traces.dir), sep ="")
 
 # Create the TIME table
 cat("Creating the TIME table...\n")
-time.table <- data.frame(date_time=CriarDATE_TIME(first.start.time, last.start.time, max.trace.size))
+time.table <- data.frame(date_time=DATE_TIME(first.start.time, last.start.time, max.trace.size))
 time.table$id_time <- seq_len(nrow(time.table))
 time.table <- time.table[,c("id_time", "date_time")]
 
@@ -214,16 +224,25 @@ for (vm in seq(initial.vm, final.vm)){
   
   trace.table <- data.frame(id_time=GetTIME_ID(trace.size), 
                             id_vm=rep(vm, trace.size),
-                            net_util=CriarNET_UTIL(trace.size, base.trace$NET_UTIL, num.fail.metrics),
-                            pkt_per_sec=CriarPKT_PER_SEC(trace.size, NA, num.fail.metrics),
-                            disk_util=CriarDISK_UTIL(trace.size, NA, num.fail.metrics),
-                            ios_per_sec=CriarIOS_PER_SEC(trace.size, NA, num.fail.metrics),
-                            cpu_util=CriarCPU_UTIL(trace.size, base.trace$CPU_UTIL, num.fail.metrics),
-                            cpu_alloc=CriarCPU_ALLOC(trace.size, base.trace$CPU_ALLOC, num.fail.metrics),
-                            cpu_queue=CriarCPU_QUEUE(trace.size, NA, num.fail.metrics),
-                            memory_util=CriarMEM_UTIL(trace.size, base.trace$MEM_UTIL, num.fail.metrics),
-                            memory_alloc=CriarMEM_ALLOC(trace.size, base.trace$MEM_ALLOC, num.fail.metrics),
-                            pages_per_sec=CriarPAGES_PER_SEC(trace.size, NA, num.fail.metrics))
+                            net_util=NET_UTIL(trace.size, base.trace$NET_UTIL, num.fail.metrics),
+                            pkt_per_sec=rep(0.0, trace.size),
+                            disk_util=DISK_UTIL(trace.size, NA, num.fail.metrics),
+                            ios_per_sec=rep(0.0, trace.size),
+                            cpu_util=CPU_UTIL(trace.size, base.trace$CPU_UTIL, num.fail.metrics),
+                            cpu_alloc=CPU_ALLOC(trace.size, base.trace$CPU_ALLOC, num.fail.metrics),
+                            cpu_queue=rep(0.0, trace.size),
+                            memory_util=MEM_UTIL(trace.size, base.trace$MEM_UTIL, num.fail.metrics),
+                            memory_alloc=MEM_ALLOC(trace.size, base.trace$MEM_ALLOC, num.fail.metrics),
+                            pages_per_sec=rep(0.0, trace.size))
+  
+  trace.table$pkt_per_sec <- PKT_PER_SEC(trace.size, NA, num.fail.metrics, 
+                                         trace.table$net_util)
+  trace.table$ios_per_sec <- IOS_PER_SEC(trace.size, NA, num.fail.metrics, 
+                                         trace.table$disk_util)
+  trace.table$cpu_queue <- CPU_QUEUE(trace.size, NA, num.fail.metrics,
+                                     trace.table$cpu_util)
+  trace.table$pages_per_sec <- PAGES_PER_SEC(trace.size, NA, num.fail.metrics, 
+                                             trace.table$memory_util)
   
   # ----------------------------------------------------------------------------
   # Indisponible Row Generation
