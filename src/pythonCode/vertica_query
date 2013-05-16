@@ -155,4 +155,8 @@ if __name__ == "__main__":
 		exit(4)
 	except Exception, e:
 		print "error: something odd happened while attempting to connect to Vertica database: "+str(e)
+
 	QUERY_ADAPTERS[query_name](start_date, end_date)
+
+	DB_CURSOR.close()
+	DB_CONNECTION.close()
