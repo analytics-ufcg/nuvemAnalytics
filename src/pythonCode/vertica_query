@@ -27,24 +27,31 @@ def execute_query(sql_query_file, start_date, end_date):
 #AND THEN ADD A KEY VALUE PAIR (query_name, query_function) INTO THE QUERY_ADAPTERS DICTIONARY
 
 def lowUsageVMs(start_date, end_date):
-	print "executing lowUsageVMs"
-	print "start date is:", start_date
-	print "end date is:", end_date
+
+	print ">: Executing query 'lowUsageVMs'... from "+start_date+" to "+end_date
+	print ">: Beware this will take a while..."
 
 	execute_query("LowUsageVMs.sql", start_date, end_date)
 
+	print ">: Query complete. We got the following results:"
+
+	print "VM NAME\t\t90th PERCENTILE CPU (cores)\t90th DISK I/O (MB/s)\t90th PERCENTILE NETWORK I/O (MB/s)"
+	rows = DB_CURSOR.fetchall()
+	for row in rows:
+		print row
 
 def vmsOverMemAlloc(start_date, end_date):
-	print "executing vmsOverMemAlloc"
-	print "start date is:", start_date
-	print "end date is:", end_date
+
+	print ">: Executing query 'vmsOverMemAlloc'... from "+start_date+" to "+end_date
 
 	execute_query("VMsOverMemAlloc.sql", start_date, end_date)
 
+	print ">: Query complete. We got the following results:"
+
+	print "VM NAME\t\tPEAK MEMORY (%)\tMEMORY ALLOCATION (GB)"
 	rows = DB_CURSOR.fetchall()
-	print "VM_ID\tMEM_UTIL\tMEM_ALLOC"
 	for row in rows:
-		print "%s\t%.5f\t\t%.3f" % (row[0], row[1], row[2])
+		print "%s\t\t%.5f\t\t%.3f" % (row[0], row[1], row[2])
 
 
 def exampleQuery(start_date, end_date):
