@@ -90,25 +90,20 @@ def in_range(number, range_index):
 
 def valid_date(a_date):
 	if a_date.count("-") != 2:
-		print "@1"
 		return False
 	elif a_date.count(":") != 2:
-		print "@2"
 		return False
 	elif a_date.strip().count(" ") != 1:
-		print "@3"
 		return False
 
 	parts = a_date.split(" ")
 	numbers = parts[0].split("-") + parts[1].split(":")
 
 	if len(numbers[0]) != 4:
-		print "@4"
 		return False
 	
 	for i in range(len(numbers)):
 		if ( i != 0 and not len(numbers[i]) == 2 ):
-			print "@5"
 			return False
 		if ( not numbers[i].isdigit() or not in_range(numbers[i], i) ):
 			return False
