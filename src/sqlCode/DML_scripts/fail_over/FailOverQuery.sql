@@ -10,3 +10,7 @@ where sub.avg > 0.15 and sub.avg < 0.151;
 
 -- Check the Cluster K-Safety
 SELECT current_fault_tolerance FROM system;
+
+-- Check what are the Critical Nodes 
+SELECT * from V_MONITOR.CRITICAL_NODES;
+
