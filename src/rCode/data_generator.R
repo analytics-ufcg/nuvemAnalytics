@@ -44,7 +44,7 @@ NET_UTIL <- function(trace.size, population.data, num.fail.metrics){
   }
   
   # Generate the Fail Metrics
-  GenerateFailMetrics(net.util, num.fail.metrics)
+  net.util <- GenerateFailMetrics(net.util, num.fail.metrics)
   
   return(round(net.util, round.digits))
 }
@@ -63,7 +63,7 @@ PKT_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
   }
   
   # Generate the Fail Metrics
-  GenerateFailMetrics(pkt.sec, num.fail.metrics)
+  pkt.sec <- GenerateFailMetrics(pkt.sec, num.fail.metrics)
   
   return(round(pkt.sec, round.digits))
 }
@@ -91,7 +91,7 @@ DISK_UTIL <- function(trace.size, population.data, num.fail.metrics){
   }
   
   # Generate the Fail Metrics
-  GenerateFailMetrics(disk.util, num.fail.metrics)
+  disk.util <- GenerateFailMetrics(disk.util, num.fail.metrics)
   
   return(round(disk.util, round.digits))
 }
@@ -106,7 +106,7 @@ IOS_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
   }
   
   # Generate the Fail Metrics
-  GenerateFailMetrics(ios.sec, num.fail.metrics)
+  ios.sec <- GenerateFailMetrics(ios.sec, num.fail.metrics)
   
   return(round(ios.sec, round.digits))
 }
@@ -118,10 +118,10 @@ CPU_UTIL <- function(trace.size, population.data, num.fail.metrics){
   if (trace.size > length(population.data)){
     population.data <- rep(population.data, ceiling(trace.size/length(population.data)))
   }
-  cpu.util = jitter(population.data[1:trace.size])
+  cpu.util <- jitter(population.data[1:trace.size])
   
   # Generate the Fail Metrics
-  GenerateFailMetrics(cpu.util, num.fail.metrics)
+  cpu.util <- GenerateFailMetrics(cpu.util, num.fail.metrics)
   
   return(round(cpu.util, round.digits))
 }
@@ -131,7 +131,7 @@ CPU_ALLOC <- function(trace.size, population.data, num.fail.metrics){
   }
   
   # Generate the Fail Metrics
-  GenerateFailMetrics(population.data, num.fail.metrics)
+  population.data <- GenerateFailMetrics(population.data, num.fail.metrics)
   
   return(population.data[1:trace.size])
 }
@@ -143,7 +143,7 @@ CPU_QUEUE <- function(trace.size, population.data, num.fail.metrics, cpu.util, c
   cpu.queue[cpu.queue > 90 & !is.na(cpu.queue)] <- cpu.queue[cpu.queue > 90 & !is.na(cpu.queue)] - 90
   
   # Generate the Fail Metrics (All NAs from cpu.util and cpu.alloc will appear here too...)
-  GenerateFailMetrics(cpu.queue, num.fail.metrics)
+  cpu.queue <- GenerateFailMetrics(cpu.queue, num.fail.metrics)
   
   return(cpu.queue)
 }
