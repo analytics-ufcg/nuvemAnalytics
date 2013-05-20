@@ -44,8 +44,7 @@ NET_UTIL <- function(trace.size, population.data, num.fail.metrics){
   }
   
   # Generate the Fail Metrics
-  num.fail.metrics <- num.fail.metrics - sum(is.na(net.util))
-  net.util[sample(which(!is.na(net.util)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
+  GenerateFailMetrics(net.util, num.fail.metrics)
   
   return(round(net.util, round.digits))
 }
@@ -55,17 +54,16 @@ PKT_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
   # We consider that the cluster is in a 1-Gb/s network and we set the packet size as 1000 bytes
   # Googling(http://www.cisco.com/web/about/security/intelligence/network_performance_metrics.html) 
   # we found that this bandwith has a packet_per_sec rate of 1.000.000 p/s
-
+  
   pkt.sec <- filter(rpois(trace.size, 1000000), filter=rep(1, min(trace.size, 5)), circular=TRUE)
-
+  
   if (length(pkt.sec) > 1 & min(pkt.sec) < 0){
     # Normalize to minimum 0
     pkt.sec <- pkt.sec + (min(pkt.sec) * -1)
   }
   
   # Generate the Fail Metrics
-  num.fail.metrics <- num.fail.metrics - sum(is.na(pkt.sec))
-  pkt.sec[sample(which(!is.na(pkt.sec)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
+  GenerateFailMetrics(pkt.sec, num.fail.metrics)
   
   return(round(pkt.sec, round.digits))
 }
@@ -93,8 +91,7 @@ DISK_UTIL <- function(trace.size, population.data, num.fail.metrics){
   }
   
   # Generate the Fail Metrics
-  num.fail.metrics <- num.fail.metrics - sum(is.na(disk.util))
-  disk.util[sample(which(!is.na(disk.util)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
+  GenerateFailMetrics(disk.util, num.fail.metrics)
   
   return(round(disk.util, round.digits))
 }
@@ -109,8 +106,7 @@ IOS_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
   }
   
   # Generate the Fail Metrics
-  num.fail.metrics <- num.fail.metrics - sum(is.na(ios.sec))
-  ios.sec[sample(which(!is.na(ios.sec)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
+  GenerateFailMetrics(ios.sec, num.fail.metrics)
   
   return(round(ios.sec, round.digits))
 }
@@ -125,8 +121,7 @@ CPU_UTIL <- function(trace.size, population.data, num.fail.metrics){
   cpu.util = jitter(population.data[1:trace.size])
   
   # Generate the Fail Metrics
-  num.fail.metrics <- num.fail.metrics - sum(is.na(cpu.util))
-  cpu.util[sample(which(!is.na(cpu.util)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
+  GenerateFailMetrics(cpu.util, num.fail.metrics)
   
   return(round(cpu.util, round.digits))
 }
@@ -136,8 +131,7 @@ CPU_ALLOC <- function(trace.size, population.data, num.fail.metrics){
   }
   
   # Generate the Fail Metrics
-  num.fail.metrics <- num.fail.metrics - sum(is.na(population.data))
-  population.data[sample(which(!is.na(population.data)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
+  GenerateFailMetrics(population.data, num.fail.metrics)
   
   return(population.data[1:trace.size])
 }
@@ -149,10 +143,7 @@ CPU_QUEUE <- function(trace.size, population.data, num.fail.metrics, cpu.util, c
   cpu.queue[cpu.queue > 90 & !is.na(cpu.queue)] <- cpu.queue[cpu.queue > 90 & !is.na(cpu.queue)] - 90
   
   # Generate the Fail Metrics (All NAs from cpu.util and cpu.alloc will appear here too...)
-  if (num.fail.metrics > sum(is.na(cpu.queue))){
-    num.fail.metrics <- num.fail.metrics - sum(is.na(cpu.queue))
-    cpu.queue[sample(which(!is.na(cpu.queue)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
-  }
+  GenerateFailMetrics(cpu.queue, num.fail.metrics)
   
   return(cpu.queue)
 }
@@ -167,8 +158,7 @@ MEM_UTIL <- function(trace.size, population.data, num.fail.metrics){
   mem.util = jitter(population.data[1:trace.size])
   
   # Generate the Fail Metrics
-  num.fail.metrics <- num.fail.metrics - sum(is.na(mem.util))
-  mem.util[sample(which(!is.na(mem.util)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
+  GenerateFailMetrics(mem.util, num.fail.metrics)
   
   return(round(mem.util, round.digits))
 }
@@ -178,8 +168,7 @@ MEM_ALLOC <- function(trace.size, population.data, num.fail.metrics){
   }
   
   # Generate the Fail Metrics
-  num.fail.metrics <- num.fail.metrics - sum(is.na(population.data))
-  population.data[sample(which(!is.na(population.data)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
+  GenerateFailMetrics(population.data, num.fail.metrics)
   
   return(population.data[1:trace.size])
 }
@@ -189,10 +178,20 @@ PAGES_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
   pages.sec <- jitter(filter(rpois(trace.size, 1), filter=rep(1, min(trace.size, 5)), circular=TRUE))
   
   # Generate the Fail Metrics
-  num.fail.metrics <- num.fail.metrics - sum(is.na(pages.sec))
-  pages.sec[sample(which(!is.na(pages.sec)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
-  
+  GenerateFailMetrics(pages.sec, num.fail.metrics)
+
   return(round(pages.sec, round.digits))
+}
+
+# ------------------------------------------------------------------------------
+# Fail Metrics Functions
+# ------------------------------------------------------------------------------
+GenerateFailMetrics <- function(data.vector, num.fail.metrics){
+  if (num.fail.metrics > sum(is.na(data.vector))){
+    num.fail.metrics <- num.fail.metrics - sum(is.na(data.vector))
+    data.vector[sample(which(!is.na(data.vector)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
+  }
+  return(data.vector)
 }
 
 # =============================================================================
