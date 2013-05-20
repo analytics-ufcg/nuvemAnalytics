@@ -1,10 +1,12 @@
 #!/usr/bin/python
 
-import os, sys, pyodbc
+import os
+import sys
+import pyodbc
 
 def execute_query(sql_query_file, start_date, end_date):
 
-	sql_file = open("../sqlCode/DML_scripts/queries/"+sql_query_file, 'r')
+	sql_file = open("/home/vertica/nuvemAnalytics/src/sqlCode/DML_scripts/queries/"+sql_query_file, 'r')
 	sql_code = sql_file.read()
 	sql_file.close()
 
