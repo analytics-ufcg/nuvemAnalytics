@@ -27,13 +27,17 @@ GetTIME_ID <- function(trace.size){
 NET_UTIL <- function(trace.size, population.data, num.fail.metrics){
   # NET_UTIL: Network bandwidth utilization in Mb/s (10^6 bits, megabits per second)
   
-  # TODO (Add a daily and weekly pattern here!)
-  net.util <- filter(rpois(trace.size, 10), filter=rep(1, min(trace.size, 5)), 
-                     circular=TRUE)
+  # Generation RULE:
+  # Time-serie with randon poisson (lambda = 2000) data 
+  net.util <- filter(rpois(trace.size, 2000), filter=rep(1, min(trace.size, 5)), circular=TRUE)
   
   if (length(net.util) > 1){
     # Normalize to minimum 0
-    net.util <- net.util + min(net.util)
+    if (min(net.util) < 0){
+      net.util <- net.util + min(net.util) * -1
+    }else{
+      net.util <- net.util + min(net.util)
+    }
     
     # Change the scale to Mega-bits
     net.util <- net.util/10^6
@@ -46,8 +50,18 @@ NET_UTIL <- function(trace.size, population.data, num.fail.metrics){
   return(round(net.util, round.digits))
 }
 
-PKT_PER_SEC <- function(trace.size, population.data, num.fail.metrics, net.util){
-  pkt.sec = runif(trace.size, 0, 20)
+PKT_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
+  # Generation RULES:
+  # We consider that the cluster is in a 1-Gb/s network and we set the packet size as 1000 bytes
+  # Googling(http://www.cisco.com/web/about/security/intelligence/network_performance_metrics.html) 
+  # we found that this bandwith has a packet_per_sec rate of 1.000.000 p/s
+
+  pkt.sec <- filter(rpois(trace.size, 1000000), filter=rep(1, min(trace.size, 5)), circular=TRUE)
+
+  if (length(pkt.sec) > 1 & min(pkt.sec) < 0){
+    # Normalize to minimum 0
+    pkt.sec <- pkt.sec + (min(pkt.sec) * -1)
+  }
   
   # Generate the Fail Metrics
   num.fail.metrics <- num.fail.metrics - sum(is.na(pkt.sec))
@@ -60,11 +74,22 @@ PKT_PER_SEC <- function(trace.size, population.data, num.fail.metrics, net.util)
 # DISK Functions
 # ------------------------------------------------------------------------------
 DISK_UTIL <- function(trace.size, population.data, num.fail.metrics){
-  disk.util = filter(rnorm(trace.size, 0, 1), filter=rep(1, min(trace.size, 50)), 
-                     circular=TRUE)
+  # DISK_UTIL: Disk bandwidth utilization in MB/s (10^6 bytes, megabytes per second)
+  
+  # Generation RULE:
+  # Time-serie with randon poisson (lambda = 2000) data 
+  disk.util <- filter(rpois(trace.size, 2000), filter=rep(1, min(trace.size, 5)), circular=TRUE)
   
   if (length(disk.util) > 1){
-    disk.util <- (disk.util - min(disk.util))/(max(disk.util)-min(disk.util))
+    # Normalize to minimum 0
+    if (min(disk.util) < 0){
+      disk.util <- disk.util + min(disk.util) * -1
+    }else{
+      disk.util <- disk.util + min(disk.util)
+    }
+    
+    # Change the scale to Mega-bytes
+    disk.util <- disk.util/10^6
   }
   
   # Generate the Fail Metrics
@@ -73,8 +98,15 @@ DISK_UTIL <- function(trace.size, population.data, num.fail.metrics){
   
   return(round(disk.util, round.digits))
 }
-IOS_PER_SEC <- function(trace.size, population.data, num.fail.metrics, disk.util){
-  ios.sec = runif(trace.size, 0, 20)
+IOS_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
+  # IOS_PER_SEC: The number of disk I/O operations executed per second.
+  # Based on the sample trace data from Evandro
+  ios.sec <- jitter(filter(rpois(trace.size, 2), filter=rep(1, min(trace.size, 5)), circular=TRUE))
+  
+  if (length(ios.sec) > 1 & min(ios.sec) < 0){
+    # Normalize to minimum 0
+    ios.sec <- ios.sec + (min(ios.sec) * -1)
+  }
   
   # Generate the Fail Metrics
   num.fail.metrics <- num.fail.metrics - sum(is.na(ios.sec))
@@ -109,12 +141,18 @@ CPU_ALLOC <- function(trace.size, population.data, num.fail.metrics){
   
   return(population.data[1:trace.size])
 }
-CPU_QUEUE <- function(trace.size, population.data, num.fail.metrics, cpu.util){
-  cpu.queue = rep(0, trace.size)
-
-  # Generate the Fail Metrics
-  num.fail.metrics <- num.fail.metrics - sum(is.na(cpu.queue))
-  cpu.queue[sample(which(!is.na(cpu.queue)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
+CPU_QUEUE <- function(trace.size, population.data, num.fail.metrics, cpu.util, cpu.alloc){
+  # Generation RULE:
+  # If the as.integer(cpu.util) is higher than 90, the CPU_QUEUE is equal to (as.integer(cpu.util) - 90).
+  cpu.queue <- as.integer((cpu.util/cpu.alloc) * 100)
+  cpu.queue[cpu.queue < 90] <- 0
+  cpu.queue[cpu.queue > 90 & !is.na(cpu.queue)] <- cpu.queue[cpu.queue > 90 & !is.na(cpu.queue)] - 90
+  
+  # Generate the Fail Metrics (All NAs from cpu.util and cpu.alloc will appear here too...)
+  if (num.fail.metrics > sum(is.na(cpu.queue))){
+    num.fail.metrics <- num.fail.metrics - sum(is.na(cpu.queue))
+    cpu.queue[sample(which(!is.na(cpu.queue)), num.fail.metrics)] <- rep(NA, num.fail.metrics)
+  }
   
   return(cpu.queue)
 }
@@ -145,8 +183,10 @@ MEM_ALLOC <- function(trace.size, population.data, num.fail.metrics){
   
   return(population.data[1:trace.size])
 }
-PAGES_PER_SEC <- function(trace.size, population.data, num.fail.metrics, mem.util){
-  pages.sec = runif(trace.size, 0, 20)
+PAGES_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
+  # Generation RULE:
+  # Jittered Time-serie with randon poisson (lambda = 10) data 
+  pages.sec <- jitter(filter(rpois(trace.size, 1), filter=rep(1, min(trace.size, 5)), circular=TRUE))
   
   # Generate the Fail Metrics
   num.fail.metrics <- num.fail.metrics - sum(is.na(pages.sec))
@@ -161,20 +201,20 @@ PAGES_PER_SEC <- function(trace.size, population.data, num.fail.metrics, mem.uti
 args <- commandArgs(trailingOnly = TRUE)
 
 # Input Arguments
-# traces.dir <- args[1]                       # "data/traces/"
-# output.dir <- args[2]                       # "data/output/"
-# initial.vm <- as.integer(args[3])           # 1 (for example)
-# final.vm <- as.integer(args[4])             # 100 (for example)
-# perc.fail.collect <- as.numeric(args[5])    # 0.01 (for example)
-# perc.fail.metric <- as.numeric(args[6])     # 0.05 (for example)
+traces.dir <- args[1]                       # "data/traces/"
+output.dir <- args[2]                       # "data/output/"
+initial.vm <- as.integer(args[3])           # 1 (for example)
+final.vm <- as.integer(args[4])             # 100 (for example)
+perc.fail.collect <- as.numeric(args[5])    # 0.01 (for example)
+perc.fail.metric <- as.numeric(args[6])     # 0.05 (for example)
 
 # Test Arguments
-traces.dir <- "data/traces/"
-output.dir <- "data/output/"
-initial.vm <- 1
-final.vm <- 2
-perc.fail.collect <- 0.01
-perc.fail.metric <- 0.05
+# traces.dir <- "data/traces/"
+# output.dir <- "data/output/"
+# initial.vm <- 1
+# final.vm <- 2
+# perc.fail.collect <- 0.01
+# perc.fail.metric <- 0.05
 
 # Fixed Input Arguments
 min.trace.size <- 105120 # Evandro's Requirement: (60/5) * 24 * 365 * 1 (1 year in minutes) = 105120
@@ -225,24 +265,18 @@ for (vm in seq(initial.vm, final.vm)){
   trace.table <- data.frame(id_time=GetTIME_ID(trace.size), 
                             id_vm=rep(vm, trace.size),
                             net_util=NET_UTIL(trace.size, base.trace$NET_UTIL, num.fail.metrics),
-                            pkt_per_sec=rep(0.0, trace.size),
+                            pkt_per_sec=PKT_PER_SEC(trace.size, NA, num.fail.metrics),
                             disk_util=DISK_UTIL(trace.size, NA, num.fail.metrics),
-                            ios_per_sec=rep(0.0, trace.size),
+                            ios_per_sec=IOS_PER_SEC(trace.size, NA, num.fail.metrics),
                             cpu_util=CPU_UTIL(trace.size, base.trace$CPU_UTIL, num.fail.metrics),
                             cpu_alloc=CPU_ALLOC(trace.size, base.trace$CPU_ALLOC, num.fail.metrics),
                             cpu_queue=rep(0.0, trace.size),
                             memory_util=MEM_UTIL(trace.size, base.trace$MEM_UTIL, num.fail.metrics),
                             memory_alloc=MEM_ALLOC(trace.size, base.trace$MEM_ALLOC, num.fail.metrics),
-                            pages_per_sec=rep(0.0, trace.size))
+                            pages_per_sec=PAGES_PER_SEC(trace.size, NA, num.fail.metrics))
   
-  trace.table$pkt_per_sec <- PKT_PER_SEC(trace.size, NA, num.fail.metrics, 
-                                         trace.table$net_util)
-  trace.table$ios_per_sec <- IOS_PER_SEC(trace.size, NA, num.fail.metrics, 
-                                         trace.table$disk_util)
   trace.table$cpu_queue <- CPU_QUEUE(trace.size, NA, num.fail.metrics,
-                                     trace.table$cpu_util)
-  trace.table$pages_per_sec <- PAGES_PER_SEC(trace.size, NA, num.fail.metrics, 
-                                             trace.table$memory_util)
+                                     trace.table$cpu_util, trace.table$cpu_alloc)
   
   # ----------------------------------------------------------------------------
   # Indisponible Row Generation
@@ -283,3 +317,4 @@ for (vm in seq(initial.vm, final.vm)){
   cat(round(runtime[[1]], 2), attr(runtime, "units"), "\n")
 }
 
+# TODO (Add a daily and weekly pattern then!)
