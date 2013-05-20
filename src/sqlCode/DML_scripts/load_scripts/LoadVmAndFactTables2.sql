@@ -45,3 +45,4 @@ FROM local '/home/augusto/git/nuvemAnalytics/data/output2/memory_1.csv',
 	       '/home/augusto/git/nuvemAnalytics/data/output2/memory_5.csv',
      	   '/home/augusto/git/nuvemAnalytics/data/output2/memory_6.csv'
 DELIMITER ',' NULL 'NA' NO COMMIT;
+

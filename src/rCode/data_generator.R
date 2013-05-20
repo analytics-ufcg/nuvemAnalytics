@@ -228,7 +228,7 @@ dir.create(output.dir, showWarnings=F)
 # Temp variables
 file.index <- 1
 curr.file.rows <- 0
-max.file.rows <- 40000000 # MAX = 40 million rows (200 vm's per file on average)
+max.file.rows <- 10000000 # MAX = 10 million rows (50 vm's per file on average, 220 MB on average)
 base.trace.files <- paste(traces.dir, list.files(traces.dir), sep ="")
 
 # Create the TIME table
