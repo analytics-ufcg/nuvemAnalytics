@@ -1,6 +1,8 @@
 -- Import the CSV files with the generated data;
 -- ATTENTION: Do not change the importing order, the foreign keys could not permit loading
 
+select count(*) from network;
+
 -- VM table files
 COPY vm_dim
 FROM local '/home/augusto/git/nuvemAnalytics/data/output/vm.csv'
