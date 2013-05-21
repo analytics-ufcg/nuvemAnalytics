@@ -9,17 +9,24 @@ def execute_query(sql_query_file, start_date, end_date):
 	sql_code = None
 
 	try:
-
+		#looking here to remain backwards compatible. This attempt should be taken out once US13 is validated by Evandro.
+		#I still have this so that he can easily ssh into vertica1 and do a `python $NUVEM_CLI` from anywhere in the machine with no problems
+		
 		sql_file = open("/home/vertica/nuvemAnalytics/src/sqlCode/DML_scripts/queries/"+sql_query_file, 'r')
-		#looking here to remain backwards compatible
 		sql_code = sql_file.read()
 		sql_file.close()
 
 	except IOError:
 
-		sql_file = open(sql_query_file, 'r')
-		sql_code = sql_file.read()
-		sql_file.close()
+		try:
+			sql_file = open(sql_query_file, 'r')
+			sql_code = sql_file.read()
+			sql_file.close()
+
+		except IOError:
+
+			print "error: could not find sql query file "+sql_query_file
+			exit(6)
 
 	sql_code = sql_code[ : sql_code.find("T.date_time >= '") + 16 ] + sql_code[ sql_code.find("'", sql_code.find("T.date_time >= '") + 16) : ]
 	sql_code = sql_code[ : sql_code.find("T.date_time <= '") + 16 ] + sql_code[ sql_code.find("'", sql_code.find("T.date_time <= '") + 16) : ]
