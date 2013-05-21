@@ -163,7 +163,7 @@ if __name__ == "__main__":
 		exit(3)
 
 	try:
-		print ">: Connecting to Vertica database..."
+		print ">: Connecting to Vertica..."
 		DB_CONNECTION = pyodbc.connect("DSN=Vertica")
 		DB_CURSOR = DB_CONNECTION.cursor()
 	except pyodbc.Error:
