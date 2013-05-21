@@ -143,7 +143,7 @@ if __name__ == "__main__":
 	query_code = sys.argv[1]
 	query_name = None
 	if ( query_code.isdigit() ):
-		if ( 0 <= int(query_code) <= len(QUERY_CODES) ):
+		if ( 0 <= int(query_code) < len(QUERY_CODES) ):
 			query_name = QUERY_CODES[int(query_code)]
 		else:
 			print "error: invalid query code"
