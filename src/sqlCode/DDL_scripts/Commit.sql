@@ -1,0 +1,3 @@
+-- Run the AnalyzeTableConstraints.sql script first...
+--rollback; -- Uncomment it and run if there is any constraint violation
+commit; -- Uncomment it and run if there is no constraint violation
