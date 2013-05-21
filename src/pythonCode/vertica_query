@@ -163,6 +163,7 @@ if __name__ == "__main__":
 		exit(3)
 
 	try:
+		print ">: Connecting to Vertica database..."
 		DB_CONNECTION = pyodbc.connect("DSN=Vertica")
 		DB_CURSOR = DB_CONNECTION.cursor()
 	except pyodbc.Error:
@@ -170,6 +171,8 @@ if __name__ == "__main__":
 		exit(4)
 	except Exception, e:
 		print "error: something odd happened while attempting to connect to Vertica database: "+str(e)
+
+	print ">: Connection successful!"
 
 	QUERY_ADAPTERS[query_name](start_date, end_date)
 
