@@ -74,21 +74,22 @@ def vmsOverMemAlloc(start_date, end_date):
 		print "%s\t\t%.5f\t\t%.3f" % (row[0], row[1], row[2])
 
 
-def exampleQuery(start_date, end_date):
-	print "executing exampleQuery"
-	print "start date is:", start_date
-	print "end date is:", end_date
-	pass
+#def exampleQuery(start_date, end_date):
+#
+#	print "executing exampleQuery"
+#	print "start date is:", start_date
+#	print "end date is:", end_date
+#	pass
 
 QUERY_ADAPTERS = {}
 QUERY_ADAPTERS['lowUsageVMs'] = lowUsageVMs
 QUERY_ADAPTERS['vmsOverMemAlloc'] = vmsOverMemAlloc
-QUERY_ADAPTERS['exampleQuery'] = exampleQuery
+#QUERY_ADAPTERS['exampleQuery'] = exampleQuery
 
 QUERY_CODES = []
 QUERY_CODES.append('lowUsageVMs')
 QUERY_CODES.append('vmsOverMemAlloc')
-QUERY_CODES.append('exampleQuery')
+#QUERY_CODES.append('exampleQuery')
 
 DATE_FORMAT = "%Y-%m-%d %H-%M-%S" #Accepts only dates in this format YYYY-MM-DD HH:MM:SS e.g. 2002-08-22 13:54:22
 
