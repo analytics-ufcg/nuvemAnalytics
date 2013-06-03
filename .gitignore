@@ -1,4 +1,2 @@
-.Rproj.user
-.Rhistory
-.RData
-data
+src/udf_development/examples
+src/udf_development/include
