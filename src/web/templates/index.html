@@ -1,0 +1,33 @@
+<!DOCTYPE html style="height:100%;">
+<head>
+<meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='viz.css')}}">
+	<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='bootstrap/css/bootstrap.min.css')}}">
+</meta>
+</head>
+<body style="height:100%;">
+
+	<div class='container-fluid' style="height:100%;">
+		<div class='row-fluid' style="height:10%;">
+			(mockup) tempo: hora dia semana mes ano escolha data inicial escolha data final
+		</div>
+		<div class='row-fluid' style="height:90%;">
+			<div class='span2'>
+				(mockup)<br/>
+				<br/>tipo de problema: <ul><li>subutilizacao</li> <li>superutilizacao</li> <li>previsao</li></ul>
+				<br/>forma de agrupamento: <ul><li>agrupamento de problemas</li> <li>problema</li></ul>
+			</div>
+			<div id='bubble_chart' class='span5'>
+
+			</div>
+			<div class='span5'>
+
+			</div>
+		</div>
+	</div>
+
+	<script src="{{url_for('static', filename='jquery-1.10.1.min.js')}}"></script>
+	<script src="{{url_for('static', filename='d3.v3.min.js')}}"></script>
+	<script src="{{url_for('static', filename='viz.js')}}"></script>
+</body>
+</html>
