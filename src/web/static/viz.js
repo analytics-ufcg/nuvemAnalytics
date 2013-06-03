@@ -21,9 +21,12 @@ var pack = d3.layout.pack()
     .size([r, r])
     .value(function(d) { return d.size; })
 
-var vis = d3.select("body").insert("svg:svg", "h2")
+var vis = d3.select("#bubble_chart")
     .attr("width", w)
     .attr("height", h)
+  .insert("svg:svg", "h2")
+    .attr("width", "100%")
+    .attr("height", "100%")
   .append("svg:g")
     .attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")");
 
