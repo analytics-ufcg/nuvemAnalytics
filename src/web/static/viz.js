@@ -1,8 +1,11 @@
-var w = 800,
-    h = 480,
-    r = 720,
+var w = $("#bubble_chart").attr("width"),
+    h = $("#bubble_chart").attr("height"),
+    r = 500,
     x = d3.scale.linear().range([0, r]),
     y = d3.scale.linear().range([0, r]);
+
+console.log("w: "+w);
+console.log("h: "+h);
 
 var root = { 'name' : '', 'children' : [
   { 'name' : 'No Problem (30)', 'size' : 30, 'class' : 'no_problem' },
@@ -22,8 +25,6 @@ var pack = d3.layout.pack()
     .value(function(d) { return d.size; })
 
 var vis = d3.select("#bubble_chart")
-    .attr("width", w)
-    .attr("height", h)
   .insert("svg:svg", "h2")
     .attr("width", "100%")
     .attr("height", "100%")
