@@ -1,2 +1,6 @@
 src/udf_development/examples
 src/udf_development/include
+.RData
+.Rhistory
+.Rproj.user
+data
