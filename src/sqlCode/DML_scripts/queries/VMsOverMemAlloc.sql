@@ -1,7 +1,7 @@
 SELECT DISTINCT V.vm_name, M.mem_util, M.mem_alloc  
 FROM vm_dim V, memory M, time_dim T
 WHERE V.id_vm = M.id_vm and T.id_time = M.id_time and
-	T.date_time >= '2011-01-31 08:15:00' and T.date_time <= '2013-01-31 08:15:00' and
+	T.date_time >= '2007-01-31 08:15:00' and T.date_time <= '2013-01-31 08:15:00' and
 	(V.id_vm, M.mem_util) in 
 		(SELECT id_vm, max(M.mem_util) 
 		 FROM memory M 
