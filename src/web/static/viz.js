@@ -1,5 +1,5 @@
-var w = $("#bubble_chart").attr("width"),
-    h = $("#bubble_chart").attr("height"),
+var w = 423,
+    h = 323,
     r = 500,
     x = d3.scale.linear().range([0, r]),
     y = d3.scale.linear().range([0, r]);
@@ -8,7 +8,6 @@ console.log("w: "+w);
 console.log("h: "+h);
 
 var root = { 'name' : '', 'children' : [
-  { 'name' : 'No Problem (30)', 'size' : 30, 'class' : 'no_problem' },
   { 'name' : 'VMs with Over-provisioned Memoryory (5)', 'size' : 5, 'class' : 'bad_problem_1' },
   { 'name' : 'Low Usage VMs (12)', 'size' : 12, 'class' : 'bad_problem_1' },
   { 'name' : 'VMs with Over-provisioned CPU (7)', 'size' : 7, 'class' : 'bad_problem_1' },

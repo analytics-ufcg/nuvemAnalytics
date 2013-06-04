@@ -34,3 +34,23 @@ circle.bad_problem_3{
   fill: #FF2E01;
   fill-opacity: 1;
 }
+
+#top_bar{
+  background-color:#D9E5FF;
+}
+
+#sidebar{
+  background-color:#BABCE8;
+}
+
+#bottom_bar{
+  background-color:#BAD4E8;
+}
+
+#chart2{
+  background-color:#D8CCFF;
+}
+
+#chart3{
+  background-color:#CCF6FF;
+}
