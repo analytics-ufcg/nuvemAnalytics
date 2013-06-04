@@ -115,10 +115,16 @@ IOS_PER_SEC <- function(trace.size, population.data, num.fail.metrics){
 # CPU Functions
 # ------------------------------------------------------------------------------
 CPU_UTIL <- function(trace.size, population.data, num.fail.metrics){
+  # Remove the NAs
+  population.data <- population.data[!is.na(population.data)]
+
   if (trace.size > length(population.data)){
     population.data <- rep(population.data, ceiling(trace.size/length(population.data)))
   }
   cpu.util <- jitter(population.data[1:trace.size])
+  
+  # Check the 0-1 boundaries
+  cpu.util <- (cpu.util - min(cpu.util))/(max(cpu.util) - min(cpu.util))
   
   # Generate the Fail Metrics
   cpu.util <- GenerateFailMetrics(cpu.util, num.fail.metrics)
@@ -152,10 +158,16 @@ CPU_QUEUE <- function(trace.size, population.data, num.fail.metrics, cpu.util, c
 # MEMORY Functions
 # ------------------------------------------------------------------------------
 MEM_UTIL <- function(trace.size, population.data, num.fail.metrics){
+  # Remove the NAs
+  population.data <- population.data[!is.na(population.data)]
+
   if (trace.size > length(population.data)){
     population.data <- rep(population.data, ceiling(trace.size/length(population.data)))
   }
   mem.util = jitter(population.data[1:trace.size])
+  
+  # Check the 0-1 boundaries
+  mem.util <- (mem.util - min(mem.util))/(max(mem.util) - min(mem.util))
   
   # Generate the Fail Metrics
   GenerateFailMetrics(mem.util, num.fail.metrics)
@@ -267,10 +279,10 @@ for (vm in seq(initial.vm, final.vm)){
                             pkt_per_sec=PKT_PER_SEC(trace.size, NA, num.fail.metrics),
                             disk_util=DISK_UTIL(trace.size, NA, num.fail.metrics),
                             ios_per_sec=IOS_PER_SEC(trace.size, NA, num.fail.metrics),
-                            cpu_util=CPU_UTIL(trace.size, base.trace$CPU_UTIL, num.fail.metrics),
+                            cpu_util=CPU_UTIL(trace.size, base.trace$CPU_UTIL/base.trace$CPU_ALLOC, num.fail.metrics),
                             cpu_alloc=CPU_ALLOC(trace.size, base.trace$CPU_ALLOC, num.fail.metrics),
                             cpu_queue=rep(0.0, trace.size),
-                            memory_util=MEM_UTIL(trace.size, base.trace$MEM_UTIL, num.fail.metrics),
+                            memory_util=MEM_UTIL(trace.size, base.trace$MEM_UTIL/base.trace$MEM_ALLOC, num.fail.metrics),
                             memory_alloc=MEM_ALLOC(trace.size, base.trace$MEM_ALLOC, num.fail.metrics),
                             pages_per_sec=PAGES_PER_SEC(trace.size, NA, num.fail.metrics))
   
