@@ -1,17 +1,17 @@
 var w = $("#bubble_chart").width(),
     h = $("#bubble_chart").height(),
-    r = 500,
+    r = 350,
     x = d3.scale.linear().range([0, r]),
     y = d3.scale.linear().range([0, r]);
 
 var root = { 'name' : '', 'children' : [
-  { 'name' : 'VMs with Over-provisioned Memoryory (5)', 'size' : 5, 'class' : 'bad_problem_1' },
-  { 'name' : 'Low Usage VMs (12)', 'size' : 12, 'class' : 'bad_problem_1' },
-  { 'name' : 'VMs with Over-provisioned CPU (7)', 'size' : 7, 'class' : 'bad_problem_1' },
-  { 'name' : 'Low Usage VMs and VMs with Over-provisioned Memoryory (3)', 'size' : 3, 'class' : 'bad_problem_2' },
-  { 'name' : 'Low Usage VMs and VMs with Over-provisioned CPU (4)', 'size' : 4, 'class' : 'bad_problem_2' },
-  { 'name' : 'VMs with Over-provisioned Memoryory and VMs with Over-provisioned CPU (1)', 'size' : 1, 'class' : 'bad_problem_2' },
-  { 'name' : 'Low Usage VMs, VMs with Over-provisioned Memoryory and VMs with Over-provisioned CPU (1)', 'size' : 1, 'class' : 'bad_problem_3' }
+  { 'name' : 'Over-provisioned Memory (5)', 'size' : 11015, 'class' : 'bad_problem_1' },
+  { 'name' : 'Low Usage (12)', 'size' : 1022, 'class' : 'bad_problem_1' },
+  { 'name' : 'Over-provisioned CPU (7)', 'size' : 1017, 'class' : 'bad_problem_1' },
+  { 'name' : 'Low Usage and Over-provisioned Memory (3)', 'size' : 1013, 'class' : 'bad_problem_2' },
+  { 'name' : 'Low Usage and Over-provisioned CPU (4)', 'size' : 1014, 'class' : 'bad_problem_2' },
+  { 'name' : 'Over-provisioned Memory and Over-provisioned CPU (1)', 'size' : 1011, 'class' : 'bad_problem_2' },
+  { 'name' : 'Low Usage, Over-provisioned Memory and Over-provisioned CPU (1)', 'size' : 1011, 'class' : 'bad_problem_3' }
   ] }
 
 var node = root;
@@ -47,7 +47,9 @@ vis.selectAll("text")
     .attr("dy", ".35em")
     .attr("text-anchor", "middle")
     .style("opacity", function(d) { return d.r > 20 ? 1 : 0; })
-    .text(function(d) { return d.name.substring(0, d.r / 3); });
+  .append("svg:tspan")
+    .style("font-size", 8)
+    .text(function(d) { return d.name.substring(0, d.r / 2); })
 
 d3.select(window).on("click", function() { zoom(root); });
 
@@ -67,8 +69,14 @@ function zoom(d, i) {
   t.selectAll("text")
     .attr("x", function(d) { return x(d.x); })
     .attr("y", function(d) { return y(d.y); })
-    .style("opacity", function(d) { return k * d.r > 20 ? 1 : 0; })
-    .text(function(d) { return d.name.substring(0, (k * d.r) / 3); });
+    .style("opacity", function(d) { return k * d.r > 20 ? 1 : 0; });
+
+  $("tspan").remove();
+
+  vis.selectAll("text")
+     .append("svg:tspan")
+     .style("font-size", 8)
+     .text(function(d) { return d.name.substring(0, (k * d.r) / 2); })
 
   node = d;
   d3.event.stopPropagation();
