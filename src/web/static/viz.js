@@ -1,11 +1,8 @@
-var w = 423,
-    h = 323,
+var w = $("#bubble_chart").width(),
+    h = $("#bubble_chart").height(),
     r = 500,
     x = d3.scale.linear().range([0, r]),
     y = d3.scale.linear().range([0, r]);
-
-console.log("w: "+w);
-console.log("h: "+h);
 
 var root = { 'name' : '', 'children' : [
   { 'name' : 'VMs with Over-provisioned Memoryory (5)', 'size' : 5, 'class' : 'bad_problem_1' },
