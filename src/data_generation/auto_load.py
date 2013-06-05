@@ -18,7 +18,7 @@ def executeQuery(sqlQueryFile):
         exit(4)
     except Exception, e:
         print "error: something odd happened while attempting to connect to Vertica database: " + str(e)
-	exit(4)
+        exit(4)
  
     # Execute the DDL queries
     for sqlCode in sqlScript.split(";"):
@@ -60,7 +60,7 @@ PERC_FAIL_COLLECT = 0.01
 PERC_FAIL_METRIC = 0.05
 
 # Received as input argument
-OUTPUT_DIR = "../../data/output/" # TODO (is not yet receiving it)
+OUTPUT_DIR = "../../data/output/"  # TODO (is not yet receiving it)
 FIRST_VM_ID = -1  # Default only (not used)
 LAST_VM_ID = 0  # Default only (not used)
 
@@ -122,8 +122,8 @@ if __name__ == '__main__':
         print "Load the VM and FACT TABLEs into DB..."
         executeQuery(LOAD_OTHER_TABLES_SQL)
 
-        print
-	sys.stdout.flush()
+        print ""
+        sys.stdout.flush()
 
         if finalVmId == LAST_VM_ID:
             print "=================== We're DONE! =================="
