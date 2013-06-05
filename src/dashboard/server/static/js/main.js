@@ -1,0 +1,1 @@
+SELECTED_GROUP = null;
