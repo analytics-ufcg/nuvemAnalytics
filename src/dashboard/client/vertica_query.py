@@ -3,73 +3,58 @@
 import sys
 import pyodbc
 
-def execute_query(sql_query_file, start_date, end_date):
+class QueryResult:
 
-	sql_file = open(sql_query_file, 'r')
-	sql_code = sql_file.read()
-	sql_file.close()
-
-	sql_code = sql_code[ : sql_code.find("T.date_time >= '") + 16 ] + sql_code[ sql_code.find("'", sql_code.find("T.date_time >= '") + 16) : ]
-	sql_code = sql_code[ : sql_code.find("T.date_time <= '") + 16 ] + sql_code[ sql_code.find("'", sql_code.find("T.date_time <= '") + 16) : ]
-	
-	sql_code = sql_code.replace("T.date_time >= ''", "T.date_time >= '" + start_date + "'")
-	sql_code = sql_code.replace("T.date_time <= ''", "T.date_time <= '" + end_date + "'")
-
-	try:
-		DB_CURSOR.execute(sql_code)
-	except pyodbc.DataError:
-		print "error: a problem (data error) happened while executing this query" + sql_query_file
-		exit(5)
-	except Exception, e:
-		print "error: a problem (" + str(e) + ") happened while executing this query " + sql_query_file
-		exit(5)
+	def __init__(self, column_names, rows):
+		self.column_names = column_names
+		self.rows = rows
 
 # TO ADD NEW QUERIES JUST CREATE ANOTHER FUNCTION DEFINITION AS THE ONES BELOW
 # AND THEN ADD A KEY VALUE PAIR (query_name, query_function) INTO THE QUERY_ADAPTERS DICTIONARY
 
 def lowUsageVMs(start_date, end_date):
 
-	print ">: Executing query 'lowUsageVMs'... from " + start_date + " to " + end_date
-	print ">: Beware this will take a while..."
+	(exit_status, message, output) = execute_query("LowUsageVMs.sql", start_date, end_date)
+	
+	if ( exit_status != 0 ):
+		return (exit_status, message, NO_OUTPUT)
 
-	execute_query("LowUsageVMs.sql", start_date, end_date)
-
-	print ">: Query complete. We got the following results:"
-
-	print "VM NAME\t\t90th PERCENTILE CPU (cores)\t90th DISK I/O (MB/s)\t90th PERCENTILE NETWORK I/O (MB/s)"
+	column_names = [
+	{'name' : 'VM NAME', 'measurement' : ''},
+	{'name' : '90th PERCENTILE CPU', 'measurement' : 'cores'},
+	{'name' : '90th PERCENTILE NETWORK I/O', 'measurement' : 'MB/s'}
+	]
+	
 	rows = DB_CURSOR.fetchall()
-	for row in rows:
-		print row
+	
+	return (exit_status, message, QueryResult(column_names, rows))	
 
 def vmsOverMemAlloc(start_date, end_date):
 
-	print ">: Executing query 'vmsOverMemAlloc'... from " + start_date + " to " + end_date
+	(exit_status, message, output) = execute_query("VMsOverMemAlloc.sql", start_date, end_date)
 
-	execute_query("VMsOverMemAlloc.sql", start_date, end_date)
+	if ( exit_status != 0 ):
+		return (exit_status, message, NO_OUTPUT)
 
-	print ">: Query complete. We got the following results:"
+	column_names = [
+	{'name' : 'VM NAME', 'measurement' : ''},
+	{'name' : 'PEAK MEMORY', 'measurement' : '%'},
+	{'name' : 'MEMORY ALLOCATION', 'measurement' : 'GB'}
+	]
 
-	print "VM NAME\t\tPEAK MEMORY (%)\tMEMORY ALLOCATION (GB)"
 	rows = DB_CURSOR.fetchall()
-	for row in rows:
-		print "%s\t\t%.5f\t\t%.3f" % (row[0], row[1], row[2])
 
+	return (exit_status, message, QueryResult(column_names, rows))
 
-def exampleQuery(start_date, end_date):
-	print "executing exampleQuery"
-	print "start date is:", start_date
-	print "end date is:", end_date
-	pass
+################## END OF QUERY DEFINITIONS #####################
 
 QUERY_ADAPTERS = {}
 QUERY_ADAPTERS['lowUsageVMs'] = lowUsageVMs
 QUERY_ADAPTERS['vmsOverMemAlloc'] = vmsOverMemAlloc
-QUERY_ADAPTERS['exampleQuery'] = exampleQuery
 
 QUERY_CODES = []
 QUERY_CODES.append('lowUsageVMs')
 QUERY_CODES.append('vmsOverMemAlloc')
-QUERY_CODES.append('exampleQuery')
 
 DATE_FORMAT = "%Y-%m-%d %H-%M-%S"  # Accepts only dates in this format YYYY-MM-DD HH:MM:SS e.g. 2002-08-22 13:54:22
 
@@ -84,12 +69,46 @@ RANGES.append((0, 59))  # SECOND
 DB_CONNECTION = None
 DB_CURSOR = None
 
+NO_OUTPUT = None
+
+
+def execute_query(sql_query_file, start_date, end_date):
+
+	sql_file = open(sql_query_file, 'r')
+	sql_code = sql_file.read()
+	sql_file.close()
+
+	sql_code = sql_code[ : sql_code.find("T.date_time >= '") + 16 ] + sql_code[ sql_code.find("'", sql_code.find("T.date_time >= '") + 16) : ]
+	sql_code = sql_code[ : sql_code.find("T.date_time <= '") + 16 ] + sql_code[ sql_code.find("'", sql_code.find("T.date_time <= '") + 16) : ]
+	
+	sql_code = sql_code.replace("T.date_time >= ''", "T.date_time >= '" + start_date + "'")
+	sql_code = sql_code.replace("T.date_time <= ''", "T.date_time <= '" + end_date + "'")
+
+	try:
+		DB_CURSOR.execute(sql_code)
+
+	except pyodbc.DataError:
+
+		exit_status = 5
+		message = "error: a problem (data error) happened while executing this query" + sql_query_file
+		return (exit_status, message, NO_OUTPUT)
+
+	except Exception, e:
+
+		exit_status = 5
+		message = "error: a problem (" + str(e) + ") happened while executing this query " + sql_query_file
+		return (exit_status, message, NO_OUTPUT)
+
+
+
 def in_range(number, range_index):
+
 	number = int(number)
 	return RANGES[range_index][0] <= number <= RANGES[range_index][1]
 
 
 def valid_date(a_date):
+
 	if a_date.count("-") != 2:
 		return False
 	elif a_date.count(":") != 2:
@@ -110,7 +129,81 @@ def valid_date(a_date):
 			return False
 	
 	return True
-	
+
+class VerticaClientFacade:
+
+	def check_and_query(self, query_identifier, start_date, end_date):
+
+		if (query_identifier == None):
+		
+			exit_status = 2
+			message = "error: query identifier cannot be null"
+			return (exit_status, message, NO_OUTPUT)
+		
+		elif (start_date == None or end_date == None):
+		
+			exit_status = 3
+			message = "error: both start and end ates cannot be null"
+			return (exit_status, message, NO_OUTPUT)
+
+		query_code = query_identifier
+		query_name = None
+		if (query_code.isdigit()):
+			if (0 <= int(query_code) <= len(QUERY_CODES)):
+				query_name = QUERY_CODES[int(query_code)]
+			else:
+				exit_status = 2
+				message = "error: invalid query code"
+				return (exit_status, message, NO_OUTPUT)
+		else:
+			query_name = query_code
+
+		if (query_name not in QUERY_ADAPTERS):
+			exit_status = 2
+			message = "error: invalid query name"
+			return (exit_status, message, NO_OUTPUT)
+		
+		if (not valid_date(start_date) or not valid_date(end_date)):
+			exit_status = 3
+			message = "error: both start and end dates must be valid"
+			return (exit_status, message, NO_OUTPUT)
+
+		try:
+			DB_CONNECTION = pyodbc.connect("DSN=Vertica")
+			DB_CURSOR = DB_CONNECTION.cursor()
+		except pyodbc.Error:
+			exit_status = 4
+			message = "error: pyodbc could not connect to Vertica database"
+			return (exit_status, message, NO_OUTPUT)
+		except Exception, e:
+			exit_status = 5
+			message = "error: something odd happened while attempting to connect to Vertica database: " + str(e)
+			return (exit_status, message, NO_OUTPUT)
+
+		if __name__ == "__main__":
+			print ">: Executing query '" + query_name + "'... from " + start_date + " to " + end_date
+
+		(exit_status, message, output) = QUERY_ADAPTERS[query_name](start_date, end_date)
+
+		if __name__ == "__main__":
+			print ">: Query complete. We got the following results:"
+
+		header = ""
+		for i in range(len(output.column_names)):
+			header += "%s (%s) \t\t" % (output.column_names[i]['name'], output.column_names[i]['measurement'])
+		print header
+
+		for row in output.rows:
+			formatted_row = ""
+			for i in range(len(row)):
+				formatted_row += row[i] + "\t\t"
+			print formatted_row
+
+		DB_CURSOR.close()
+		DB_CONNECTION.close()
+
+		return (exit_status, message, output)
+
 if __name__ == "__main__":
 
 	if len(sys.argv) != 4:
@@ -120,39 +213,10 @@ if __name__ == "__main__":
 		for i in range(len(QUERY_CODES)):
 			print "\t", i, " - ", QUERY_CODES[i]
 		exit(1)
-		
-	query_code = sys.argv[1]
-	query_name = None
-	if (query_code.isdigit()):
-		if (0 <= int(query_code) <= len(QUERY_CODES)):
-			query_name = QUERY_CODES[int(query_code)]
-		else:
-			print "error: invalid query code"
-			exit(2)
-	else:
-		query_name = query_code
 
-	start_date = sys.argv[2]
-	end_date = sys.argv[3]
-	
-	if (query_name not in QUERY_ADAPTERS):
-		print "error: invalid query name"
-		exit(2)
-	
-	if (not valid_date(start_date) or not valid_date(end_date)):
-		print "error: both start and end dates must be valid"
-		exit(3)
 
-	try:
-		DB_CONNECTION = pyodbc.connect("DSN=Vertica")
-		DB_CURSOR = DB_CONNECTION.cursor()
-	except pyodbc.Error:
-		print "error: pyodbc could not connect to Vertica database"
-		exit(4)
-	except Exception, e:
-		print "error: something odd happened while attempting to connect to Vertica database: " + str(e)
-
-	QUERY_ADAPTERS[query_name](start_date, end_date)
-
-	DB_CURSOR.close()
-	DB_CONNECTION.close()
+	client = VerticaClientFacade()
+	(exit_status, message, output) = client.check_and_query(sys.argv[1], sys.argv[2], sys.argv[3])
+	if ( exit_status != 0 ):
+		print message
+		exit(exit_status)
