@@ -121,6 +121,7 @@ if __name__ == '__main__':
         executeQuery(LOAD_OTHER_TABLES_SQL)
 
         print
+	sys.stdout.flush()
 
         if finalVmId == LAST_VM_ID:
             print "=================== We're DONE! =================="
