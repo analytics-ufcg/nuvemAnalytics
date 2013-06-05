@@ -4,5 +4,5 @@
 
 -- TIME table files
 COPY time_dim
-FROM local '/home/nuvem/Área de Trabalho/nuvemAnalytics/data/output/time.csv'
+FROM local '/home/vertica/nuvemAnalytics/data/output/time.csv'
 DELIMITER ',' ENCLOSED BY '"' NULL 'NA' NO COMMIT;

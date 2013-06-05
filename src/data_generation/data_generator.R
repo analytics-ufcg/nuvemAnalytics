@@ -249,10 +249,10 @@ time.table <- data.frame(date_time=DATE_TIME(first.start.time, last.start.time, 
 time.table$id_time <- seq_len(nrow(time.table))
 time.table <- time.table[,c("id_time", "date_time")]
 
-# Write the TIME table (if it does not exists)
-cat("Writing the TIME table (if it doesn't exist)...\n")
 time.table.file <- paste(output.dir, "time.csv", sep = "")
 if (!file.exists(time.table.file)){
+  # Write the TIME table
+  cat("Writing the TIME table...\n")
   write.table(time.table, time.table.file, col.names = F, row.names=F, sep = ",")
 }
 
