@@ -244,7 +244,6 @@ max.file.rows <- 10000000 # MAX = 10 million rows (50 vm's per file on average, 
 base.trace.files <- paste(traces.dir, list.files(traces.dir), sep ="")
 
 # Create the TIME table
-cat("Creating the TIME table...\n")
 time.table <- data.frame(date_time=DATE_TIME(first.start.time, last.start.time, max.trace.size))
 time.table$id_time <- seq_len(nrow(time.table))
 time.table <- time.table[,c("id_time", "date_time")]
