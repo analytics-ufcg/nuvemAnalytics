@@ -15,10 +15,10 @@ def executeQuery(sqlQueryFile):
         dbCursor = dbConnection.cursor()
     except pyodbc.Error:
         print "error: pyodbc could not connect to Vertica database"
-        exit(4)
+        exit(2)
     except Exception, e:
         print "error: something odd happened while attempting to connect to Vertica database: " + str(e)
-	exit(4)
+        exit(2)
  
     # Execute the DDL queries
     for sqlCode in sqlScript.split(";"):
@@ -27,10 +27,10 @@ def executeQuery(sqlQueryFile):
             dbCursor.execute(sqlCode)
         except pyodbc.DataError:
             print "error: a problem (data error) happened while executing this query" + sqlQueryFile
-            exit(5)
+            exit(3)
         except Exception, e:
             print "error: a problem (" + str(e) + ") happened while executing this query " + sqlQueryFile
-            exit(5)
+            exit(3)
 
         if dbCursor.rowcount != -1:
             print "  " + str(dbCursor.rowcount) + " rows affected"
