@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
-import sys
-import pyodbc
+import os, sys, pyodbc
 
 class QueryResult:
 
@@ -14,7 +13,7 @@ class QueryResult:
 
 def lowUsageVMs(start_date, end_date):
 
-	(exit_status, message, output) = execute_query("LowUsageVMs.sql", start_date, end_date)
+	(exit_status, message, rows) = execute_query("LowUsageVMs.sql", start_date, end_date)
 	
 	if ( exit_status != 0 ):
 		return (exit_status, message, NO_OUTPUT)
@@ -25,13 +24,11 @@ def lowUsageVMs(start_date, end_date):
 	{'name' : '90th PERCENTILE NETWORK I/O', 'measurement' : 'MB/s'}
 	]
 	
-	rows = DB_CURSOR.fetchall()
-	
 	return (exit_status, message, QueryResult(column_names, rows))	
 
 def vmsOverMemAlloc(start_date, end_date):
 
-	(exit_status, message, output) = execute_query("VMsOverMemAlloc.sql", start_date, end_date)
+	(exit_status, message, rows) = execute_query("VMsOverMemAlloc.sql", start_date, end_date)
 
 	if ( exit_status != 0 ):
 		return (exit_status, message, NO_OUTPUT)
@@ -41,8 +38,6 @@ def vmsOverMemAlloc(start_date, end_date):
 	{'name' : 'PEAK MEMORY', 'measurement' : '%'},
 	{'name' : 'MEMORY ALLOCATION', 'measurement' : 'GB'}
 	]
-
-	rows = DB_CURSOR.fetchall()
 
 	return (exit_status, message, QueryResult(column_names, rows))
 
@@ -74,7 +69,11 @@ NO_OUTPUT = None
 
 def execute_query(sql_query_file, start_date, end_date):
 
-	sql_file = open(sql_query_file, 'r')
+	print "sql file:", sql_query_file
+	print "start_date", start_date
+	print "end_date", end_date
+
+	sql_file = open(os.path.join("..", "client", sql_query_file), 'r')
 	sql_code = sql_file.read()
 	sql_file.close()
 
@@ -99,6 +98,10 @@ def execute_query(sql_query_file, start_date, end_date):
 		message = "error: a problem (" + str(e) + ") happened while executing this query " + sql_query_file
 		return (exit_status, message, NO_OUTPUT)
 
+	rows = DB_CURSOR.fetchall()
+	exit_status = 0
+	message = "Query completed succesfully"
+	return (exit_status, message, rows)
 
 
 def in_range(number, range_index):
@@ -133,6 +136,9 @@ def valid_date(a_date):
 class VerticaClientFacade:
 
 	def check_and_query(self, query_identifier, start_date, end_date):
+
+		global DB_CURSOR
+		global DB_CONNECTION
 
 		if (query_identifier == None):
 		
@@ -188,16 +194,21 @@ class VerticaClientFacade:
 		if __name__ == "__main__":
 			print ">: Query complete. We got the following results:"
 
-		header = ""
-		for i in range(len(output.column_names)):
-			header += "%s (%s) \t\t" % (output.column_names[i]['name'], output.column_names[i]['measurement'])
-		print header
+		if exit_status == 0:
 
-		for row in output.rows:
-			formatted_row = ""
-			for i in range(len(row)):
-				formatted_row += row[i] + "\t\t"
-			print formatted_row
+			header = ""
+			for i in range(len(output.column_names)):
+				header += "%s (%s) \t\t" % (output.column_names[i]['name'], output.column_names[i]['measurement'])
+			print header
+
+			for row in output.rows:
+				formatted_row = ""
+				for i in range(len(row)):
+					formatted_row += row[i] + "\t\t"
+				print formatted_row
+		else:
+
+			print ">: No results..."
 
 		DB_CURSOR.close()
 		DB_CONNECTION.close()

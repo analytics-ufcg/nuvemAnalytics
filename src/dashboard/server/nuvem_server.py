@@ -11,8 +11,12 @@ def index():
 
 	return render_template("index.html")
 
-@server.route('/query/<query_identifier>?start_date=<start_date>&end_date=<end_date>')
+@server.route('/query/<query_identifier>/<start_date>/<end_date>')
 def do_query(query_identifier=None, start_date=None, end_date=None):
+
+	print "query: %s" % query_identifier
+	print "start: %s" % start_date
+	print "end: %s" % end_date
 
 	client = VerticaClientFacade()
 	(exit_status, message, output) = client.check_and_query(query_identifier, start_date, end_date)
