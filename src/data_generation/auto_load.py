@@ -3,9 +3,8 @@ import shlex, subprocess, os, glob, pyodbc, sys
 def executeQuery(sqlQueryFile):
 
     sqlFile = open(sqlQueryFile, 'r')
-    sqlCode = sqlFile.read()
+    sqlScript = sqlFile.read()
     sqlFile.close()
-    print sqlCode
 
     dbConnection = None
     dbCursor = None
@@ -16,31 +15,33 @@ def executeQuery(sqlQueryFile):
         dbCursor = dbConnection.cursor()
     except pyodbc.Error:
         print "error: pyodbc could not connect to Vertica database"
-        exit(4)
+        exit(2)
     except Exception, e:
         print "error: something odd happened while attempting to connect to Vertica database: " + str(e)
+        exit(2)
  
-    # Execute the query
-    try:
-        dbCursor.execute(sqlCode)
-    except pyodbc.DataError:
-        print "error: a problem (data error) happened while executing this query" + sqlFile
-        exit(5)
-    except Exception, e:
-        print "error: a problem (" + str(e) + ") happened while executing this query " + sqlFile
-        exit(5)
- 
-    try:
-        rows = dbCursor.fetchall()
-        for row in rows:
-            print row
-    except Exception, e:
-        exit(5)
+    # Execute the DDL queries
+    for sqlCode in sqlScript.split(";"):
+        sqlCode = sqlCode.rstrip().lstrip() + ";"
+        try:
+            dbCursor.execute(sqlCode)
+        except pyodbc.DataError:
+            print "error: a problem (data error) happened while executing this query" + sqlQueryFile
+            exit(3)
+        except Exception, e:
+            print "error: a problem (" + str(e) + ") happened while executing this query " + sqlQueryFile
+            exit(3)
+
+        if dbCursor.rowcount != -1:
+            print "  " + str(dbCursor.rowcount) + " rows affected"
+
+    # Commit all changes
+    dbCursor.commit()
 
     # Close the cursor and the connection
     dbCursor.close()
     dbConnection.close()
-    
+   
 '''
     SQL VARIABLES
 '''
@@ -87,8 +88,8 @@ if __name__ == '__main__':
         # Drop the old tables and crete the new ones
         print "DROP old tables from DB..."
         executeQuery(DROP_TABLE_SQL)
-        print "CREATE new tables in DB...\n"
-    #     executeQuery(CREATE_TABLE_SQL)
+        print "CREATE new tables in DB..."
+        executeQuery(CREATE_TABLE_SQL)
 
     initialVmId = 1
     loadedTimeTable = False
@@ -97,7 +98,7 @@ if __name__ == '__main__':
         
         finalVmId = min(initialVmId + VMS_PER_LOAD - 1, LAST_VM_ID)
         
-        print "======== VM Ids from " + str(initialVmId) + " to " + str(finalVmId) + " (up to " + str(LAST_VM_ID) + ") ========"
+        print "\n======== VM Ids from " + str(initialVmId) + " to " + str(finalVmId) + " (up to " + str(LAST_VM_ID) + ") ========"
 
         if os.path.exists(OUTPUT_DIR + "cpu_1.csv"):
             print "Remove the old vm and fact tables..."
@@ -113,11 +114,11 @@ if __name__ == '__main__':
         
         if not loadedTimeTable:
             print "Load the TIME TABLE into DB..." 
-#             executeQuery(LOAD_TIME_TABLE_SQL)
+            executeQuery(LOAD_TIME_TABLE_SQL)
             loadedTimeTable = True
         
         print "Load the VM and FACT TABLEs into DB..."
-#         executeQuery(LOAD_OTHER_TABLES_SQL)
+        executeQuery(LOAD_OTHER_TABLES_SQL)
 
         print
 
