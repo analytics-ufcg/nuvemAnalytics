@@ -25,7 +25,8 @@ def executeQuery(sqlQueryFile, isLoad):
         sqlCode = sqlCode.rstrip().lstrip() + ";"
         try:
             if (isLoad):
-                dbCursor.execute(sqlCode, OUTPUT_DIR_NAME)
+                sqlCode = sqlCode.replace("<?>", OUTPUT_DIR_NAME)    
+                dbCursor.execute(sqlCode)
             else:
                 dbCursor.execute(sqlCode)
         except pyodbc.DataError:
@@ -66,7 +67,7 @@ PERC_FAIL_METRIC = 0.05
 '''
     EXECUTION VARIABLES
 '''
-VMS_PER_LOAD = 1
+VMS_PER_LOAD = 20
 RECREATE_TABLES = 0
 LOAD_TIME_TABLE = 0
 
@@ -96,10 +97,6 @@ if __name__ == '__main__':
         print "error: <load_time_table> should be 0 or 1"
         exit(1)
 
-#     if not os.path.exists(OUTPUT_DIR):
-#         print "error: unexistent <output_dir>"
-#         exit(1)
-    
     # Start the script
     
     if RECREATE_TABLES == 1:
