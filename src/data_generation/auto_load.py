@@ -60,7 +60,7 @@ PERC_FAIL_COLLECT = 0.01
 PERC_FAIL_METRIC = 0.05
 
 # Received as input argument
-OUTPUT_DIR = "../../data/output/"  # TODO (is not yet receiving it)
+OUTPUT_DIR = "/path/to/output/dir"  # Default only (not used)
 FIRST_VM_ID = -1  # Default only (not used)
 LAST_VM_ID = 0  # Default only (not used)
 
@@ -69,29 +69,46 @@ LAST_VM_ID = 0  # Default only (not used)
 '''
 VMS_PER_LOAD = 20
 RECREATE_TABLES = 0
+LOAD_TIME_TABLE = 0
 
 if __name__ == '__main__':
     print "================ Auto Loading VMs ================"
     
     # Read input arguments
-    if len(sys.argv) != 4:
-        print "usage: python auto_load.py <first_vm_id> <last_vm_id> <recreate_tables>"
+    if len(sys.argv) != 6:
+        print "usage: python auto_load.py <first_vm_id> <last_vm_id> <recreate_tables> <load_time_table> <output_dir>"
         exit(1)
     
     FIRST_VM_ID = int(sys.argv[1])
     LAST_VM_ID = int(sys.argv[2])
     RECREATE_TABLES = int(sys.argv[3])
+    LOAD_TIME_TABLE = int(sys.argv[4])
+    OUTPUT_DIR = sys.argv[5]
     
     if FIRST_VM_ID > LAST_VM_ID:
         print "error: <first_vm_id> greater than <last_vm_id>"
         exit(1)
     
+    if not RECREATE_TABLES in [0, 1]:
+        print "error: <recreate_tables> should be 0 or 1"
+        exit(1)
+   
+    if not LOAD_TIME_TABLE in [0, 1]:
+        print "error: <load_time_table> should be 0 or 1"
+        exit(1)
+
+    if not os.path.exists(OUTPUT_DIR):
+        print "error: unexistent <output_dir>"
+        exit(1)
+    
+    # Start the script
+    
     if RECREATE_TABLES == 1:
         # Drop the old tables and crete the new ones
         print "DROP old tables from DB..."
-        executeQuery(DROP_TABLE_SQL)
+#         executeQuery(DROP_TABLE_SQL)
         print "CREATE new tables in DB..."
-        executeQuery(CREATE_TABLE_SQL)
+#         executeQuery(CREATE_TABLE_SQL)
 
     initialVmId = 1
     loadedTimeTable = False
@@ -114,13 +131,13 @@ if __name__ == '__main__':
                           str(initialVmId) + " " + str(finalVmId) + " " + str(PERC_FAIL_COLLECT) + " " + str(PERC_FAIL_METRIC)
         subprocess.call(shlex.split(generationCall))
         
-        if not loadedTimeTable:
+        if LOAD_TIME_TABLE == 1 and not loadedTimeTable:
             print "Load the TIME TABLE into DB..." 
-            executeQuery(LOAD_TIME_TABLE_SQL)
+#             executeQuery(LOAD_TIME_TABLE_SQL)
             loadedTimeTable = True
         
         print "Load the VM and FACT TABLEs into DB..."
-        executeQuery(LOAD_OTHER_TABLES_SQL)
+#         executeQuery(LOAD_OTHER_TABLES_SQL)
 
         print ""
         sys.stdout.flush()
