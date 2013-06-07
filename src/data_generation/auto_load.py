@@ -106,9 +106,9 @@ if __name__ == '__main__':
     if RECREATE_TABLES == 1:
         # Drop the old tables and crete the new ones
         print "DROP old tables from DB..."
-#         executeQuery(DROP_TABLE_SQL)
+        executeQuery(DROP_TABLE_SQL)
         print "CREATE new tables in DB..."
-#         executeQuery(CREATE_TABLE_SQL)
+        executeQuery(CREATE_TABLE_SQL)
 
     initialVmId = 1
     loadedTimeTable = False
@@ -133,11 +133,11 @@ if __name__ == '__main__':
         
         if LOAD_TIME_TABLE == 1 and not loadedTimeTable:
             print "Load the TIME TABLE into DB..." 
-#             executeQuery(LOAD_TIME_TABLE_SQL)
+            executeQuery(LOAD_TIME_TABLE_SQL)
             loadedTimeTable = True
         
         print "Load the VM and FACT TABLEs into DB..."
-#         executeQuery(LOAD_OTHER_TABLES_SQL)
+        executeQuery(LOAD_OTHER_TABLES_SQL)
 
         print ""
         sys.stdout.flush()
