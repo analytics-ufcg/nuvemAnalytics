@@ -110,7 +110,7 @@ if __name__ == '__main__':
         print "CREATE new tables in DB..."
         executeQuery(CREATE_TABLE_SQL)
 
-    initialVmId = 1
+    initialVmId = FIRST_VM_ID
     loadedTimeTable = False
     
     while True:
