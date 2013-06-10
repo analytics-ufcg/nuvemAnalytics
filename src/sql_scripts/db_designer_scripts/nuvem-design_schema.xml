@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<schema>
+<tables>
+<table name="time_dim" schema="public">
+</table>
+<table name="vm_dim" schema="public">
+</table>
+<table name="network" schema="public">
+</table>
+<table name="disk" schema="public">
+</table>
+<table name="cpu" schema="public">
+</table>
+<table name="memory" schema="public">
+</table>
+</tables>
+</schema>

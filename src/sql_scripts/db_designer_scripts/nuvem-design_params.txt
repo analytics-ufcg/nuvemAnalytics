@@ -1,0 +1,21 @@
+SchemaSearchPath: 
+DataDirectory: /home/vertica
+DatabaseClient: /opt/vertica/bin/vsql
+DataTerminator: \012
+FactTableRows: 100000000
+WorkingDirectory: /home/vertica
+DatabaseName: nuvem
+KSafetyLevel: 1
+DesignContextName: nuvem-design
+DataFileExt: .tbl
+DataDelimiter: |
+DesignType: Comprehensive
+Port: 5433
+DataNullValue: 
+DesignPolicy: Load
+DesignName: nuvem-design
+DeployDesign: True
+QueriesFile: 
+AnalyzeStatistics: True
+Task: Design
+DesignSchemaFile: /home/vertica/nuvem-design_schema.xml
