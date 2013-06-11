@@ -39,5 +39,11 @@
 	<script src="{{url_for('static', filename='js/jquery-1.10.1.min.js')}}"></script>
 	<script src="{{url_for('static', filename='js/d3.v3.min.js')}}"></script>
 	<script src="{{url_for('static', filename='js/bubble_chart.js')}}"></script>
+	{% if response %}
+	<script type="text/javascript">
+		var bubble_chart_data = {{ response|tojson|safe }}
+
+	</script>
+	{% endif %}
 </body>
 </html>

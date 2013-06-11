@@ -1,4 +1,4 @@
-import  os, sys
+import  os, sys, json
 from flask import Flask, render_template
 
 sys.path.append("../client")
@@ -14,30 +14,36 @@ def index():
 @server.route('/query/<query_identifier>/<start_date>/<end_date>')
 def do_query(query_identifier=None, start_date=None, end_date=None):
 
-	print "query: %s" % query_identifier
-	print "start: %s" % start_date
-	print "end: %s" % end_date
-
 	client = VerticaClientFacade()
 	(exit_status, message, output) = client.check_and_query(query_identifier, start_date, end_date)
 
+	response = { 
+		'name' : 'subutilization',
+		'children' : [],
+		'exit_status' : exit_status,
+		'message' : message
+	}
+
 	if ( exit_status != 0 ):
-		return "too bad(%s): %s" % (exit_status, message)
 
-	return_page = ""
+		return render_template("index.html", response=json.dumps(response))
 
-	header = ""
-	for i in range(len(output.column_names)):
-		header += "%s (%s) \t\t" % (output.column_names[i]['name'], output.column_names[i]['measurement'])
-	return_page += header + "\n"
+	query_results = {
+		'name' : query_identifier,
+		'children' : []
+	}
 
 	for row in output.rows:
-		formatted_row = ""
-		for i in range(len(row)):
-			formatted_row += row[i] + "\t\t"
-		return_page += formatted_row + "\n"
+		vm_info = {'size' : 1}
+		for i in range(0, len(output.column_names)):
+			vm_info[output.column_names[i]['name']] = {
+			'value' : row[i],
+			'measurement' : output.column_names[i]['measurement']
+			}
+		query_results['children'].append(vm_info)
 
-	return return_page
+	response['response'].append(query_results)
+	return render_template("index.html", response=json.dumps(response))
 
 if __name__ == "__main__":
 

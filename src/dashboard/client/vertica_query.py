@@ -69,22 +69,12 @@ NO_OUTPUT = None
 
 def execute_query(sql_query_file, start_date, end_date):
 
-	print "sql file:", sql_query_file
-	print "start_date", start_date
-	print "end_date", end_date
-
 	sql_file = open(os.path.join("..", "client", sql_query_file), 'r')
 	sql_code = sql_file.read()
 	sql_file.close()
 
-	sql_code = sql_code[ : sql_code.find("T.date_time >= '") + 16 ] + sql_code[ sql_code.find("'", sql_code.find("T.date_time >= '") + 16) : ]
-	sql_code = sql_code[ : sql_code.find("T.date_time <= '") + 16 ] + sql_code[ sql_code.find("'", sql_code.find("T.date_time <= '") + 16) : ]
-	
-	sql_code = sql_code.replace("T.date_time >= ''", "T.date_time >= '" + start_date + "'")
-	sql_code = sql_code.replace("T.date_time <= ''", "T.date_time <= '" + end_date + "'")
-
 	try:
-		DB_CURSOR.execute(sql_code)
+		DB_CURSOR.execute(sql_code, start_date, end_date)
 
 	except pyodbc.DataError:
 
@@ -100,7 +90,7 @@ def execute_query(sql_query_file, start_date, end_date):
 
 	rows = DB_CURSOR.fetchall()
 	exit_status = 0
-	message = "Query completed succesfully"
+	message = "Query completed succesfully!"
 	return (exit_status, message, rows)
 
 
@@ -175,6 +165,8 @@ class VerticaClientFacade:
 			return (exit_status, message, NO_OUTPUT)
 
 		try:
+			if __name__ == "__main__":
+				print ">: Connecting to Vertica..."
 			DB_CONNECTION = pyodbc.connect("DSN=Vertica")
 			DB_CURSOR = DB_CONNECTION.cursor()
 		except pyodbc.Error:
@@ -187,6 +179,7 @@ class VerticaClientFacade:
 			return (exit_status, message, NO_OUTPUT)
 
 		if __name__ == "__main__":
+			print ">: Connection successful!"
 			print ">: Executing query '" + query_name + "'... from " + start_date + " to " + end_date
 
 		(exit_status, message, output) = QUERY_ADAPTERS[query_name](start_date, end_date)
