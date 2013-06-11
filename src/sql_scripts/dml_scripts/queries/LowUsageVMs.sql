@@ -12,4 +12,4 @@ where tabelaCpu.cpu_p > 90 and tabelaCpu.cpu_alloc < 0.2 and
 	  tabelaDisk.ios_p > 90 and tabelaDisk.ios_per_sec < 1.0 and
 	  tabelaNet.pkt_p > 90 and tabelaNet.pkt_per_sec < 3.0 and
 	  tabelaCpu.id_vm = tabelaDisk.id_vm and tabelaDisk.id_vm = tabelaNet.id_vm
-	  and T.date_time >= '2011-01-31 08:15:00' and T.date_time <= '2013-01-31 08:15:00' and tabelaCpu.id_time = T.id_time;
+	  and T.date_time >= '2012-12-31 00:00:00' and T.date_time <= '2013-01-01 00:00:00' and tabelaCpu.id_time = T.id_time;

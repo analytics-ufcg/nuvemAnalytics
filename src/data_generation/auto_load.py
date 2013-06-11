@@ -1,6 +1,6 @@
 import shlex, subprocess, os, glob, pyodbc, sys
 
-def executeQuery(sqlQueryFile):
+def executeQuery(sqlQueryFile, isLoad):
 
     sqlFile = open(sqlQueryFile, 'r')
     sqlScript = sqlFile.read()
@@ -15,22 +15,26 @@ def executeQuery(sqlQueryFile):
         dbCursor = dbConnection.cursor()
     except pyodbc.Error:
         print "error: pyodbc could not connect to Vertica database"
-        exit(2)
+        exit(4)
     except Exception, e:
         print "error: something odd happened while attempting to connect to Vertica database: " + str(e)
-        exit(2)
+        exit(4)
  
     # Execute the DDL queries
     for sqlCode in sqlScript.split(";"):
         sqlCode = sqlCode.rstrip().lstrip() + ";"
         try:
-            dbCursor.execute(sqlCode)
+            if (isLoad):
+                sqlCode = sqlCode.replace("<?>", OUTPUT_DIR_NAME)    
+                dbCursor.execute(sqlCode)
+            else:
+                dbCursor.execute(sqlCode)
         except pyodbc.DataError:
-            print "error: a problem (data error) happened while executing this query" + sqlQueryFile
-            exit(3)
+            print "error: a problem (data error) happened while executing this query" + sqlCode
+            exit(5)
         except Exception, e:
-            print "error: a problem (" + str(e) + ") happened while executing this query " + sqlQueryFile
-            exit(3)
+            print "error: a problem (" + str(e) + ") happened while executing this query " + sqlCode
+            exit(5)
 
         if dbCursor.rowcount != -1:
             print "  " + str(dbCursor.rowcount) + " rows affected"
@@ -55,34 +59,45 @@ LOAD_OTHER_TABLES_SQL = SQL_DIR + "/dml_scripts/load_scripts/LoadVmAndFactTables
 '''
     R VARIABLES
 '''
+DATA_DIR = "../../data/"
 TRACE_DIR = "../../data/traces/"
-OUTPUT_DIR = "../../data/output/"
 PERC_FAIL_COLLECT = 0.01
 PERC_FAIL_METRIC = 0.05
-FIRST_VM_ID = -1  # Default only (not used)
-LAST_VM_ID = 0  # Default only (not used)
 
 '''
     EXECUTION VARIABLES
 '''
-VMS_PER_LOAD = 1
+VMS_PER_LOAD = 20
 RECREATE_TABLES = 0
+LOAD_TIME_TABLE = 0
 
 if __name__ == '__main__':
     print "================ Auto Loading VMs ================"
     
     # Read input arguments
-    if len(sys.argv) != 4:
-        print "usage: python auto_load.py <first_vm_id> <last_vm_id> <recreate_tables>"
+    if len(sys.argv) != 6:
+        print "usage: python auto_load.py <first_vm_id> <last_vm_id> <recreate_tables> <load_time_table> <output_dir_name>"
         exit(1)
     
     FIRST_VM_ID = int(sys.argv[1])
     LAST_VM_ID = int(sys.argv[2])
     RECREATE_TABLES = int(sys.argv[3])
+    LOAD_TIME_TABLE = int(sys.argv[4])
+    OUTPUT_DIR_NAME = sys.argv[5]
     
     if FIRST_VM_ID > LAST_VM_ID:
         print "error: <first_vm_id> greater than <last_vm_id>"
         exit(1)
+    
+    if not RECREATE_TABLES in [0, 1]:
+        print "error: <recreate_tables> should be 0 or 1"
+        exit(1)
+   
+    if not LOAD_TIME_TABLE in [0, 1]:
+        print "error: <load_time_table> should be 0 or 1"
+        exit(1)
+
+    # Start the script
     
     if RECREATE_TABLES == 1:
         # Drop the old tables and crete the new ones
@@ -91,8 +106,9 @@ if __name__ == '__main__':
         print "CREATE new tables in DB..."
         executeQuery(CREATE_TABLE_SQL)
 
-    initialVmId = 1
+    initialVmId = FIRST_VM_ID
     loadedTimeTable = False
+    outputDir = DATA_DIR + OUTPUT_DIR_NAME + "/"
     
     while True:
         
@@ -100,27 +116,28 @@ if __name__ == '__main__':
         
         print "\n======== VM Ids from " + str(initialVmId) + " to " + str(finalVmId) + " (up to " + str(LAST_VM_ID) + ") ========"
 
-        if os.path.exists(OUTPUT_DIR + "cpu_1.csv"):
+        if os.path.exists(outputDir + "cpu_1.csv"):
             print "Remove the old vm and fact tables..."
-            for f in glob.glob(OUTPUT_DIR + "*.csv"):
+            for f in glob.glob(outputDir + "*.csv"):
                 if not f.endswith("time.csv"):
                     os.remove(f)
 
         # RUN the DATA GENERATOR
         print "Run the data generator..."
-        generationCall = "Rscript data_generator.R " + TRACE_DIR + " " + OUTPUT_DIR + " " + \
+        generationCall = "Rscript data_generator.R " + TRACE_DIR + " " + outputDir + " " + \
                           str(initialVmId) + " " + str(finalVmId) + " " + str(PERC_FAIL_COLLECT) + " " + str(PERC_FAIL_METRIC)
         subprocess.call(shlex.split(generationCall))
         
-        if not loadedTimeTable:
+        if LOAD_TIME_TABLE == 1 and not loadedTimeTable:
             print "Load the TIME TABLE into DB..." 
-            executeQuery(LOAD_TIME_TABLE_SQL)
+            executeQuery(LOAD_TIME_TABLE_SQL, isLoad=True)
             loadedTimeTable = True
         
         print "Load the VM and FACT TABLEs into DB..."
-        executeQuery(LOAD_OTHER_TABLES_SQL)
+        executeQuery(LOAD_OTHER_TABLES_SQL, isLoad=True)
 
-        print
+        print ""
+        sys.stdout.flush()
 
         if finalVmId == LAST_VM_ID:
             print "=================== We're DONE! =================="
