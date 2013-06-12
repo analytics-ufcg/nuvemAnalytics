@@ -41,7 +41,13 @@
 	<script src="{{url_for('static', filename='js/bubble_chart.js')}}"></script>
 	{% if response %}
 	<script type="text/javascript">
-		var bubble_chart_data = {{ response|tojson|safe }}
+
+		var bubble_chart_data;
+
+		$(document).ready(function(){
+			bubble_chart_data = JSON.parse({{ response|tojson|safe }})
+			showBubbleChart(bubble_chart_data);
+		});
 
 	</script>
 	{% endif %}

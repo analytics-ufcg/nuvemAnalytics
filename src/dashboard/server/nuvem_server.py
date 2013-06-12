@@ -12,10 +12,10 @@ def execute_query(query_identifier, start_date, end_date, response):
 
 	(exit_status, message, output) = client.check_and_query(query_identifier, start_date, end_date)
 
-	if ( exit_status != 0 ):
+	response['exit_status'] = exit_status
+	response['message'] = message
 
-		response['exit_status'] = exit_status
-		response['message'] = message
+	if ( exit_status != 0 ):
 		return
 
 	query_results = {
