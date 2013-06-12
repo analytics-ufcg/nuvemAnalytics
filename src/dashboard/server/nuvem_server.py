@@ -48,9 +48,7 @@ def do_query(query_identifier=None, start_date=None, end_date=None):
 
 	response = { 
 		'name' : query_identifier,
-		'children' : [],
-		'exit_status' : exit_status,
-		'message' : message
+		'children' : []
 	}
 
 	execute_query(query_identifier, start_date, end_date, response)
@@ -64,9 +62,7 @@ def do_subutilization_queries(start_date=None, end_date=None):
 
 	response = { 
 		'name' : 'subutilization',
-		'children' : [],
-		'exit_status' : -1,
-		'message' : ""
+		'children' : []
 	}
 
 	execute_query("vmsOverMemAlloc", start_date, end_date, response)

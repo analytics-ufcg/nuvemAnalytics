@@ -66,6 +66,16 @@ DB_CURSOR = None
 
 NO_OUTPUT = None
 
+def filter_out(text, pattern):
+
+	actual_find = text.find(pattern)
+	while (actual_find != -1):
+
+		next_find = text.find("'", actual_find+16)
+		text = text[:actual_find+16] + text[next_find:]
+		actual_find = text.find(pattern, next_find)
+
+	return text
 
 def execute_query(sql_query_file, start_date, end_date):
 
@@ -73,8 +83,14 @@ def execute_query(sql_query_file, start_date, end_date):
 	sql_code = sql_file.read()
 	sql_file.close()
 
+	sql_code = filter_out(sql_code, "T.date_time >= '")
+	sql_code = sql_code.replace("T.date_time >= ''", "T.date_time >= '" + start_date + "'")
+
+	sql_code = filter_out(sql_code, "T.date_time <= '")
+	sql_code = sql_code.replace("T.date_time <= ''", "T.date_time <= '" + end_date + "'")
+
 	try:
-		DB_CURSOR.execute(sql_code, start_date, end_date)
+		DB_CURSOR.execute(sql_code)
 
 	except pyodbc.DataError:
 
@@ -167,7 +183,7 @@ class VerticaClientFacade:
 		try:
 			if __name__ == "__main__":
 				print ">: Connecting to Vertica..."
-			DB_CONNECTION = pyodbc.connect("DSN=Vertica")
+			DB_CONNECTION = pyodbc.connect("DSN=TestVertica")
 			DB_CURSOR = DB_CONNECTION.cursor()
 		except pyodbc.Error:
 			exit_status = 4
