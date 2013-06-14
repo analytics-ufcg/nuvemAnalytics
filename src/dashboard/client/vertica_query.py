@@ -213,7 +213,7 @@ class VerticaClientFacade:
 			for row in output.rows:
 				formatted_row = ""
 				for i in range(len(row)):
-					formatted_row += row[i] + "\t\t"
+					formatted_row += str(row[i]) + "\t\t"
 				print formatted_row
 		else:
 

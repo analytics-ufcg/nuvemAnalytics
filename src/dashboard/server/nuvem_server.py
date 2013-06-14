@@ -20,23 +20,26 @@ def execute_query(query_identifier, start_date, end_date, response):
 
 	query_results = {
 		'name' : query_identifier,
-		'children' : []
 	}
 
 	for row in output.rows:
 
-		vm_info = {'size' : 1}
+		vm_info = {'size' : 1, 'name' : row[0]}
 		
-		for i in range(0, len(output.column_names)):
+		for i in range(1, len(output.column_names)):
 		
 			vm_info[output.column_names[i]['name']] = {
 				'value' : row[i],
-				'measurement' : output.column_names[i]['measurement']
+				'measurement' : output.column_names[i]['measurement'],
 			}
 
+		if not 'children' in query_results:
+			query_results['children'] = []
 		query_results['children'].append(vm_info)
+		#print vm_info
 
-	response['children'].append(query_results)
+	if 'children' in query_results:
+		response['children'].append(query_results)
 
 
 @server.route('/')
@@ -67,11 +70,11 @@ def do_subutilization_queries(start_date=None, end_date=None):
 
 	execute_query("vmsOverMemAlloc", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		pass #flash
+		pass #flash this error
 
 	execute_query("lowUsageVMs", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		pass #flash
+		pass #flash this error
 
 	return render_template("index.html", response=json.dumps(response))
 

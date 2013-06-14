@@ -41,7 +41,7 @@ function showBubbleChart(data){
 	    .attr("text-anchor", "middle")
 	    .style("opacity", function(d) { return d.r > 20 ? 1 : 0; })
 	  .append("svg:tspan")
-	    .style("font-size", 8)
+	    .style("font-size", 12)
 	    .text(function(d) { return d.name.substring(0, d.r / 3); })
 
 	d3.select(window).on("click", function() { zoom(root); });
@@ -68,7 +68,7 @@ function showBubbleChart(data){
 
 	  vis.selectAll("text")
 	     .append("svg:tspan")
-	     .style("font-size", 8)
+	     .style("font-size", 12)
 	     .text(function(d) { return d.name.substring(0, (k * d.r) / 3); });
 
 	  node = d;
