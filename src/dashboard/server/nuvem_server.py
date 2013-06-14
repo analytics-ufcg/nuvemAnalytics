@@ -51,7 +51,7 @@ def index():
 def do_subutilization_queries(start_date=None, end_date=None):
 
 	response = { 
-		'name' : 'subutilization',
+		'name' : '', # Remember to add the 'subutilization' then...
 		'children' : []
 	}
 
