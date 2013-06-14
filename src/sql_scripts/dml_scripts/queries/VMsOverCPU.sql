@@ -13,4 +13,4 @@ WHERE V.id_vm = C.id_vm and
     C.cpu_alloc >= 1 
 ORDER BY C.cpu_util DESC;
 
--- TODO: O DISTINCT não faz o que queremos, deve existir 
+-- TODO: O DISTINCT nao faz o que queremos, deve existir 
