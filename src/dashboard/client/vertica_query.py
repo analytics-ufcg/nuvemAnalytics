@@ -13,7 +13,7 @@ class QueryResult:
 
 def lowUsageVMs(start_date, end_date):
 
-	(exit_status, message, rows) = execute_query("LowUsageVMs.sql", start_date, end_date)
+	(exit_status, message, rows) = execute_query(PATH_TO_QUERIES + "LowUsageVMs.sql", start_date, end_date)
 	
 	if ( exit_status != 0 ):
 		return (exit_status, message, NO_OUTPUT)
@@ -28,7 +28,7 @@ def lowUsageVMs(start_date, end_date):
 
 def vmsOverMemAlloc(start_date, end_date):
 
-	(exit_status, message, rows) = execute_query("VMsOverMemAlloc.sql", start_date, end_date)
+	(exit_status, message, rows) = execute_query(PATH_TO_QUERIES + "VMsOverMemAlloc.sql", start_date, end_date)
 
 	if ( exit_status != 0 ):
 		return (exit_status, message, NO_OUTPUT)
@@ -43,7 +43,7 @@ def vmsOverMemAlloc(start_date, end_date):
 
 def vmsOverCPU(start_date, end_date):
 
-	(exit_status, message, rows) = execute_query("VMsOverCPU.sql", start_date, end_date)
+	(exit_status, message, rows) = execute_query(PATH_TO_QUERIES + "VMsOverCPU.sql", start_date, end_date)
 
 	if ( exit_status != 0 ):
 		return (exit_status, message, NO_OUTPUT)
@@ -57,6 +57,8 @@ def vmsOverCPU(start_date, end_date):
 	return (exit_status, message, QueryResult(column_names, rows))
 
 ################## END OF QUERY DEFINITIONS #####################
+
+PATH_TO_QUERIES = "../../sql_scripts/dml_scripts/queries/"
 
 QUERY_ADAPTERS = {}
 QUERY_ADAPTERS['lowUsageVMs'] = lowUsageVMs
