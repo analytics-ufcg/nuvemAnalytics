@@ -13,4 +13,8 @@ WHERE V.id_vm = C.id_vm and
     C.cpu_alloc >= 1 
 ORDER BY C.cpu_util DESC;
 
--- TODO: O DISTINCT nao faz o que queremos, deve existir 
+-- TODO: This SQL should return one row per VM. The DISTINCT clause is just a bugged workaround!
+-- Example of bug that can occur: 
+-- VM_NAME	CPU_UTIL	CPU_ALLOC
+-- VM_1 	1 			4
+-- VM_1 	1 			5
