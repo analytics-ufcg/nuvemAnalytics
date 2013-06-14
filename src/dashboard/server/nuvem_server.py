@@ -59,7 +59,7 @@ def do_subutilization_queries(start_date=None, end_date=None):
 	if response['exit_status'] != 0:
 		pass #flash this error
 
-	execute_query("lowUsageVMs", start_date, end_date, response)
+	execute_query("vmsOverCPU", start_date, end_date, response)
 	if response['exit_status'] != 0:
 		pass #flash this error
 

@@ -41,11 +41,27 @@ def vmsOverMemAlloc(start_date, end_date):
 
 	return (exit_status, message, QueryResult(column_names, rows))
 
+def vmsOverCPU(start_date, end_date):
+
+	(exit_status, message, rows) = execute_query("VMsOverCPU.sql", start_date, end_date)
+
+	if ( exit_status != 0 ):
+		return (exit_status, message, NO_OUTPUT)
+
+	column_names = [
+	{'name' : 'VM NAME', 'measurement' : ''},
+	{'name' : 'PEAK CPU', 'measurement' : '%'},
+	{'name' : 'CORE COUNT', 'measurement' : ''}
+	]
+
+	return (exit_status, message, QueryResult(column_names, rows))
+
 ################## END OF QUERY DEFINITIONS #####################
 
 QUERY_ADAPTERS = {}
 QUERY_ADAPTERS['lowUsageVMs'] = lowUsageVMs
 QUERY_ADAPTERS['vmsOverMemAlloc'] = vmsOverMemAlloc
+QUERY_ADAPTERS['vmsOverCPU'] = vmsOverCPU
 
 QUERY_CODES = []
 QUERY_CODES.append('lowUsageVMs')

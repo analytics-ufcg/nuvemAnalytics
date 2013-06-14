@@ -1,1 +1,0 @@
-SELECTED_GROUP = null;
