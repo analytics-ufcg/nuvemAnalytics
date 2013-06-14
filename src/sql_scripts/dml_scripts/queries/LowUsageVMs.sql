@@ -8,8 +8,11 @@ from (select V.vm_name, V.id_vm, C.cpu_alloc, C.id_time, NTILE(100) OVER(order b
 	 (select V.vm_name, V.id_vm, N.pkt_per_sec, NTILE(100) OVER(order by N.pkt_per_sec) as pkt_p
 	  from vm_dim V, network N 
 	  where (V.id_vm = N.id_vm)) as tabelaNet, time_dim T 
-where tabelaCpu.cpu_p > 90 and tabelaCpu.cpu_alloc < 0.2 and
-	  tabelaDisk.ios_p > 90 and tabelaDisk.ios_per_sec < 1.0 and
-	  tabelaNet.pkt_p > 90 and tabelaNet.pkt_per_sec < 3.0 and
+where tabelaCpu.cpu_p > 90 and tabelaCpu.cpu_alloc < 1000000000 and
+	  tabelaDisk.ios_p > 90 and tabelaDisk.ios_per_sec < 1000000000 and
+	  tabelaNet.pkt_p > 90 and tabelaNet.pkt_per_sec < 1000000000 and
 	  tabelaCpu.id_vm = tabelaDisk.id_vm and tabelaDisk.id_vm = tabelaNet.id_vm
-	  and T.date_time >= '2012-12-31 00:00:00' and T.date_time <= '2013-01-01 00:00:00' and tabelaCpu.id_time = T.id_time;
+	  and T.date_time >= '2011-12-31 00:00:00' and T.date_time <= '2013-01-01 00:00:00' and tabelaCpu.id_time = T.id_time;
+
+	  
+	  select count(*) from cpu;

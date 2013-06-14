@@ -18,47 +18,34 @@ def execute_query(query_identifier, start_date, end_date, response):
 	if ( exit_status != 0 ):
 		return
 
-	query_results = {
-		'name' : query_identifier,
-	}
+	# Add the children conditionally just if there is any answer 
+	if len(output.rows) > 0:
+		query_results = {
+			'name' : query_identifier,
+			'children' : []
+		}
 
-	for row in output.rows:
-
-		vm_info = {'size' : 1, 'name' : row[0]}
-		
-		for i in range(1, len(output.column_names)):
-		
-			vm_info[output.column_names[i]['name']] = {
-				'value' : row[i],
-				'measurement' : output.column_names[i]['measurement'],
-			}
-
-		if not 'children' in query_results:
-			query_results['children'] = []
-		query_results['children'].append(vm_info)
-		#print vm_info
-
-	if 'children' in query_results:
+		for row in output.rows:
+			# vm_info
+			# size: All VMs have equal size
+			# name: We assume that the first column is always the VM name
+			vm_info = {'size' : 1, 'name' : row[0]}
+			
+			for i in range(1, len(output.column_names)):
+			
+				vm_info[output.column_names[i]['name']] = {
+					'value' : row[i],
+					'measurement' : output.column_names[i]['measurement'],
+				}
+	
+			query_results['children'].append(vm_info)
+	
 		response['children'].append(query_results)
 
 
 @server.route('/')
-@server.route('/query/<query_identifier>/<start_date>/<end_date>')
-def do_query(query_identifier=None, start_date=None, end_date=None):
-
-	if query_identifier == None or start_date == None or end_date == None:
-		return render_template("index.html")
-
-	response = { 
-		'name' : query_identifier,
-		'children' : []
-	}
-
-	execute_query(query_identifier, start_date, end_date, response)
-	if response['exit_status'] != 0:
-		pass #flash
-
-	return render_template("index.html", response=json.dumps(response))
+def index():
+	return render_template("index.html")
 
 @server.route('/subutilization/<start_date>/<end_date>')
 def do_subutilization_queries(start_date=None, end_date=None):
