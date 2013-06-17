@@ -190,7 +190,7 @@ class VerticaClientFacade:
 		elif (start_date == None or end_date == None):
 		
 			exit_status = 3
-			message = "error: both start and end ates cannot be null"
+			message = "error: both start and end dates cannot be null"
 			return (exit_status, message, NO_OUTPUT)
 
 		query_code = query_identifier
