@@ -134,7 +134,7 @@ def do_subutilization_queries(aggregate=None, start_date=None, end_date=None):
 
 	# Aggregate queries or not
 	print aggregate
-	if (aggregate is not None and aggregate is "yes"):
+	if (aggregate != None and aggregate == "yes"):
 		print "entrou"
 		response = aggregate_problems(start_date, end_date, response)
 
@@ -153,7 +153,7 @@ def do_superutilization_queries(aggregate=None,start_date=None, end_date=None):
 		pass  # flash this error
 
 	# Aggregate queries or not
-	if (aggregate is not None and aggregate is "yes"):
+	if (aggregate != None and aggregate == "yes"):
 		response = aggregate_problems(start_date, end_date, response)
 
 	return render_template("index.html", response=json.dumps(response))
