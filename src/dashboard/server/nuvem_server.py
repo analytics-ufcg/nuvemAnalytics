@@ -59,7 +59,7 @@ def aggregate_problems(start_date, end_date, response):
 		
 		query_vms_info_map[child_query['name']] = child_query['children']
 
-	response = { 
+	response_json = { 
 		'name' : '',  # Remember to add the 'subutilization' then...
 		'children' : []
 	}
@@ -100,9 +100,12 @@ def aggregate_problems(start_date, end_date, response):
 						query_results['children'].append(info)
 						break;
 				
-			response['children'].append(query_results)
+			response_json['children'].append(query_results)
 		
 		print
+	
+	return response_json	
+		
 
 
 @server.route('/')
@@ -130,7 +133,7 @@ def do_subutilization_queries(start_date=None, end_date=None):
 		pass  # flash this error
 
 	# Aggregate problems
-	aggregate_problems(start_date, end_date, response)
+	response = aggregate_problems(start_date, end_date, response)
 
 	return render_template("index.html", response=json.dumps(response))
 
