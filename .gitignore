@@ -4,3 +4,5 @@ src/udf_development/include
 .Rhistory
 .Rproj.user
 data
+*.pyc
+*~
