@@ -112,8 +112,8 @@ def aggregate_problems(start_date, end_date, response):
 def index():
 	return render_template("index.html")
 
-@server.route('/subutilization/<aggregate>/<start_date>/<end_date>')
-def do_subutilization_queries(aggregate=None, start_date=None, end_date=None):
+@server.route('/subutilization/<grouped>/<start_date>/<end_date>')
+def do_subutilization_queries(grouped=None, start_date=None, end_date=None):
 
 	response = { 
 		'name' : '',  # Remember to add the 'subutilization' then...
@@ -133,13 +133,13 @@ def do_subutilization_queries(aggregate=None, start_date=None, end_date=None):
 		pass  # flash this error
 
 	# Aggregate queries or not
-	if aggregate == 1:
+	if grouped.equals("yes"):
 		response = aggregate_problems(start_date, end_date, response)
 
 	return render_template("index.html", response=json.dumps(response))
 
-@server.route('/superutilization/<aggregate>/<start_date>/<end_date>')
-def do_superutilization_queries(aggregate=None,start_date=None, end_date=None):
+@server.route('/superutilization/<grouped>/<start_date>/<end_date>')
+def do_superutilization_queries(grouped=None,start_date=None, end_date=None):
 
 	response = { 
 		'name' : '',  # Remember to add the 'superutilization' then...
@@ -151,7 +151,7 @@ def do_superutilization_queries(aggregate=None,start_date=None, end_date=None):
 		pass  # flash this error
 
 	# Aggregate queries or not
-	if aggregate == 1:
+	if grouped.equals("yes"):
 		response = aggregate_problems(start_date, end_date, response)
 
 	return render_template("index.html", response=json.dumps(response))
