@@ -55,11 +55,11 @@ def aggregate_problems(start_date, end_date, response):
 		query_vms = []
 		for vm_info in child_query['children']:
 			query_vms.append(vm_info['name'])
-		query_vms_map[child_query] = query_vms
+		query_vms_map[child_query['name']] = query_vms
 		
-		query_vms_info_map[child_query] = child_query['children']
+		query_vms_info_map[child_query['name']] = child_query['children']
 
-		response = { 
+	response = { 
 		'name' : '',  # Remember to add the 'subutilization' then...
 		'children' : []
 	}
