@@ -56,6 +56,20 @@ def vmsOverCPU(start_date, end_date):
 
 	return (exit_status, message, QueryResult(column_names, rows))
 
+def vmsNetConstrained(start_date, end_date):
+
+	(exit_status, message, rows) = execute_query(PATH_TO_QUERIES + "VMsNetConstrained.sql", start_date, end_date)
+
+	if ( exit_status != 0 ):
+		return (exit_status, message, NO_OUTPUT)
+
+	column_names = [
+	{'name' : 'VM NAME', 'measurement' : ''},
+	{'name' : '90th PERCENTILE NETWORK I/O', 'measurement' : 'MB/s'},
+	]
+
+	return (exit_status, message, QueryResult(column_names, rows))
+
 ################## END OF QUERY DEFINITIONS #####################
 
 PATH_TO_QUERIES = "../../sql_scripts/dml_scripts/queries/"
@@ -64,10 +78,13 @@ QUERY_ADAPTERS = {}
 QUERY_ADAPTERS['lowUsageVMs'] = lowUsageVMs
 QUERY_ADAPTERS['vmsOverMemAlloc'] = vmsOverMemAlloc
 QUERY_ADAPTERS['vmsOverCPU'] = vmsOverCPU
+QUERY_ADAPTERS['vmsNetConstrained'] = vmsNetConstrained
 
 QUERY_CODES = []
 QUERY_CODES.append('lowUsageVMs')
 QUERY_CODES.append('vmsOverMemAlloc')
+QUERY_CODES.append('vmsOverCPU')
+QUERY_CODES.append('vmsNetConstrained')
 
 DATE_FORMAT = "%Y-%m-%d %H-%M-%S"  # Accepts only dates in this format YYYY-MM-DD HH:MM:SS e.g. 2002-08-22 13:54:22
 
@@ -251,7 +268,6 @@ if __name__ == "__main__":
 		for i in range(len(QUERY_CODES)):
 			print "\t", i, " - ", QUERY_CODES[i]
 		exit(1)
-
 
 	client = VerticaClientFacade()
 	(exit_status, message, output) = client.check_and_query(sys.argv[1], sys.argv[2], sys.argv[3])

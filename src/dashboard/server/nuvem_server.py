@@ -62,6 +62,24 @@ def do_subutilization_queries(start_date=None, end_date=None):
 	execute_query("vmsOverCPU", start_date, end_date, response)
 	if response['exit_status'] != 0:
 		pass #flash this error
+	
+	execute_query("lowUsageVMs", start_date, end_date, response)
+	if response['exit_status'] != 0:
+		pass #flash this error
+
+	return render_template("index.html", response=json.dumps(response))
+
+@server.route('/superutilization/<start_date>/<end_date>')
+def do_superutilization_queries(start_date=None, end_date=None):
+
+	response = { 
+		'name' : '', # Remember to add the 'subutilization' then...
+		'children' : []
+	}
+
+	execute_query("vmsNetConstrained", start_date, end_date, response)
+	if response['exit_status'] != 0:
+		pass #flash this error
 
 	return render_template("index.html", response=json.dumps(response))
 
