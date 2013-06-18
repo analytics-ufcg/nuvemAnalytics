@@ -52,7 +52,9 @@ function showBubbleChart(data){
 
 	function zoom(d, i) {
 
-	  selectedBubble = d;
+	  if ( d == root ){
+	     selectedBubble = d;
+	  }
 
 	  var k = r / d.r / 2;
 	  x.domain([d.x - d.r, d.x + d.r]);
