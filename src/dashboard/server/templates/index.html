@@ -18,8 +18,8 @@
 				<div class='row-fluid' style="height:40%;" id='time_bar'>
 					<em> Pick a <strong>start</strong> date and time:</em>
 					<div id="start_date_time">
-						<div class="input-append date" id="start_date_wrapper" style="float:left; width:50%;" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
-							<input id="start_date" class="input-block-level" type="text" value="12-02-2012">
+						<div class="input-append date" id="start_date_wrapper" style="float:left; width:50%;" data-date="12-02-2012" data-date-format="yyyy/mm/dd">
+							<input id="start_date" class="input-block-level" type="text" value="2012/02/02">
 							<span class="add-on"><i class="icon-calendar"></i></span>
 						</div>
 						<div class="bootstrap-timepicker" id="start_time_wrapper" style="float:right; width:38%;">
@@ -29,8 +29,8 @@
 					<br/>
 					<em> Pick an <strong>end</strong> date and time:</em>
 					<div id="end_date_time">
-						<div class="input-append date" id="end_date_wrapper" style="float:left; width:50%;" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
-							<input id="end_date" class="input-block-level" type="text" value="12-02-2012">
+						<div class="input-append date" id="end_date_wrapper" style="float:left; width:50%;" data-date="12-02-2012" data-date-format="yyyy/mm/dd">
+							<input id="end_date" class="input-block-level" type="text" value="2012/02/02">
 							<span class="add-on"><i class="icon-calendar"></i></span>
 						</div>
 						<div class="bootstrap-timepicker" id="end_time_wrapper" style="float:right; width:38%;">
@@ -100,6 +100,7 @@
 			newDate.setDate(newDate.getDate() + 1);
 			end_field.setValue(newDate);
 		}
+		ensureTimeConsistency();
 	}).data('datepicker');
 
 	$("#start_date_wrapper").datepicker('setValue', now);
@@ -119,6 +120,8 @@
 		onRender : function(date) {
 			return date.valueOf() <= start_field.date.valueOf() || date.valueOf() > upperBound.valueOf() ? 'disabled' : '';
 		}
+	}).on('changeDate', function(ev) {
+		ensureTimeConsistency();
 	}).data('datepicker');
 
 	$("#end_date_wrapper").datepicker('setValue', upperBound);
