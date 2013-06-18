@@ -1,10 +1,11 @@
 import  os, sys, json, itertools, copy
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash
 
 sys.path.append("../client")
 from vertica_query import VerticaClientFacade
 
 server = Flask(__name__)
+server.secret_key = os.urandom(24)
 
 def execute_query(query_identifier, start_date, end_date, response):
 
@@ -119,7 +120,7 @@ def do_subutilization_queries():
 	end_date = request.args.get("end_date")
 
 	if ( start_date == None or end_date == None ):
-		# flash this error
+		flash("Error: start dates or end dates cannot be null!")
 		return render_template("index.html")
 
 	aggregate = request.args.get("aggregate")
@@ -135,17 +136,17 @@ def do_subutilization_queries():
 
 	execute_query("vmsOverMemAlloc", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		# flash this error
+		flash(response['message'].capitalize()+"!")
 		return render_template("index.html")
 
 	execute_query("vmsOverCPU", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		# flash this error
+		flash(response['message'].capitalize()+"!")
 		return render_template("index.html")	
 
 	execute_query("lowUsageVMs", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		# flash this error
+		flash(response['message'].capitalize()+"!")
 		return render_template("index.html")
 
 	# see if we should aggregate query results
@@ -155,13 +156,13 @@ def do_subutilization_queries():
 	return render_template("index.html", response=json.dumps(response))
 
 @server.route('/superutilization')
-def do_superutilization_queries(aggregate=None,start_date=None, end_date=None):
+def do_superutilization_queries():
 
 	start_date = request.args.get("start_date")
 	end_date = request.args.get("end_date")
 
 	if ( start_date == None or end_date == None ):
-		# flash this error
+		flash("Error: start dates or end dates cannot be null!")
 		return render_template("index.html")
 
 	aggregate = request.args.get("aggregate")
@@ -177,7 +178,8 @@ def do_superutilization_queries(aggregate=None,start_date=None, end_date=None):
 
 	execute_query("vmsNetConstrained", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		pass  # flash this error
+		flash(response['message'].capitalize()+"!")
+		return render_template("index.html")
 
 	# Aggregate queries or not
 	if ( aggregate ):

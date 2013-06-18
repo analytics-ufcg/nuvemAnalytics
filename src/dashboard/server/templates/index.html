@@ -7,7 +7,6 @@
 </meta>
 </head>
 <body style="height:100%;">
-
 	<div class='container-fluid' style="height:100%;">
 		<div class='row-fluid' style="height:10%;" id='top_bar'>
 			(mockup) <br/>title and configurations
@@ -25,6 +24,12 @@
 				</div>
 			</div>
 			<div style="width:40%; height:100%; padding:0px; float:left;" id='bubble_chart'>
+				{% for message in get_flashed_messages() %}
+				<div class='alert alert-error' style="width:91%;">
+					<button type='button' class='close' data-dismiss='alert'>&times;</button>
+					{{ message }}
+				</div>
+				{% endfor %}
 			</div>
 			<div style="width:50%; padding:0px; float:left;">
 				<div class='row' id='chart2' style="height:50%;">
@@ -41,10 +46,10 @@
 			(mockup) copyright and other info space
 		</div>
 	</div>
-
 	<script src="{{url_for('static', filename='js/jquery-1.10.1.min.js')}}"></script>
 	<script src="{{url_for('static', filename='js/d3.v3.min.js')}}"></script>
 	<script src="{{url_for('static', filename='js/bubble_chart.js')}}"></script>
+	<script src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
 	{% if response %}
 	<script type="text/javascript">
 
