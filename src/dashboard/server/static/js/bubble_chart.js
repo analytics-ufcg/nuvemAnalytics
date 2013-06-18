@@ -53,6 +53,9 @@ function showBubbleChart(data){
 	function zoom(d, i) {
 
 	  if ( d == root ){
+	     selectedBubble = null;
+	  }
+	  else{
 	     selectedBubble = d;
 	  }
 
