@@ -16,6 +16,7 @@
 		<div class='row-fluid' style="height:85%;">
 			<div style="width:10%; height:100%; float:left;" id='sidebar'>
 				<div class='row-fluid' style="height:40%;" id='time_bar'>
+					<em> Pick a <strong>start</strong> date and time:</em>
 					<div id="start_date_time">
 						<div class="input-append date" id="start_date_wrapper" style="float:left; width:50%;" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
 							<input id="start_date" class="input-block-level" type="text" value="12-02-2012">
@@ -23,6 +24,17 @@
 						</div>
 						<div class="bootstrap-timepicker" id="start_time_wrapper" style="float:right; width:38%;">
 							<input id="start_time" class="input-block-level" type="text">
+						</div>
+					</div>
+					<br/>
+					<em> Pick an <strong>end</strong> date and time:</em>
+					<div id="end_date_time">
+						<div class="input-append date" id="end_date_wrapper" style="float:left; width:50%;" data-date="12-02-2012" data-date-format="dd-mm-yyyy">
+							<input id="end_date" class="input-block-level" type="text" value="12-02-2012">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+						</div>
+						<div class="bootstrap-timepicker" id="end_time_wrapper" style="float:right; width:38%;">
+							<input id="end_time" class="input-block-level" type="text">
 						</div>
 					</div>
 				</div>
@@ -64,16 +76,58 @@
 	<script src="{{url_for('static', filename='js/bootstrap-timepicker.min.js')}}"></script>
 	<script type="text/javascript">
 	{% if response %}
+
 		var bubble_chart_data;
 
 		$(document).ready(function(){
 			bubble_chart_data = JSON.parse({{ response|tojson|safe }})
 			showBubbleChart(bubble_chart_data);
 		});
+
 	{% endif %}
 
-	$("#start_date_wrapper").datepicker();
+	var lowerBound = new Date(1950, 1, 1, 0, 0, 0, 0);
+	var now = new Date();
+	var upperBound = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+	
+	var start_field = $("#start_date_wrapper").datepicker({
+		onRender : function(date) {
+			return date.valueOf() <= lowerBound.valueOf() || date.valueOf() > upperBound.valueOf() ? 'disabled' : '';
+		}
+	}).on('changeDate', function(ev) {
+		if ( ev.date.valueOf() > end_field.date.valueOf() ){
+			var newDate = new Date(ev.date);
+			newDate.setDate(newDate.getDate() + 1);
+			end_field.setValue(newDate);
+		}
+	}).data('datepicker');
+
+	$("#start_date_wrapper").datepicker('setValue', now);
+	$("#start_date").click(function() {
+		$("start_date_wrapper").datepicker('show');
+	});
+
 	$("#start_time").timepicker({
+		showMeridian : false,
+		showSeconds : true,
+		disableFocus: true,
+		showInputs: false,
+		minuteStep : 5
+	});
+
+	var end_field = $("#end_date_wrapper").datepicker({
+		onRender : function(date) {
+			return date.valueOf() <= start_field.date.valueOf() || date.valueOf() > upperBound.valueOf() ? 'disabled' : '';
+		}
+	}).data('datepicker');
+
+	$("#end_date_wrapper").datepicker('setValue', upperBound);
+	$("#end_date").click(function() {
+		$("end_date_wrapper").datepicker('show');
+	});
+
+
+	$("#end_time").timepicker({
 		showMeridian : false,
 		showSeconds : true,
 		disableFocus: true,
