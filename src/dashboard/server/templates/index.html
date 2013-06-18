@@ -40,9 +40,14 @@
 				</div>
 				<div class='row-fluid' style="height:30%;" id='query_type_bar'>
 					(mockup) <br/>Query Type: <ul><li>subutilization</li> <li>superutilization</li> <li>prediction</li></ul>
+					<br/>
+					<br/>
+					(mockup) <br/>Query Visualization Type: <ul><li>agreggated queries</li> <li>not agreggated queries</li></ul>
 				</div>
 				<div class='row-fluid' style="height:30%;" id='query_view_bar'>
-					(mockup) <br/>Query Visualization Type: <ul><li>agreggated queries</li> <li>not agreggated queries</li></ul>
+					<button class="btn btn-large btn-inverse" type="button" id="go">
+						GO!	
+					</button>
 				</div>
 			</div>
 			<div style="width:40%; height:100%; padding:0px; float:left;" id='bubble_chart'>
@@ -74,7 +79,9 @@
 	<script src="{{url_for('static', filename='js/bootstrap.js')}}"></script>
 	<script src="{{url_for('static', filename='js/bootstrap-datepicker.js')}}"></script>
 	<script src="{{url_for('static', filename='js/bootstrap-timepicker.min.js')}}"></script>
+	<script src="{{url_for('static', filename='js/date_fields.js')}}"></script>
 	<script type="text/javascript">
+
 	{% if response %}
 
 		var bubble_chart_data;
@@ -86,58 +93,13 @@
 
 	{% endif %}
 
-	var lowerBound = new Date(1950, 1, 1, 0, 0, 0, 0);
-	var now = new Date();
-	var upperBound = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
-	
-	var start_field = $("#start_date_wrapper").datepicker({
-		onRender : function(date) {
-			return date.valueOf() <= lowerBound.valueOf() || date.valueOf() > upperBound.valueOf() ? 'disabled' : '';
-		}
-	}).on('changeDate', function(ev) {
-		if ( ev.date.valueOf() > end_field.date.valueOf() ){
-			var newDate = new Date(ev.date);
-			newDate.setDate(newDate.getDate() + 1);
-			end_field.setValue(newDate);
-		}
-		ensureTimeConsistency();
-	}).data('datepicker');
-
-	$("#start_date_wrapper").datepicker('setValue', now);
-	$("#start_date").click(function() {
-		$("start_date_wrapper").datepicker('show');
+	$("#go").click(function(){
+		var url = "/subutilization?";
+		url += "start_date="+$("#start_date").val().replace(/\//g, '-')+" "+$("#start_time").val();
+		url += "&end_date="+$("#end_date").val().replace(/\//g, '-')+" "+$("#end_time").val();
+		url += "&aggregate=yes";
+		window.location = url;
 	});
-
-	$("#start_time").timepicker({
-		showMeridian : false,
-		showSeconds : true,
-		disableFocus: true,
-		showInputs: false,
-		minuteStep : 5
-	});
-
-	var end_field = $("#end_date_wrapper").datepicker({
-		onRender : function(date) {
-			return date.valueOf() <= start_field.date.valueOf() || date.valueOf() > upperBound.valueOf() ? 'disabled' : '';
-		}
-	}).on('changeDate', function(ev) {
-		ensureTimeConsistency();
-	}).data('datepicker');
-
-	$("#end_date_wrapper").datepicker('setValue', upperBound);
-	$("#end_date").click(function() {
-		$("end_date_wrapper").datepicker('show');
-	});
-
-
-	$("#end_time").timepicker({
-		showMeridian : false,
-		showSeconds : true,
-		disableFocus: true,
-		showInputs: false,
-		minuteStep : 5
-	});
-
 	</script>
 </body>
 </html>

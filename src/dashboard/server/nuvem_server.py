@@ -23,14 +23,15 @@ def execute_query(query_identifier, start_date, end_date, response):
 	if len(output.rows) > 0:
 		query_results = {
 			'name' : query_identifier,
-			'children' : []
+			'children' : [],
+			'type' : 'vm_set'
 		}
 
 		for row in output.rows:
 			# vm_info
 			# size: All VMs have equal size
 			# name: We assume that the first column is always the VM name
-			vm_info = {'size' : 1, 'name' : row[0]}
+			vm_info = {'size' : 1, 'name' : row[0], 'type' : 'vm'}
 			
 			for i in range(1, len(output.column_names)):
 			
@@ -40,12 +41,17 @@ def execute_query(query_identifier, start_date, end_date, response):
 				}
 	
 			query_results['children'].append(vm_info)
-	
+
+		if 'children' not in response:
+			response['children'] = []
 		response['children'].append(query_results)
 
 
 def aggregate_problems(start_date, end_date, response):
 	
+	if 'children' not in response:
+		return response
+
 	# Get the query_names, vm_names and query_vm_info's
 	query_names = []
 	query_vms_map = {}
@@ -92,7 +98,8 @@ def aggregate_problems(start_date, end_date, response):
 		if len(vm_comb) > 0:
 			query_results = {
 				'name' : ' - '.join(comb),
-				'children' : []
+				'children' : [],
+				'type' : 'vm_set'
 			}
 	
 			for vm in vm_comb:
@@ -131,7 +138,6 @@ def do_subutilization_queries():
 
 	response = { 
 		'name' : '',  # Remember to add the 'subutilization' then...
-		'children' : []
 	}
 
 	execute_query("vmsOverMemAlloc", start_date, end_date, response)
@@ -173,7 +179,6 @@ def do_superutilization_queries():
 
 	response = { 
 		'name' : '',  # Remember to add the 'superutilization' then...
-		'children' : []
 	}
 
 	execute_query("vmsNetConstrained", start_date, end_date, response)
