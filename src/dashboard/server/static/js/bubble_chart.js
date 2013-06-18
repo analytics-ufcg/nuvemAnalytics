@@ -1,3 +1,5 @@
+var selectedBubble = null;
+
 function showBubbleChart(data){
 
 	var w = $("#bubble_chart").width(),
@@ -8,7 +10,7 @@ function showBubbleChart(data){
 
 	var root = data;
 	var node = root;
-  
+
 	var pack = d3.layout.pack()
 	    .size([r, r])
 	    .value(function(d) { return d.size; });
@@ -18,7 +20,8 @@ function showBubbleChart(data){
 	    .attr("width", "100%")
 	    .attr("height", "100%")
 	  .append("svg:g")
-	    .attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")");
+	    .attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")")
+	    .style("cursor", "pointer");
 
 	var nodes = pack.nodes(root);
 
@@ -42,11 +45,15 @@ function showBubbleChart(data){
 	    .style("opacity", function(d) { return d.r > 20 ? 1 : 0; })
 	  .append("svg:tspan")
 	    .style("font-size", 12)
+	    .style("cursor", "pointer")
 	    .text(function(d) { return d.name.substring(0, d.r / 3); })
 
-	d3.select(window).on("click", function() { zoom(root); });
+	d3.select("#bubble_chart").on("click", function() { zoom(root); });
 
 	function zoom(d, i) {
+
+	  selectedBubble = d;
+
 	  var k = r / d.r / 2;
 	  x.domain([d.x - d.r, d.x + d.r]);
 	  y.domain([d.y - d.r, d.y + d.r]);
@@ -69,10 +76,13 @@ function showBubbleChart(data){
 	  vis.selectAll("text")
 	     .append("svg:tspan")
 	     .style("font-size", 12)
+	     .style("cursor", "pointer")
 	     .text(function(d) { return d.name.substring(0, (k * d.r) / 3); });
 
 	  node = d;
 	  d3.event.stopPropagation();
 
 	}
+
+	zoom(root)
 }
