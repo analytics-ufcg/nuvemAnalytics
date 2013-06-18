@@ -1,5 +1,5 @@
 import  os, sys, json, itertools, copy
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 sys.path.append("../client")
 from vertica_query import VerticaClientFacade
@@ -112,8 +112,21 @@ def aggregate_problems(start_date, end_date, response):
 def index():
 	return render_template("index.html")
 
-@server.route('/subutilization/<aggregate>/<start_date>/<end_date>')
-def do_subutilization_queries(aggregate=None, start_date=None, end_date=None):
+@server.route('/subutilization')
+def do_subutilization_queries():
+
+	start_date = request.args.get("start_date")
+	end_date = request.args.get("end_date")
+
+	if ( start_date == None or end_date == None ):
+		# flash this error
+		return render_template("index.html")
+
+	aggregate = request.args.get("aggregate")
+	if ( aggregate != None and aggregate == "yes" ):
+		aggregate = True
+	else:
+		aggregate = False
 
 	response = { 
 		'name' : '',  # Remember to add the 'subutilization' then...
@@ -122,18 +135,21 @@ def do_subutilization_queries(aggregate=None, start_date=None, end_date=None):
 
 	execute_query("vmsOverMemAlloc", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		pass  # flash this error
+		# flash this error
+		return render_template("index.html")
 
 	execute_query("vmsOverCPU", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		pass  # flash this error
-	
+		# flash this error
+		return render_template("index.html")	
+
 	execute_query("lowUsageVMs", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		pass  # flash this error
+		# flash this error
+		return render_template("index.html")
 
-	# Aggregate queries or not
-	if (aggregate != None and aggregate == "yes"):
+	# see if we should aggregate query results
+	if ( aggregate ):
 		response = aggregate_problems(start_date, end_date, response)
 
 	return render_template("index.html", response=json.dumps(response))
