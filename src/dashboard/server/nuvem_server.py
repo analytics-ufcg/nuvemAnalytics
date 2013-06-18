@@ -154,8 +154,21 @@ def do_subutilization_queries():
 
 	return render_template("index.html", response=json.dumps(response))
 
-@server.route('/superutilization/<aggregate>/<start_date>/<end_date>')
+@server.route('/superutilization')
 def do_superutilization_queries(aggregate=None,start_date=None, end_date=None):
+
+	start_date = request.args.get("start_date")
+	end_date = request.args.get("end_date")
+
+	if ( start_date == None or end_date == None ):
+		# flash this error
+		return render_template("index.html")
+
+	aggregate = request.args.get("aggregate")
+	if ( aggregate != None and aggregate == "yes" ):
+		aggregate = True
+	else:
+		aggregate = False
 
 	response = { 
 		'name' : '',  # Remember to add the 'superutilization' then...
@@ -167,7 +180,7 @@ def do_superutilization_queries(aggregate=None,start_date=None, end_date=None):
 		pass  # flash this error
 
 	# Aggregate queries or not
-	if (aggregate != None and aggregate == "yes"):
+	if ( aggregate ):
 		response = aggregate_problems(start_date, end_date, response)
 
 	return render_template("index.html", response=json.dumps(response))
