@@ -149,7 +149,7 @@ def do_subutilization_queries():
 		flash(response['message'].capitalize()+"!")
 		return render_template("index.html")
 
-	# see if we should aggregate query results
+	# see if query results should be aggregated
 	if ( aggregate ):
 		response = aggregate_problems(start_date, end_date, response)
 
@@ -181,7 +181,7 @@ def do_superutilization_queries():
 		flash(response['message'].capitalize()+"!")
 		return render_template("index.html")
 
-	# Aggregate queries or not
+	# see if query results should be aggregated
 	if ( aggregate ):
 		response = aggregate_problems(start_date, end_date, response)
 
