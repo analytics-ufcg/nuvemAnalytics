@@ -1,4 +1,4 @@
-import  os, sys, json, itertools, copy
+import  os, sys, json, itertools
 from flask import Flask, render_template, request, flash
 
 sys.path.append("../client")
@@ -34,11 +34,13 @@ def execute_query(query_identifier, start_date, end_date, response):
 			vm_info = {'size' : 1, 
 					   'name' : row[0], 
 					   'type' : 'vm', 
-					   'columns' : {}}
+					   'query_columns' : {}}
 			
+			vm_info['query_columns'][query_identifier] = {}
+
 			for i in range(1, len(output.column_names)):
 			
-				vm_info['columns'][output.column_names[i]['name']] = {
+				vm_info['query_columns'][query_identifier][output.column_names[i]['name']] = {
 					'value' : row[i],
 					'measurement' : output.column_names[i]['measurement']
 				}
@@ -110,10 +112,11 @@ def aggregate_problems(start_date, end_date, response):
 				for query in comb:
 					for info in query_vms_info_map[query]:
 						if info['name'] == vm:
+							# All columns per query are mantained
 							if my_vm_info is None:
 								my_vm_info = info
 							else:
-								my_vm_info['columns'] = dict(my_vm_info['columns'] + info['columns'])
+								my_vm_info['query_columns'] = dict(my_vm_info['query_columns'].items() + info['query_columns'].items())
 				
 				query_results['children'].append(my_vm_info)
 				

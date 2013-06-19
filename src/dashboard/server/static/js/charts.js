@@ -1,5 +1,17 @@
 var selectedBubble = null;
 
+function showQueryResultChart(selectedBubble){
+	
+	console.log("calling this and selectedBubble is: ");
+	console.log(selectedBubble);
+	if ( selectedBubble != null ){
+		$("#query_result_chart").text(selectedBubble.type);
+	}
+	else{
+		$("#query_result_chart").text("null");
+	}
+}
+
 function showBubbleChart(data){
 
 	var w = $("#bubble_chart").width(),
@@ -53,7 +65,7 @@ function showBubbleChart(data){
 	function zoom(d, i) {
 
 	  if ( d == root ){
-	     selectedBubble = null;
+	     selectedBubble = (root.children.length == 1)? root.children[0] : null;
 	  }
 	  else{
 	     selectedBubble = d;
@@ -64,7 +76,7 @@ function showBubbleChart(data){
 	  y.domain([d.y - d.r, d.y + d.r]);
 
 	  var t = vis.transition()
-	      .duration(d3.event.altKey ? 7500 : 750);
+	      .duration(750);
 
 	  t.selectAll("circle")
 	    .attr("cx", function(d) { return x(d.x); })
@@ -85,9 +97,13 @@ function showBubbleChart(data){
 	     .text(function(d) { return d.name.substring(0, (k * d.r) / 3); });
 
 	  node = d;
-	  d3.event.stopPropagation();
+	  if (d3.event){
+             d3.event.stopPropagation();
+	  }
 
+	  //update the query results chart
+	  showQueryResultChart(selectedBubble);
 	}
 
-	zoom(root)
+	zoom(root);
 }
