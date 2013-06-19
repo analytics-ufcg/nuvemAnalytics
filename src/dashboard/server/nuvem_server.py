@@ -31,13 +31,16 @@ def execute_query(query_identifier, start_date, end_date, response):
 			# vm_info
 			# size: All VMs have equal size
 			# name: We assume that the first column is always the VM name
-			vm_info = {'size' : 1, 'name' : row[0], 'type' : 'vm'}
+			vm_info = {'size' : 1, 
+					   'name' : row[0], 
+					   'type' : 'vm', 
+					   'columns' : {}}
 			
 			for i in range(1, len(output.column_names)):
 			
-				vm_info[output.column_names[i]['name']] = {
+				vm_info['columns'][output.column_names[i]['name']] = {
 					'value' : row[i],
-					'measurement' : output.column_names[i]['measurement'],
+					'measurement' : output.column_names[i]['measurement']
 				}
 	
 			query_results['children'].append(vm_info)
