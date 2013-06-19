@@ -5,13 +5,16 @@ function showQueryResultChart(selectedBubble){
 //	console.log("calling this and selectedBubble is: ");
 //	console.log(selectedBubble);
 	if ( selectedBubble != null ){
+		var summary = "";
 		if (selectedBubble.type == "vm_set"){
-			
+			summary += selectedBubble.name
+			$("#query_result_chart").text(summary);
 		}
 		if (selectedBubble.type == "vm"){
-			
+                        summary += selectedBubble.name
+                        $("#query_result_chart").text(summary);
+
 		}
-		$("#query_result_chart").text(selectedBubble.type);
 	}
 	else{
 		$("#query_result_chart").text("null");
