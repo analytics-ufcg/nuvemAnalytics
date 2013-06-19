@@ -25,12 +25,11 @@ def execute_query(query_identifier, start_date, end_date, response):
 			'name' : query_identifier,
 			'children' : [],
 			'type' : 'vm_set',
-			'query_columns' : {}
+			'query_columns' : []
 		}
 
-		query_results['query_columns'][query_identifier] = output.column_names[1:len(output.column_names)]
-# 		for col in output.column_names:
-# 			query_results['query_columns'][query_identifier].append(col)
+		for i in range (1, len(output.column_names)):
+			query_results['query_columns'].append(output.column_names[i]['name'])
 
 		for row in output.rows:
 			# vm_info
@@ -39,16 +38,8 @@ def execute_query(query_identifier, start_date, end_date, response):
 			vm_info = {'size' : 1,
 					   'name' : row[0],
 					   'type' : 'vm',
-					   'values' : row[1:len(row)]}
+					   'values' : list(row[1:len(row)])}
 			
-# 			vm_info['query_columns'][query_identifier] = {}
-
-# 			for i in range(1, len(output.column_names)):			
-# 				vm_info['query_columns'][query_identifier][output.column_names[i]['name']] = {
-# 					'value' : row[i],
-# 					'measurement' : output.column_names[i]['measurement']
-# 				}
-	
 			query_results['children'].append(vm_info)
 
 		if 'children' not in response:
@@ -216,6 +207,22 @@ def do_superutilization_queries():
 		response = aggregate_problems(start_date, end_date, response)
 
 	return render_template("index.html", response=json.dumps(response))
+
+query_metrics = {}
+query_metrics['lowUsageVMs'] = [ 'CPU_ALLOC', 'IOS_PER_SEC', 'PKT_PER_SEC' ]
+query_metrics['vmsOverMemAlloc'] = [ 'MEM_UTIL', 'MEM_ALLOC' ]
+query_metrics['vmsOverCPU'] = [ 'CPU_UTIL', 'CPU_ALLOC' ]
+query_metrics['vmsNetConstrained'] = [ 'PKT_PER_SEC' ]
+
+@server.route('/query_metrics')
+def get_query_metrics():
+
+        query_identifier = request.args.get("query")
+
+        if ( query_identifier == None or not query_identifier in query_metrics ):
+                return "null";
+        else:
+                return json.dumps({ 'metrics' : query_metrics[query_identifier] })
 
 
 if __name__ == "__main__":

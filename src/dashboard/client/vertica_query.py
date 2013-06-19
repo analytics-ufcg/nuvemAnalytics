@@ -65,7 +65,7 @@ def vmsNetConstrained(start_date, end_date):
 
 	column_names = [
 	{'name' : 'VM NAME', 'measurement' : ''},
-	{'name' : '90th PERCENTILE NETWORK I/O', 'measurement' : 'MB/s'},
+	{'name' : '90th PERCENTILE NETWORK I/O', 'measurement' : 'MB/s'}
 	]
 
 	return (exit_status, message, QueryResult(column_names, rows))
