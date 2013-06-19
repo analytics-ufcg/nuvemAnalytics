@@ -25,30 +25,29 @@ def execute_query(query_identifier, start_date, end_date, response):
 			'name' : query_identifier,
 			'children' : [],
 			'type' : 'vm_set',
-			'query_name' : output.column_names,
 			'query_columns' : {}
 		}
 
-		query_results['query_columns'][query_identifier] = []
-		for col in output.column_names:
-			query_results['query_columns'][query_identifier].append(col)
+		query_results['query_columns'][query_identifier] = output.column_names[1:len(output.column_names)]
+# 		for col in output.column_names:
+# 			query_results['query_columns'][query_identifier].append(col)
 
 		for row in output.rows:
 			# vm_info
 			# size: All VMs have equal size
 			# name: We assume that the first column is always the VM name
-			vm_info = {'size' : 1, 
-					   'name' : row[0], 
-					   'type' : 'vm', 
-					   'values' : row}
+			vm_info = {'size' : 1,
+					   'name' : row[0],
+					   'type' : 'vm',
+					   'values' : row[1:len(row)]}
 			
-#			vm_info['query_columns'][query_identifier] = {}
+# 			vm_info['query_columns'][query_identifier] = {}
 
-#			for i in range(1, len(output.column_names)):			
-#				vm_info['query_columns'][query_identifier][output.column_names[i]['name']] = {
-#					'value' : row[i],
-#					'measurement' : output.column_names[i]['measurement']
-#				}
+# 			for i in range(1, len(output.column_names)):			
+# 				vm_info['query_columns'][query_identifier][output.column_names[i]['name']] = {
+# 					'value' : row[i],
+# 					'measurement' : output.column_names[i]['measurement']
+# 				}
 	
 			query_results['children'].append(vm_info)
 
@@ -65,6 +64,7 @@ def aggregate_problems(start_date, end_date, response):
 	# Get the query_names, vm_names and query_vm_info's
 	query_names = []
 	query_vms_map = {}
+	query_col_map = {}
 	query_vms_info_map = {}
 	for child_query in response['children']:
 		query_names.append(child_query['name'])
@@ -73,6 +73,8 @@ def aggregate_problems(start_date, end_date, response):
 		for vm_info in child_query['children']:
 			query_vms.append(vm_info['name'])
 		query_vms_map[child_query['name']] = query_vms
+		
+		query_col_map[child_query['name']] = child_query['query_columns'] 
 		
 		query_vms_info_map[child_query['name']] = child_query['children']
 
@@ -111,8 +113,11 @@ def aggregate_problems(start_date, end_date, response):
 				'children' : [],
 				'type' : 'vm_set',
 				'query_names' : comb,
-				'query_columns' : []
+				'query_columns' : {}
 			}
+	
+			for query in comb:
+				query_results['query_columns'][query] = query_col_map[query]
 	
 			for vm in vm_comb:
 				my_vm_info = None
@@ -123,9 +128,10 @@ def aggregate_problems(start_date, end_date, response):
 							if my_vm_info is None:
 								my_vm_info = info
 							else:
-								my_vm_info['query_columns'] = dict(my_vm_info['query_columns'].items() + info['query_columns'].items())
+								my_vm_info['values'].extend(info['values'])
 				
 				query_results['children'].append(my_vm_info)
+				print my_vm_info
 				
 			response_json['children'].append(query_results)
 		
@@ -145,12 +151,12 @@ def do_subutilization_queries():
 	start_date = request.args.get("start_date")
 	end_date = request.args.get("end_date")
 
-	if ( start_date == None or end_date == None ):
+	if (start_date == None or end_date == None):
 		flash("Error: start dates or end dates cannot be null!")
 		return render_template("index.html")
 
 	aggregate = request.args.get("aggregate")
-	if ( aggregate != None and aggregate == "yes" ):
+	if (aggregate != None and aggregate == "yes"):
 		aggregate = True
 	else:
 		aggregate = False
@@ -161,21 +167,21 @@ def do_subutilization_queries():
 
 	execute_query("vmsOverMemAlloc", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		flash(response['message'].capitalize()+"!")
+		flash(response['message'].capitalize() + "!")
 		return render_template("index.html")
 
 	execute_query("vmsOverCPU", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		flash(response['message'].capitalize()+"!")
+		flash(response['message'].capitalize() + "!")
 		return render_template("index.html")	
 
 	execute_query("lowUsageVMs", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		flash(response['message'].capitalize()+"!")
+		flash(response['message'].capitalize() + "!")
 		return render_template("index.html")
 
 	# see if query results should be aggregated
-	if ( aggregate ):
+	if (aggregate):
 		response = aggregate_problems(start_date, end_date, response)
 
 	return render_template("index.html", response=json.dumps(response))
@@ -186,12 +192,12 @@ def do_superutilization_queries():
 	start_date = request.args.get("start_date")
 	end_date = request.args.get("end_date")
 
-	if ( start_date == None or end_date == None ):
+	if (start_date == None or end_date == None):
 		flash("Error: start dates or end dates cannot be null!")
 		return render_template("index.html")
 
 	aggregate = request.args.get("aggregate")
-	if ( aggregate != None and aggregate == "yes" ):
+	if (aggregate != None and aggregate == "yes"):
 		aggregate = True
 	else:
 		aggregate = False
@@ -202,11 +208,11 @@ def do_superutilization_queries():
 
 	execute_query("vmsNetConstrained", start_date, end_date, response)
 	if response['exit_status'] != 0:
-		flash(response['message'].capitalize()+"!")
+		flash(response['message'].capitalize() + "!")
 		return render_template("index.html")
 
 	# see if query results should be aggregated
-	if ( aggregate ):
+	if (aggregate):
 		response = aggregate_problems(start_date, end_date, response)
 
 	return render_template("index.html", response=json.dumps(response))
