@@ -106,10 +106,16 @@ def aggregate_problems(start_date, end_date, response):
 			}
 	
 			for vm in vm_comb:
-				for info in query_vms_info_map[comb[0]]:
-					if info['name'] == vm:
-						query_results['children'].append(info)
-						break;
+				my_vm_info = None
+				for query in comb:
+					for info in query_vms_info_map[query]:
+						if info['name'] == vm:
+							if my_vm_info is None:
+								my_vm_info = info
+							else:
+								my_vm_info['columns'] = dict(my_vm_info['columns'] + info['columns'])
+				
+				query_results['children'].append(my_vm_info)
 				
 			response_json['children'].append(query_results)
 		
