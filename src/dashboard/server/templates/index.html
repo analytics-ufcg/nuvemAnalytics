@@ -93,6 +93,21 @@
 	{% endif %}
 
 
+	{% if start_time %}
+
+		var st = "{{start_time}}".split(" ");
+		$("#start_date_wrapper").datepicker("setValue", st[0]);
+		$("#start_time").timepicker("setTime", st[1]);
+	{% endif %}
+
+	{% if end_time %}
+
+		var en = "{{end_time}}".split(" ");
+		$("#end_date_wrapper").datepicker("setValue", en[0]);
+		$("#end_time").timepicker("setTime", en[1]);
+	{% endif %}
+
+
 	$("#go").click(function(){
 		var url = "/subutilization?";
 		url += "start_date="+$("#start_date").val().replace(/\//g, '-')+" "+$("#start_time").val();

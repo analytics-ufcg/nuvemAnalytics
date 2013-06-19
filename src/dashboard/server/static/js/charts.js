@@ -2,9 +2,15 @@ var selectedBubble = null;
 
 function showQueryResultChart(selectedBubble){
 	
-	console.log("calling this and selectedBubble is: ");
-	console.log(selectedBubble);
+//	console.log("calling this and selectedBubble is: ");
+//	console.log(selectedBubble);
 	if ( selectedBubble != null ){
+		if (selectedBubble.type == "vm_set"){
+			
+		}
+		if (selectedBubble.type == "vm"){
+			
+		}
 		$("#query_result_chart").text(selectedBubble.type);
 	}
 	else{

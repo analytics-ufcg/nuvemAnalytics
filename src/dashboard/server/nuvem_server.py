@@ -24,8 +24,14 @@ def execute_query(query_identifier, start_date, end_date, response):
 		query_results = {
 			'name' : query_identifier,
 			'children' : [],
-			'type' : 'vm_set'
+			'type' : 'vm_set',
+			'query_name' : output.column_names,
+			'query_columns' : {}
 		}
+
+		query_results['query_columns'][query_identifier] = []
+		for col in output.column_names:
+			query_results['query_columns'][query_identifier].append(col)
 
 		for row in output.rows:
 			# vm_info
@@ -34,16 +40,15 @@ def execute_query(query_identifier, start_date, end_date, response):
 			vm_info = {'size' : 1, 
 					   'name' : row[0], 
 					   'type' : 'vm', 
-					   'query_columns' : {}}
+					   'values' : row}
 			
-			vm_info['query_columns'][query_identifier] = {}
+#			vm_info['query_columns'][query_identifier] = {}
 
-			for i in range(1, len(output.column_names)):
-			
-				vm_info['query_columns'][query_identifier][output.column_names[i]['name']] = {
-					'value' : row[i],
-					'measurement' : output.column_names[i]['measurement']
-				}
+#			for i in range(1, len(output.column_names)):			
+#				vm_info['query_columns'][query_identifier][output.column_names[i]['name']] = {
+#					'value' : row[i],
+#					'measurement' : output.column_names[i]['measurement']
+#				}
 	
 			query_results['children'].append(vm_info)
 
@@ -104,7 +109,9 @@ def aggregate_problems(start_date, end_date, response):
 			query_results = {
 				'name' : ' - '.join(comb),
 				'children' : [],
-				'type' : 'vm_set'
+				'type' : 'vm_set',
+				'query_names' : comb,
+				'query_columns' : []
 			}
 	
 			for vm in vm_comb:
