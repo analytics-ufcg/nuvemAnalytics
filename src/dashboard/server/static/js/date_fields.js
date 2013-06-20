@@ -14,7 +14,7 @@ var start_field = $("#start_date_wrapper").datepicker({
 	}
 }).data('datepicker');
 
-$("#start_date_wrapper").datepicker('setValue', now);
+$("#start_date_wrapper").datepicker('setValue', lowerBound);
 $("#start_date").click(function() {
 	$("start_date_wrapper").datepicker('show');
 });
@@ -22,7 +22,8 @@ $("#start_date").click(function() {
 $("#start_time").timepicker({
 	showMeridian : false,
 	showInputs: false,
-	minuteStep : 5
+	minuteStep : 5,
+	defaultTime : "00:00 AM"
 });
 
 var end_field = $("#end_date_wrapper").datepicker({
