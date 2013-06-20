@@ -101,7 +101,7 @@
 		{% if end_date %}
 
 			var en = "{{end_date}}".split(" ");
-			$("#end_date_wrapper").datepicker("setValue", en[0]);
+			$("#end_date_wrapper").datepicker("setValue", en[0].replace(/\-/g, '/'));
 			$("#end_time").timepicker("setTime", en[1]);
 		{% endif %}
 
