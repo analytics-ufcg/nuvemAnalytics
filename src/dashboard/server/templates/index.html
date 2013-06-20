@@ -90,28 +90,30 @@
 			bubble_chart_data = JSON.parse({{ response|tojson|safe }})
 			showBubbleChart(bubble_chart_data);
 		});
+
+		{% if start_date %}
+
+			var st = "{{start_date}}".split(" ");
+			$("#start_date_wrapper").datepicker("setValue", st[0].replace(/\-/g, '/'));
+			$("#start_time").timepicker("setTime", st[1]);
+		{% endif %}
+
+		{% if end_date %}
+
+			var en = "{{end_date}}".split(" ");
+			$("#end_date_wrapper").datepicker("setValue", en[0]);
+			$("#end_time").timepicker("setTime", en[1]);
+		{% endif %}
+
 	{% endif %}
 
 
-	{% if start_time %}
-
-		var st = "{{start_time}}".split(" ");
-		$("#start_date_wrapper").datepicker("setValue", st[0]);
-		$("#start_time").timepicker("setTime", st[1]);
-	{% endif %}
-
-	{% if end_time %}
-
-		var en = "{{end_time}}".split(" ");
-		$("#end_date_wrapper").datepicker("setValue", en[0]);
-		$("#end_time").timepicker("setTime", en[1]);
-	{% endif %}
 
 
 	$("#go").click(function(){
 		var url = "/subutilization?";
-		url += "start_date="+$("#start_date").val().replace(/\//g, '-')+" "+$("#start_time").val();
-		url += "&end_date="+$("#end_date").val().replace(/\//g, '-')+" "+$("#end_time").val();
+		url += "start_date="+$("#start_date").val().replace(/\//g, '-')+" "+$("#start_time").val()+":00";
+		url += "&end_date="+$("#end_date").val().replace(/\//g, '-')+" "+$("#end_time").val()+":00";
 		url += "&aggregate=yes";
 		window.location = url;
 	});

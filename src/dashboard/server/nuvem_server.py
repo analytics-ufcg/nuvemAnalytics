@@ -159,23 +159,22 @@ def do_subutilization_queries():
 	execute_query("vmsOverMemAlloc", start_date, end_date, response)
 	if response['exit_status'] != 0:
 		flash(response['message'].capitalize() + "!")
-		return render_template("index.html")
+		return render_template("index.html", start_date=start_date, end_date=end_date)
 
 	execute_query("vmsOverCPU", start_date, end_date, response)
 	if response['exit_status'] != 0:
 		flash(response['message'].capitalize() + "!")
-		return render_template("index.html")	
+		return render_template("index.html", start_date=start_date, end_date=end_date)
 
 	execute_query("lowUsageVMs", start_date, end_date, response)
 	if response['exit_status'] != 0:
 		flash(response['message'].capitalize() + "!")
-		return render_template("index.html")
 
 	# see if query results should be aggregated
 	if (aggregate):
 		response = aggregate_problems(start_date, end_date, response)
 
-	return render_template("index.html", response=json.dumps(response))
+	return render_template("index.html", response=json.dumps(response), start_date=start_date, end_date=end_date)
 
 @server.route('/superutilization')
 def do_superutilization_queries():
@@ -200,13 +199,13 @@ def do_superutilization_queries():
 	execute_query("vmsNetConstrained", start_date, end_date, response)
 	if response['exit_status'] != 0:
 		flash(response['message'].capitalize() + "!")
-		return render_template("index.html")
+		return render_template("index.html", start_date=start_date, end_date=end_date)
 
 	# see if query results should be aggregated
 	if (aggregate):
 		response = aggregate_problems(start_date, end_date, response)
 
-	return render_template("index.html", response=json.dumps(response))
+	return render_template("index.html", response=json.dumps(response), start_date=start_date, end_date=end_date)
 
 query_metrics = {}
 query_metrics['lowUsageVMs'] = [ 'CPU_ALLOC', 'IOS_PER_SEC', 'PKT_PER_SEC' ]
