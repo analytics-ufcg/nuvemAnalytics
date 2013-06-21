@@ -25,11 +25,15 @@ def execute_query(query_identifier, start_date, end_date, response):
 			'name' : query_identifier,
 			'children' : [],
 			'type' : 'vm_set',
-			'query_columns' : []
+			'query_columns' : {},
+			'query_names' : []
 		}
 
+		query_results['query_names'].append(query_identifier)
+
+		query_results['query_columns'][query_identifier] = []
 		for i in range (1, len(output.column_names)):
-			query_results['query_columns'].append(output.column_names[i]['name'])
+			query_results['query_columns'][query_identifier].append(output.column_names[i]['name'])
 
 		for row in output.rows:
 			# vm_info
@@ -65,7 +69,7 @@ def aggregate_problems(start_date, end_date, response):
 			query_vms.append(vm_info['name'])
 		query_vms_map[child_query['name']] = query_vms
 		
-		query_col_map[child_query['name']] = child_query['query_columns'] 
+		query_col_map[child_query['name']] = child_query['query_columns'][child_query['name']]
 		
 		query_vms_info_map[child_query['name']] = child_query['children']
 
@@ -79,7 +83,6 @@ def aggregate_problems(start_date, end_date, response):
 		combs.extend([list(x) for x in itertools.combinations(query_names, i)])
 		
 	for comb in combs:
-		print comb
 		vm_comb = []
 		
 		# Query Intersection 
@@ -94,8 +97,6 @@ def aggregate_problems(start_date, end_date, response):
 		for vm in vm_comb:
 			for i in xrange(0, len(comb)):
 				query_vms_map[comb[i]].remove(vm)
-				
-		print vm_comb
 		
 		# Create the new response
 		if len(vm_comb) > 0:
@@ -122,12 +123,9 @@ def aggregate_problems(start_date, end_date, response):
 								my_vm_info['values'].extend(info['values'])
 				
 				query_results['children'].append(my_vm_info)
-				print my_vm_info
 				
 			response_json['children'].append(query_results)
-		
-		print
-	
+			
 	return response_json	
 		
 
@@ -174,7 +172,7 @@ def do_subutilization_queries():
 	if (aggregate):
 		response = aggregate_problems(start_date, end_date, response)
 
-	return render_template("index.html", response=json.dumps(response), start_date=start_date, end_date=end_date)
+	return render_template("index.html", response=json.dumps(response), start_date=start_date, end_date=end_date, aggregate=aggregate)
 
 @server.route('/superutilization')
 def do_superutilization_queries():
@@ -205,7 +203,7 @@ def do_superutilization_queries():
 	if (aggregate):
 		response = aggregate_problems(start_date, end_date, response)
 
-	return render_template("index.html", response=json.dumps(response), start_date=start_date, end_date=end_date)
+	return render_template("index.html", response=json.dumps(response), start_date=start_date, end_date=end_date, aggregate=aggregate)
 
 query_metrics = {}
 query_metrics['lowUsageVMs'] = [ 'CPU_ALLOC', 'IOS_PER_SEC', 'PKT_PER_SEC' ]
