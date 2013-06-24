@@ -20,8 +20,9 @@ def lowUsageVMs(start_date, end_date):
 
 	column_names = [
 	{'name' : 'VM NAME', 'measurement' : ''},
-	{'name' : '90th PERCENTILE CPU', 'measurement' : 'cores'},
-	{'name' : '90th PERCENTILE NETWORK I/O', 'measurement' : 'MB/s'}
+	{'name' : '90th Percentile CPU', 'measurement' : 'cores'},
+	{'name' : '90th Percentile DISK I/O', 'measurement' : 'MB/s'},
+	{'name' : '90th Percentile NETWORK I/O', 'measurement' : 'Mb/s'}
 	]
 	
 	return (exit_status, message, QueryResult(column_names, rows))	
@@ -34,9 +35,9 @@ def vmsOverMemAlloc(start_date, end_date):
 		return (exit_status, message, NO_OUTPUT)
 
 	column_names = [
-	{'name' : 'VM NAME', 'measurement' : ''},
-	{'name' : 'PEAK MEMORY', 'measurement' : '%'},
-	{'name' : 'MEMORY ALLOCATION', 'measurement' : 'GB'}
+	{'name' : 'VM Name', 'measurement' : ''},
+	{'name' : 'Peak MEMORY', 'measurement' : '%'},
+	{'name' : 'MEMORY Allocation', 'measurement' : 'GB'}
 	]
 
 	return (exit_status, message, QueryResult(column_names, rows))
@@ -49,9 +50,9 @@ def vmsOverCPU(start_date, end_date):
 		return (exit_status, message, NO_OUTPUT)
 
 	column_names = [
-	{'name' : 'VM NAME', 'measurement' : ''},
-	{'name' : 'PEAK CPU', 'measurement' : '%'},
-	{'name' : 'CORE COUNT', 'measurement' : ''}
+	{'name' : 'VM Name', 'measurement' : ''},
+	{'name' : 'Peak CPU', 'measurement' : '%'},
+	{'name' : 'CORE Count', 'measurement' : ''}
 	]
 
 	return (exit_status, message, QueryResult(column_names, rows))
@@ -64,8 +65,8 @@ def vmsNetConstrained(start_date, end_date):
 		return (exit_status, message, NO_OUTPUT)
 
 	column_names = [
-	{'name' : 'VM NAME', 'measurement' : ''},
-	{'name' : '90th PERCENTILE NETWORK I/O', 'measurement' : 'MB/s'}
+	{'name' : 'VM Name', 'measurement' : ''},
+	{'name' : '90th Percentile NETWORK I/O', 'measurement' : 'MB/s'}
 	]
 
 	return (exit_status, message, QueryResult(column_names, rows))
