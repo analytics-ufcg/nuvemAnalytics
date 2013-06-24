@@ -13,7 +13,6 @@ function showMetrics(bubble){
 				metric_list = data.metrics;
 				table_list = data.tables;
 				
-				console.log(data);
 		    		for(var i = 0; i < metric_list.length; i++){
 	       				var t = document.createElement("option")
 	       				t.value = metric_list[i];
