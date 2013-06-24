@@ -3,7 +3,11 @@ var metric_list = null;
 var table_list = null;
 
 function showMetrics(bubble){
-	if(bubble != null){
+
+	$("#metric_type_vm").empty();
+	
+	if(bubble != null){	
+		
 		if(bubble.type == "vm"){
 			// Call the server to get the metrics and tables
 			 
@@ -12,7 +16,7 @@ function showMetrics(bubble){
 				data = JSON.parse(data);
 				metric_list = data.metrics;
 				table_list = data.tables;
-				
+
 		    		for(var i = 0; i < metric_list.length; i++){
 	       				var t = document.createElement("option")
 	       				t.value = metric_list[i];
@@ -21,7 +25,6 @@ function showMetrics(bubble){
 	   	    		}	
 			});
 		}else{
-			$("#metric_type_vm").empty();	
 			metric_list = null;
 			table_list = null;
 		}
