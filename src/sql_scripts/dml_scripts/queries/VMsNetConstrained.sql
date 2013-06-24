@@ -8,5 +8,3 @@ FROM (SELECT DISTINCT N.id_vm, PERCENTILE_CONT(.90) WITHIN GROUP(ORDER BY N.pkt_
 	  vm_dim V
 WHERE Net.pkt_percentile > 95 and
 	  V.id_vm = Net.id_vm;
-
-	  
