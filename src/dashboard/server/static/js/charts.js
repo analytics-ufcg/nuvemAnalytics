@@ -1,5 +1,34 @@
 var selectedBubble = null;
+var metric_list = null;
+var table_list = null;
 
+function showMetrics(bubble){
+	if(bubble != null){
+		if(bubble.type == "vm"){
+			// Call the server to get the metrics and tables
+			 
+			$.get("query_metrics?query_list=" + bubble.parent.name, function (data){
+				
+				data = JSON.parse(data);
+				metric_list = data.metrics;
+				table_list = data.tables;
+				
+				console.log(data);
+		    		for(var i = 0; i < metric_list.length; i++){
+	       				var t = document.createElement("option")
+	       				t.value = metric_list[i];
+       					t.text = metric_list[i];
+       					$("#metric_type_vm").append(t);
+	   	    		}	
+			});
+		}else{
+			$("#metric_type_vm").empty();	
+			metric_list = null;
+			table_list = null;
+		}
+	}	
+}
+	
 function showQueryResultChart(bubble){
 
 	function compareNumbers(a, b) {
@@ -114,7 +143,6 @@ function showQueryResultChart(bubble){
 }
 
 function showBubbleChart(data){
-
 	var w = $("#bubble_chart").width(),
 	    h = $("#bubble_chart").height(),
 	    r = $("#bubble_chart").width(),
@@ -204,7 +232,9 @@ function showBubbleChart(data){
 
 	  // Update the query results chart
 	  showQueryResultChart(selectedBubble);
-	}
-
+	  // Update the metrics list
+	 // $.get("URL AQUI", showMetrics(data, selectedBubble));
+	  showMetrics(selectedBubble);
+        }
 	zoom(root);
 }

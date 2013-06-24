@@ -199,6 +199,18 @@ def do_superutilization_queries():
 		flash(response['message'].capitalize() + "!")
 		return render_template("index.html", start_date=start_date, end_date=end_date)
 
+#        execute_query("highCPUQueueing", start_date, end_date, response)
+#        if response['exit_status'] != 0:
+#                flash(response['message'].capitalize() + "!")
+#                return render_template("index.html", start_date=start_date, end_date=end_date)
+
+
+#        execute_query("vmsWithHighPagingRate", start_date, end_date, response)
+#        if response['exit_status'] != 0:
+#                flash(response['message'].capitalize() + "!")
+#                return render_template("index.html", start_date=start_date, end_date=end_date)
+
+
 	# see if query results should be aggregated
 	if (aggregate):
 		response = aggregate_problems(start_date, end_date, response)
@@ -206,21 +218,69 @@ def do_superutilization_queries():
 	return render_template("index.html", response=json.dumps(response), start_date=start_date, end_date=end_date, aggregate=aggregate)
 
 query_metrics = {}
-query_metrics['lowUsageVMs'] = [ 'CPU_ALLOC', 'IOS_PER_SEC', 'PKT_PER_SEC' ]
-query_metrics['vmsOverMemAlloc'] = [ 'MEM_UTIL', 'MEM_ALLOC' ]
-query_metrics['vmsOverCPU'] = [ 'CPU_UTIL', 'CPU_ALLOC' ]
-query_metrics['vmsNetConstrained'] = [ 'PKT_PER_SEC' ]
+query_metrics['lowUsageVMs'] = {'tables' : ["cpu", "disk", "network"], 
+				'metrics' : [ 'cpu_alloc', 'ios_per_sec', 'pkt_per_sec' ]}
+query_metrics['vmsOverMemAlloc'] = {'tables' : ["memory", "memory"], 
+				    'metrics' : [ 'mem_util', 'mem_alloc' ]}
+query_metrics['vmsOverCPU'] = {'tables' : ["cpu", "cpu"], 
+				'metrics' : [ 'cpu_util', 'cpu_alloc' ]}
+query_metrics['vmsNetConstrained'] = {'tables' : ["network"], 
+				      'metrics' : [ 'pkt_per_sec' ]}
+query_metrics['vmsWithHighPagingRate'] = {'tables' : ["memory", "memory"],
+                                          'metrics' : [ 'mem_util', 'pages_per_sec' ]}
+query_metrics['highCPUQueueing'] = {'tables' : ["cpu", "cpu", "cpu"],
+                                          'metrics' : [ "cpu_util", "cpu_alloc", "cpu_queue"]}
 
 @server.route('/query_metrics')
 def get_query_metrics():
 
-        query_identifier = request.args.get("query")
+        query_string_list = request.args.get("query_list")
 
-        if ( query_identifier == None or not query_identifier in query_metrics ):
+        if ( query_string_list == None):
                 return "null";
         else:
-                return json.dumps({ 'metrics' : query_metrics[query_identifier] })
+		query_list = query_string_list.split(" - ")
+		response = {'tables' : [],
+			    'metrics' : []}
+		for query in query_list:
+			print query
+			metrics = query_metrics[query]['metrics']
+			tables = query_metrics[query]['tables']
+			for i in range(len(metrics)):
+				if metrics[i] not in response['metrics']:
+					response['metrics'].append(metrics[i])
+					response['tables'].append(tables[i])
+		print response
+                return json.dumps(response)
 
+@server.route('/metric_time_series')
+def do_metric_time_series_query():
+	
+	vm_name = request.args.get("vm_name")
+	metric_name = request.args.get("metric")
+	table_name = request.args.get("table")
+	start_date = request.args.get("start_date")
+        end_date = request.args.get("end_date")
+
+        if (vm_name == None or metric_name == None or table_name == None or 
+	    start_date == None or end_date == None):
+                return "error: any parameter is missing"
+	else:
+		client = VerticaClientFacade()
+		(exit_status, message, output) = client.check_and_query("metricTimeSeries", start_date, end_date, vm_name, table_name, metric_name)
+		if exit_status == 0:
+			# Prepare the json response object
+			response = {'date_time' : [], 
+				    'value' : []}
+			for row in output.rows:
+				response['date_time'].append(str(row[0]))
+				response['value'].append(row[1])
+
+			return json.dumps (response)
+		else:
+			return message
+	
+	
 
 if __name__ == "__main__":
 

@@ -71,6 +71,67 @@ def vmsNetConstrained(start_date, end_date):
 
 	return (exit_status, message, QueryResult(column_names, rows))
 
+def highCPUQueueing(start_date, end_date):
+
+        (exit_status, message, rows) = execute_query(PATH_TO_QUERIES + "HighCPUQueueing.sql", start_date, end_date)
+
+        if ( exit_status != 0 ):
+                return (exit_status, message, NO_OUTPUT)
+
+        column_names = [
+        {'name' : 'VM Name', 'measurement' : ''},
+        {'name' : '90th Percentile CPU Queue', 'measurement' : ''},
+	{'name' : '90th Percentile CPU', 'measurement' : '%'},
+	{'name' : 'Average CPU', 'measurement' : '%'}
+        ]
+
+        return (exit_status, message, QueryResult(column_names, rows))
+
+def vmsWithHighPagingRate(start_date, end_date):
+
+        (exit_status, message, rows) = execute_query(PATH_TO_QUERIES + "VMsHighPagingRate.sql", start_date, end_date)
+
+        if ( exit_status != 0 ):
+                return (exit_status, message, NO_OUTPUT)
+
+        column_names = [
+        {'name' : 'VM Name', 'measurement' : ''},
+        {'name' : '90th Percentile Memory Paging', 'measurement' : 'pages/s'},
+        {'name' : '90th Percentile Memory', 'measurement' : '%'}
+        ]
+
+        return (exit_status, message, QueryResult(column_names, rows))
+
+
+def metricTimeSeries(start_date, end_date, vm_name, table, metric):
+
+	def autoQueryDefinition(vm_name, table, metric, start_date, end_date):
+
+		select_clause = "select T.date_time, X." + metric
+		from_clause = "from vm_dim as V, time_dim as T, " + table + " as X"
+		where_clause = "where T.date_time >= '" + start_date + "' and T.date_time <= '" + end_date + \
+				"' and V.vm_name = '" + vm_name + "' and X.id_time = T.id_time and X.id_vm = V.id_vm"
+		order_clause = "order by T.date_time"
+
+		return select_clause + "\n" + from_clause + "\n" + where_clause + "\n" + order_clause + ";"
+
+	auto_query = autoQueryDefinition(vm_name, table, metric, start_date, end_date)
+
+	print auto_query
+
+        (exit_status, message, rows) = execute_query(sql_query_string = auto_query)
+
+        if ( exit_status != 0 ):
+                return (exit_status, message, NO_OUTPUT)
+
+        column_names = [
+        {'name' : 'Date Time', 'measurement' : ''},
+        {'name' : metric, 'measurement' : ''}
+        ]
+
+        return (exit_status, message, QueryResult(column_names, rows))
+
+
 ################## END OF QUERY DEFINITIONS #####################
 
 PATH_TO_QUERIES = "../../sql_scripts/dml_scripts/queries/"
@@ -80,12 +141,18 @@ QUERY_ADAPTERS['lowUsageVMs'] = lowUsageVMs
 QUERY_ADAPTERS['vmsOverMemAlloc'] = vmsOverMemAlloc
 QUERY_ADAPTERS['vmsOverCPU'] = vmsOverCPU
 QUERY_ADAPTERS['vmsNetConstrained'] = vmsNetConstrained
+QUERY_ADAPTERS['highCPUQueueing'] = highCPUQueueing
+QUERY_ADAPTERS['vmsWithHighPagingRate'] = vmsWithHighPagingRate
+QUERY_ADAPTERS['metricTimeSeries'] = metricTimeSeries
 
 QUERY_CODES = []
 QUERY_CODES.append('lowUsageVMs')
 QUERY_CODES.append('vmsOverMemAlloc')
 QUERY_CODES.append('vmsOverCPU')
 QUERY_CODES.append('vmsNetConstrained')
+QUERY_CODES.append('metricTimeSeries')
+QUERY_CODES.append('highCPUQueueing')
+QUERY_CODES.append('vmsWithHighPagingRate')
 
 DATE_FORMAT = "%Y-%m-%d %H-%M-%S"  # Accepts only dates in this format YYYY-MM-DD HH:MM:SS e.g. 2002-08-22 13:54:22
 
@@ -113,31 +180,36 @@ def filter_out(text, pattern):
 
 	return text
 
-def execute_query(sql_query_file, start_date, end_date):
+def execute_query(sql_query_file = None, start_date = None, end_date = None, sql_query_string = None):
 
-	sql_file = open(os.path.join("..", "client", sql_query_file), 'r')
-	sql_code = sql_file.read()
-	sql_file.close()
+	sql_code = ""
 
-	sql_code = filter_out(sql_code, "T.date_time >= '")
-	sql_code = sql_code.replace("T.date_time >= ''", "T.date_time >= '" + start_date + "'")
+	if sql_query_file != None and start_date != None and end_date != None:
+	        sql_file = open(os.path.join("..", "client", sql_query_file), 'r')
+        	sql_code = sql_file.read()
+	        sql_file.close()
 
-	sql_code = filter_out(sql_code, "T.date_time <= '")
-	sql_code = sql_code.replace("T.date_time <= ''", "T.date_time <= '" + end_date + "'")
+        	sql_code = filter_out(sql_code, "T.date_time >= '")
+	        sql_code = sql_code.replace("T.date_time >= ''", "T.date_time >= '" + start_date + "'")
+
+        	sql_code = filter_out(sql_code, "T.date_time <= '")
+	        sql_code = sql_code.replace("T.date_time <= ''", "T.date_time <= '" + end_date + "'")
+	elif sql_query_string != None:
+		sql_code = sql_query_string
+	else:
+		exit_status = 4
+		message = "error: both the sql_query_file and the sql_query_string are null"		
+		return (exit_status, message, NO_OUTPUT)
 
 	try:
 		DB_CURSOR.execute(sql_code)
-
 	except pyodbc.DataError:
-
 		exit_status = 5
-		message = "error: a problem (data error) happened while executing this query" + sql_query_file
+		message = "error: a problem (data error) happened while executing this query " + sql_code
 		return (exit_status, message, NO_OUTPUT)
-
 	except Exception, e:
-
 		exit_status = 5
-		message = "error: a problem (" + str(e) + ") happened while executing this query " + sql_query_file
+		message = "error: a problem (" + str(e) + ") happened while executing this query " + sql_code
 		return (exit_status, message, NO_OUTPUT)
 
 	rows = DB_CURSOR.fetchall()
@@ -177,7 +249,7 @@ def valid_date(a_date):
 
 class VerticaClientFacade:
 
-	def check_and_query(self, query_identifier, start_date, end_date):
+	def check_and_query(self, query_identifier, start_date, end_date, vm_name = None, table_name = None, metric_name = None):
 
 		global DB_CURSOR
 		global DB_CONNECTION
@@ -234,7 +306,10 @@ class VerticaClientFacade:
 			print ">: Connection successful!"
 			print ">: Executing query '" + query_name + "'... from " + start_date + " to " + end_date
 
-		(exit_status, message, output) = QUERY_ADAPTERS[query_name](start_date, end_date)
+		if vm_name != None and table_name != None and metric_name != None:
+			(exit_status, message, output) = metricTimeSeries(start_date, end_date, vm_name, table_name, metric_name)
+		else:
+			(exit_status, message, output) = QUERY_ADAPTERS[query_identifier](start_date, end_date)
 
 		if __name__ == "__main__":
 			print ">: Query complete. We got the following results:"
