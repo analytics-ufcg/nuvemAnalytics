@@ -148,9 +148,9 @@ function showQueryResultChart(bubble){
 }
 
 function showBubbleChart(data){
-	var w = $("#bubble_chart").width(),
-	    h = $("#bubble_chart").height(),
-	    r = $("#bubble_chart").width(),
+	var w = $("#bubble_chart_carousel").width(),
+	    h = $("#bubble_chart_carousel").height(),
+	    r = $("#bubble_chart_carousel").width(),
 	    x = d3.scale.linear().range([0, r]),
 	    y = d3.scale.linear().range([0, r]);
 
@@ -160,8 +160,18 @@ function showBubbleChart(data){
 	var pack = d3.layout.pack()
 	    .size([r, r])
 	    .value(function(d) { return d.size; });
+	
+	$("#bubble_chart_carousel_items .item").removeClass("active");
+	$("#bubble_chart_carousel_items").prepend("<div class='active item'></div>");
 
-	var vis = d3.select("#bubble_chart")
+	if ( $("#bubble_chart_carousel_items .item").size() >= 2 ){
+		$(".carousel-control").show();
+	}
+	else{
+		$(".carousel-control").hide();
+	}
+
+	var vis = d3.select("#bubble_chart_carousel_items .active")
 	  .insert("svg:svg", "h2")
 	    .attr("width", "100%")
 	    .attr("height", "100%")
@@ -194,7 +204,7 @@ function showBubbleChart(data){
 	    .style("cursor", "pointer")
 	    .text(function(d) { return d.name.substring(0, d.r / 3); })
 
-	d3.select("#bubble_chart").on("click", function() { zoom(root); });
+	d3.select("#bubble_chart_carousel_items .active").on("click", function() { zoom(root); });
 
 	function zoom(d, i) {
 

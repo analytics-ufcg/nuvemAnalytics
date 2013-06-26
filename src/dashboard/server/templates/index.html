@@ -56,13 +56,11 @@
 					</button>
 				</div>
 			</div>
-			<div style="width:40%; height:100%; padding:0px; float:left;" id='bubble_chart'>
-				{% for message in get_flashed_messages() %}
-				<div class='alert alert-error' style="width:91%;">
-					<button type='button' class='close' data-dismiss='alert'>&times;</button>
-					{{ message }}
+			<div style="width:40%; height:100%; padding:0px; float:left;" id='bubble_chart_carousel' class='carousel slide'>
+				<div class='carousel-inner' id='bubble_chart_carousel_items'>
 				</div>
-				{% endfor %}
+				<a class='carousel-control left' href='#bubble_chart_carousel' data-slide='prev'>&lsaquo;</a>
+				<a class='carousel-control right' href='#bubble_chart_carousel' data-slide='next'>&rsaquo;</a>
 			</div>
 			<div style="width:50%; height:85%; position:fixed; top:12%; left:50%; padding:0px; float:left;">
 				<div class='row' id='query_result_chart' style="height:50%;">
@@ -119,15 +117,23 @@
 		{% if aggregate %}
 			document.getElementById("queries-agg").checked = true;
 		{% endif %}
-		
+	
+	{% else %}
+
+		$("#query_result_chart").hide();
+		$("#metric_time_series_chart").hide();	
+
 	{% endif %}
+
+	$(".carousel-control").hide();
+	$("#bubble_chart_carousel").carousel('pause');
 
 	$("#go").click(function(){
 
 		$("#bubble_chart").empty();
+		$("#metric_type_vm").empty();
 		$("#query_result_chart").hide();
  		$("#metric_time_series_chart").hide();	
-		$("#metric_type_vm").empty();
 		
 		var url = "/";
                 var qtp = document.getElementById("query-type");
