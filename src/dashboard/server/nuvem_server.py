@@ -172,6 +172,9 @@ def do_subutilization_queries():
 	if (aggregate):
 		response = aggregate_problems(start_date, end_date, response)
 
+	quick = request.args.get("quick")
+	if (quick != None):
+		return json.dumps(response)
 	return render_template("index.html", response=json.dumps(response), start_date=start_date, end_date=end_date, aggregate=aggregate)
 
 @server.route('/superutilization')
@@ -199,22 +202,24 @@ def do_superutilization_queries():
 		flash(response['message'].capitalize() + "!")
 		return render_template("index.html", start_date=start_date, end_date=end_date)
 
-#        execute_query("highCPUQueueing", start_date, end_date, response)
-#        if response['exit_status'] != 0:
-#                flash(response['message'].capitalize() + "!")
-#                return render_template("index.html", start_date=start_date, end_date=end_date)
+        execute_query("highCPUQueueing", start_date, end_date, response)
+        if response['exit_status'] != 0:
+                flash(response['message'].capitalize() + "!")
+                return render_template("index.html", start_date=start_date, end_date=end_date)
 
 
-#        execute_query("vmsWithHighPagingRate", start_date, end_date, response)
-#        if response['exit_status'] != 0:
-#                flash(response['message'].capitalize() + "!")
-#                return render_template("index.html", start_date=start_date, end_date=end_date)
-
+        execute_query("vmsWithHighPagingRate", start_date, end_date, response)
+        if response['exit_status'] != 0:
+                flash(response['message'].capitalize() + "!")
+                return render_template("index.html", start_date=start_date, end_date=end_date)
 
 	# see if query results should be aggregated
 	if (aggregate):
 		response = aggregate_problems(start_date, end_date, response)
 
+	quick = request.args.get("quick")
+	if (quick != None):
+		return json.dumps(response)
 	return render_template("index.html", response=json.dumps(response), start_date=start_date, end_date=end_date, aggregate=aggregate)
 
 query_metrics = {}

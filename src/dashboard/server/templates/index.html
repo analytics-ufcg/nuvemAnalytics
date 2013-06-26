@@ -71,9 +71,9 @@
 				</div>
 				<div class='row' id='metric_time_series_chart' style="height:50%;">
 					<h4>VM Time Series Analysis</h4>
-					<div class="dropdown" id="metric_type">
-						<h5>Metric List<h5>
-                                              	<select class="combobox" id="metric_type_vm" style="width:25%">
+					<h5>Metric List</h5>
+					<div class="metric_div" id="metric_type">
+                                              	<select class="dropdown" id="metric_type_vm" style="width:25%">
                                               	</select>
                                         </div>
 
@@ -122,13 +122,17 @@
 		
 	{% endif %}
 
-	
+	$("#query_result_chart").hide();
+ 	$("#metric_time_series_chart").hide();	
+	$("#metric_type_vm").empty();
+	$("#bubble_chart").empty();
+
 	$("#go").click(function(){
 
 		var url = "/";
                 var qtp = document.getElementById("query-type");
-                var identificador = qtp.options[qtp.selectedIndex].text;
-		if(identificador == "Subutilization"){
+                var identifier = qtp.options[qtp.selectedIndex].text;
+		if(identifier == "Subutilization"){
 			url += "subutilization?";
 		}else{
 			url += "superutilization?";
@@ -142,7 +146,16 @@
 		}else{
 			url += "&aggregate=no";
 		}
-		window.location = url;
+
+		url += "&quick";
+
+		$.get(url, function(data){
+			$("#query_result_chart").show();
+			$("#metric_time_series_chart").show();
+			data = JSON.parse(data);
+			showBubbleChart(data);
+		});
+
 	});
 	
 	

@@ -4,6 +4,7 @@ var table_list = null;
 
 function showMetrics(bubble){
 
+	$("#metric_time_series_chart").hide();
 	$("#metric_type_vm").empty();
 	
 	if(bubble != null){	
@@ -12,6 +13,8 @@ function showMetrics(bubble){
 			// Call the server to get the metrics and tables
 			 
 			$.get("query_metrics?query_list=" + bubble.parent.name, function (data){
+			
+				$("#metric_time_series_chart").show();
 				
 				data = JSON.parse(data);
 				metric_list = data.metrics;
