@@ -13,8 +13,8 @@
 		<div class='row-fluid' style="height:10%;" id='top_bar'>
 			(mockup) title
 		</div>
-		<div class='row-fluid' style="height:85%;">
-			<div style="width:10%; height:100%; float:left;" id='sidebar'>
+		<div class='row-fluid' style="height:85%; width:100%;">
+			<div style="width:10%; min-width:188px; height:100%; float:left;" id='sidebar'>
 				<div class='row-fluid' style="height:30%;" id='time_bar'>
 					<h5>Time interval</h5>
                                         <em><strong>start</strong> date and time:</em>
@@ -64,12 +64,12 @@
 				</div>
 				{% endfor %}
 			</div>
-			<div style="width:50%; padding:0px; float:left;">
+			<div style="width:50%; height:85%; position:fixed; top:12%; left:50%; padding:0px; float:left;">
 				<div class='row' id='query_result_chart' style="height:50%;">
 					(mockup)<br/>
 					<br/>Chart 2
 				</div>
-				<div class='row' id='metric_time_series_chart' style="height:50%;">
+				<div class='row' id='metric_time_series_chart' style="height:50%; position:relative; top:30%;">
 					<h4>VM Time Series Analysis</h4>
 					<h5>Metric List</h5>
 					<div class="metric_div" id="metric_type">
@@ -122,13 +122,13 @@
 		
 	{% endif %}
 
-	$("#query_result_chart").hide();
- 	$("#metric_time_series_chart").hide();	
-	$("#metric_type_vm").empty();
-	$("#bubble_chart").empty();
-
 	$("#go").click(function(){
 
+		$("#bubble_chart").empty();
+		$("#query_result_chart").hide();
+ 		$("#metric_time_series_chart").hide();	
+		$("#metric_type_vm").empty();
+		
 		var url = "/";
                 var qtp = document.getElementById("query-type");
                 var identifier = qtp.options[qtp.selectedIndex].text;
