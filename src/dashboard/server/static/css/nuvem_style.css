@@ -59,3 +59,26 @@ circle.bad_problem_3{
 #metric_time_series_chart{
   background-color:#CCF6FF;
 }*/
+
+// TIME SERIES style
+#time_series_chart {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
