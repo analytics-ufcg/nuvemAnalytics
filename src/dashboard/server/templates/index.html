@@ -64,17 +64,16 @@
 			</div>
 			<div style="width:50%; height:85%; position:fixed; top:12%; left:50%; padding:0px; float:left;">
 				<div class='row' id='query_result_chart' style="height:50%;">
-					(mockup)<br/>
-					<br/>Chart 2
 				</div>
-				<div class='row' id='metric_time_series_chart' style="height:50%; position:relative; top:30%;">
+				<div class='row' id='metric_time_series_chart' style="height:50%; position:relative;">
 					<h4>VM Time Series Analysis</h4>
-					<h5>Metric List</h5>
 					<div class="metric_div" id="metric_type">
-                                              	<select class="dropdown" id="metric_type_vm" style="width:25%">
+						<strong>Metric </strong>
+                                              	<select class="dropdown" id="metric_type_vm" style="width:15%">
                                               	</select>
                                         </div>
-
+					<div id="metric_time_series">
+					</div>
 				</div>
 			</div>
 		</div>
@@ -162,9 +161,9 @@
 			showBubbleChart(data);
 		});
 
-	});
-	
-	
+	});	
+
+	$("#metric_type_vm").change(function(){updateTimeSeries()});
 
 	</script>
 </body>

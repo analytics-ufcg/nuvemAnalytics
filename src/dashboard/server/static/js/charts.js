@@ -2,20 +2,132 @@ var selectedBubble = null;
 var metric_list = null;
 var table_list = null;
 
-function showMetrics(bubble){
+function showTimeSeriesChart(data){
+	var margin = {top: 20, right: 80, bottom: 30, left: 50},
+		width = document.getElementById("metric_time_series").offsetWidth - margin.left - margin.right,
+		height = document.getElementById("metric_time_series").offsetHeight - margin.top - margin.bottom;
 
-	$("#metric_time_series_chart").hide();
-	$("#metric_type_vm").empty();
+	var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
+
+	var x = d3.time.scale()
+		.range([0, width]);
+
+	var y = d3.scale.linear()
+		.range([height, 0]);
+
+	var color = d3.scale.category10();
+
+	var xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom");
+
+	var yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left");
+
+	var line = d3.svg.line()
+		.interpolate("basis")
+		.x(function(d) { return x(d.date); })
+		.y(function(d) { return y(d.temperature); });
+
+	var svg = d3.select("metric_time_series").append("svg")
+		.attr("width", width) + margin.left + margin.right)
+		.attr("height", height) + margin.top + margin.bottom)
+	  .append("g");
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	function showChart(data) {
+	
+		color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
+
+		data.forEach(function(d) {
+			d.date = parseDate(d.date);
+		});
+
+		var cities = color.domain().map(function(name) {
+		return {
+		  name: name,
+		  values: data.map(function(d) {
+			return {date: d.date, temperature: +d[name]};
+		  })
+		};
+		});
+
+		x.domain(d3.extent(data, function(d) { return d.date; }));
+
+		y.domain([
+			d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.temperature; }); }),
+			d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.temperature; }); })
+		]);
+
+		svg.append("g")
+		  .attr("class", "x axis")
+		  .attr("transform", "translate(0," + height + ")")
+		  .call(xAxis);
+
+		svg.append("g")
+		  .attr("class", "y axis")
+		  .call(yAxis)
+		.append("text")
+		  .attr("transform", "rotate(-90)")
+		  .attr("y", 6)
+		  .attr("dy", ".71em")
+		  .style("text-anchor", "end")
+		  .text("Temperature (ºF)");
+
+		var city = svg.selectAll(".city")
+		  .data(cities)
+		.enter().append("g")
+		  .attr("class", "city");
+
+		city.append("path")
+		  .attr("class", "line")
+		  .attr("d", function(d) { return line(d.values); })
+		  .style("stroke", function(d) { return color(d.name); });
+
+		city.append("text")
+		  .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
+		  .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")"; })
+		  .attr("x", 3)
+		  .attr("dy", ".35em")
+		  .text(function(d) { return d.name; });
+	}
+
+	showChart(data);
+}
+
+function updateTimeSeries(){
+	if (selectedBubble != null){
+		if(selectedBubble.type == "vm"){
+        		// Prepare the query 
+        	        var query = "metric_time_series?vm_name=" + selectedBubble.name;
+                	selected_index = document.getElementById("metric_type_vm").selectedIndex;
+			query += "&metric=" + metric_list[selected_index]
+			query += "&table=" + table_list[selected_index]
+			query += "&start_date="+$("#start_date").val().replace(/\//g, '-')+" "+$("#start_time").val()+":00";
+			query += "&end_date="+$("#end_date").val().replace(/\//g, '-')+" "+$("#end_time").val()+":00";
+	                console.log(query);
+
+        	        $.get(query, function(data){
+	
+        	              	data = JSON.parse(data);
+				console.log(data);
+        	        	// TODO: call the timeseries function creation
+				showTimeSeriesChart(data);
+				console.log("jah deve ter plotado...");
+        	      	});
+        	}
+	}
+}
+
+function showMetrics(bubble){
 	
 	if(bubble != null){	
-		
 		if(bubble.type == "vm"){
 			// Call the server to get the metrics and tables
 			 
 			$.get("query_metrics?query_list=" + bubble.parent.name, function (data){
-			
-				$("#metric_time_series_chart").show();
-				
+							
 				data = JSON.parse(data);
 				metric_list = data.metrics;
 				table_list = data.tables;
@@ -26,13 +138,18 @@ function showMetrics(bubble){
        					t.text = metric_list[i];
        					$("#metric_type_vm").append(t);
 	   	    		}	
+				updateTimeSeries();
 			});
 		}else{
 			metric_list = null;
 			table_list = null;
 		}
-	}	
-}
+	}else{
+		$("#metric_type_vm").empty();
+                metric_list = null;
+                table_list = null;
+	}
+}	
 	
 function showQueryResultChart(bubble){
 
@@ -171,7 +288,7 @@ function showBubbleChart(data){
 		$(".carousel-control").hide();
 	}
 
-	var vis = d3.select("#bubble_chart_carousel_items .active")
+	var bubble_chart = d3.select("#bubble_chart_carousel_items .active")
 	  .insert("svg:svg", "h2")
 	    .attr("width", "100%")
 	    .attr("height", "100%")
@@ -179,9 +296,16 @@ function showBubbleChart(data){
 	    .attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")")
 	    .style("cursor", "pointer");
 
+	$("svg").append("<g class='labels'></g>");
+
+	var labels = $("svg .labels");
+
+//	labels.style("cursor", "pointer ")
+//	  .append("<rect x='0' y='0' width='100' height='100' style='fill:blue;'></rect>");
+
 	var nodes = pack.nodes(root);
 
-	vis.selectAll("circle")
+	bubble_chart.selectAll("circle")
 	    .data(nodes)
 	  .enter().append("svg:circle")
    	 .attr("class", function(d) { return d.children ? "node " + ( d.class ? d.class : "" ) : "leaf node " + ( d.class ? d.class : "" ); })
@@ -190,7 +314,7 @@ function showBubbleChart(data){
  	   .attr("r", function(d) { return d.r; })
  	   .on("click", function(d) { return zoom(node == d ? root : d); });
 
-	vis.selectAll("text")
+	bubble_chart.selectAll("text")
 	    .data(nodes)
 	  .enter().append("svg:text")
 	    .attr("class", function(d) { return d.children ? "node" : "leaf node"; })
@@ -219,7 +343,7 @@ function showBubbleChart(data){
 	  x.domain([d.x - d.r, d.x + d.r]);
 	  y.domain([d.y - d.r, d.y + d.r]);
 
-	  var t = vis.transition()
+	  var t = bubble_chart.transition()
 	      .duration(750);
 
 	  t.selectAll("circle")
@@ -234,7 +358,7 @@ function showBubbleChart(data){
 
 	  $("tspan").remove();
 
-	  vis.selectAll("text")
+	  bubble_chart.selectAll("text")
 	     .append("svg:tspan")
 	     .style("font-size", 12)
 	     .style("cursor", "pointer")
@@ -248,7 +372,6 @@ function showBubbleChart(data){
 	  // Update the query results chart
 	  showQueryResultChart(selectedBubble);
 	  // Update the metrics list
-	 // $.get("URL AQUI", showMetrics(data, selectedBubble));
 	  showMetrics(selectedBubble);
         }
 	zoom(root);

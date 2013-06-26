@@ -15,6 +15,10 @@ def execute_query(query_identifier, start_date, end_date, response):
 
 	response['exit_status'] = exit_status
 	response['message'] = message
+	response['start_date'] = start_date
+	response['end_date'] = end_date
+	response['query_identifier'] = query_identifier
+	response['aggregate'] = 'no'
 
 	if (exit_status != 0):
 		return
@@ -74,7 +78,13 @@ def aggregate_problems(start_date, end_date, response):
 		query_vms_info_map[child_query['name']] = child_query['children']
 
 	response_json = { 
-		'name' : '',  # Remember to add the 'subutilization' then...
+		'name' : response['name'],  # Remember to add the 'subutilization' then...
+		'message' : response['message'],
+		'exit_status' : response['exit_status'],
+		'start_date' : response['start_date'],
+		'end_date' : response['end_date'],
+		'query_identifier' : response['query_identifier'],
+		'aggregate' : 'yes',
 		'children' : []
 	}
 	
@@ -248,15 +258,14 @@ def get_query_metrics():
 		response = {'tables' : [],
 			    'metrics' : []}
 		for query in query_list:
-			print query
 			metrics = query_metrics[query]['metrics']
 			tables = query_metrics[query]['tables']
 			for i in range(len(metrics)):
 				if metrics[i] not in response['metrics']:
 					response['metrics'].append(metrics[i])
 					response['tables'].append(tables[i])
-		print response
-                return json.dumps(response)
+		
+		return json.dumps(response)
 
 @server.route('/metric_time_series')
 def do_metric_time_series_query():
@@ -275,11 +284,11 @@ def do_metric_time_series_query():
 		(exit_status, message, output) = client.check_and_query("metricTimeSeries", start_date, end_date, vm_name, table_name, metric_name)
 		if exit_status == 0:
 			# Prepare the json response object
-			response = {'date_time' : [], 
-				    'value' : []}
+			response = []
 			for row in output.rows:
-				response['date_time'].append(str(row[0]))
-				response['value'].append(row[1])
+				d = {'date': str(row[0]),
+				     vm_name : str(row[1])}
+				response.append(d)
 
 			return json.dumps (response)
 		else:
