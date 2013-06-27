@@ -1,3 +1,4 @@
+
 var selectedBubble = null;
 var metric_list = null;
 var table_list = null;
@@ -17,9 +18,23 @@ function updateTimeSeries(){
         	        $.get(query, function(data){
 	
         	              	data = JSON.parse(data);
+				console.log("JSON");
 				console.log(data);
-        	        	// TODO: call the timeseries function creation
+        	        	var graph = new Rickshaw.Graph( {
+					element: document.querySelector("#metric_time_series"),
+					width: 200,
+					height: 100,
+					series: [{
+						color: 'blue',
+						data: [
+							{ x: 0, y: 70},
+							{ x: 1, y: 35}]
+						}]
+				});
+				graph.render();
+				// TODO: call the timeseries function creation
 				//showTimeSeriesChart(data);
+			
         	      	});
         	}
 	}
@@ -48,6 +63,7 @@ function showMetrics(bubble){
 		}else{
 			metric_list = null;
 			table_list = null;
+			$("#metric_type_vm").empty();
 		}
 	}else{
 		$("#metric_type_vm").empty();
