@@ -285,6 +285,7 @@ def do_metric_time_series_query():
 		if exit_status == 0:
 			# Prepare the json response object
 			response = []
+
 			for row in output.rows:
 				d = {'date': str(row[0]),
 				     vm_name : str(row[1])}

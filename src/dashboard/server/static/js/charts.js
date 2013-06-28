@@ -8,68 +8,66 @@ function updateTimeSeries(){
 		if(selectedBubble.type == "vm"){
         		// Prepare the query 
         	        var query = "metric_time_series?vm_name=" + selectedBubble.name;
-                	selected_index = document.getElementById("metric_type_vm").selectedIndex;
+                	var selected_index = document.getElementById("metric_type_vm").selectedIndex;
 			query += "&metric=" + metric_list[selected_index]
 			query += "&table=" + table_list[selected_index]
 			query += "&start_date="+$("#start_date").val().replace(/\//g, '-')+" "+$("#start_time").val()+":00";
 			query += "&end_date="+$("#end_date").val().replace(/\//g, '-')+" "+$("#end_time").val()+":00";
-	                console.log(query);
-
-        	        $.get(query, function(data){
-	
-        	              	data = JSON.parse(data);
-				console.log("JSON");
-				console.log(data);
-        	        	var graph = new Rickshaw.Graph( {
-					element: document.querySelector("#metric_time_series"),
-					width: 200,
-					height: 100,
-					series: [{
-						color: 'blue',
-						data: [
-							{ x: 0, y: 70},
-							{ x: 1, y: 35}]
-						}]
-				});
-				graph.render();
-				// TODO: call the timeseries function creation
-				//showTimeSeriesChart(data);
+	        	removeTimeSeries();
 			
+			$("#metric_time_series").html("Loading...");
+			$.get(query, function(data){
+        	              	data = JSON.parse(data);
+				$("#metric_time_series").html("");
+				showTimeSeries(data);
         	      	});
-        	}
+        	}else{
+			removeTimeSeries();
+		}
+	}else{
+		removeTimeSeries();
 	}
 }
 
-function showMetrics(bubble){
+function showTimeSeriesChart(bubble){
+
+	metric_list = null;
+	table_list = null;
+	$("#metric_type_vm").empty();
+	$("#metric_type_vm").hide();
+
+	var div_text = "";
 	
 	if(bubble != null){	
 		if(bubble.type == "vm"){
 			// Call the server to get the metrics and tables
-			 
 			$.get("query_metrics?query_list=" + bubble.parent.name, function (data){
 							
 				data = JSON.parse(data);
 				metric_list = data.metrics;
 				table_list = data.tables;
 
+				$("#metric_type_vm").show();
+
 		    		for(var i = 0; i < metric_list.length; i++){
 	       				var t = document.createElement("option")
 	       				t.value = metric_list[i];
        					t.text = metric_list[i];
        					$("#metric_type_vm").append(t);
-	   	    		}	
+	   	    		}
+				// This call occurs only when the query returns (asynchronous query)
 				updateTimeSeries();
 			});
+			
 		}else{
-			metric_list = null;
-			table_list = null;
-			$("#metric_type_vm").empty();
+			div_text += "Please select a VM";
+			updateTimeSeries();
 		}
 	}else{
-		$("#metric_type_vm").empty();
-                metric_list = null;
-                table_list = null;
+		div_text += "Please select a VM";
+ 		updateTimeSeries();
 	}
+	$("#metric_time_series").html(div_text);
 }	
 	
 function showQueryResultChart(bubble){
@@ -293,7 +291,7 @@ function showBubbleChart(data){
 	  // Update the query results chart
 	  showQueryResultChart(selectedBubble);
 	  // Update the metrics list
-	  showMetrics(selectedBubble);
+	  showTimeSeriesChart(selectedBubble);
         }
 	zoom(root);
 }

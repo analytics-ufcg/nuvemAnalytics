@@ -314,21 +314,20 @@ class VerticaClientFacade:
 		if __name__ == "__main__":
 			print ">: Query complete. We got the following results:"
 
-		if exit_status == 0:
-
-			header = ""
-			for i in range(len(output.column_names)):
-				header += "%s (%s) \t\t" % (output.column_names[i]['name'], output.column_names[i]['measurement'])
-			print header
-
-			for row in output.rows:
-				formatted_row = ""
-				for i in range(len(row)):
-					formatted_row += str(row[i]) + "\t\t"
-				print formatted_row
-		else:
-
-			print ">: No results..."
+			if exit_status == 0:
+	
+				header = ""
+				for i in range(len(output.column_names)):
+					header += "%s (%s) \t\t" % (output.column_names[i]['name'], output.column_names[i]['measurement'])
+				print header
+	
+				for row in output.rows:
+					formatted_row = ""
+					for i in range(len(row)):
+						formatted_row += str(row[i]) + "\t\t"
+					print formatted_row
+			else:
+				print ">: No results..."
 
 		DB_CURSOR.close()
 		DB_CONNECTION.close()
