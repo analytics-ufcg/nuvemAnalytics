@@ -40,26 +40,6 @@ circle.bad_problem_3{
   fill-opacity: 1;
 }
 
-#top_bar{
-  background-color:#D9E5FF;
-}
-
-#sidebar{
-  background-color:#BABCE8;
-}
-
-#bottom_bar{
-  background-color:#BAD4E8;
-}
-
-/*#query_result_chart{
-  background-color:#D8CCFF;
-}
-
-#metric_time_series_chart{
-  background-color:#CCF6FF;
-}*/
-
 // TIME SERIES style
 #time_series_chart {
   font: 10px sans-serif;

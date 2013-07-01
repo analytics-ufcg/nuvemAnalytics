@@ -17,7 +17,6 @@ def execute_query(query_identifier, start_date, end_date, response):
 	response['message'] = message
 	response['start_date'] = start_date
 	response['end_date'] = end_date
-	response['query_identifier'] = query_identifier
 	response['aggregate'] = 'no'
 
 	if (exit_status != 0):
@@ -83,7 +82,6 @@ def aggregate_problems(start_date, end_date, response):
 		'exit_status' : response['exit_status'],
 		'start_date' : response['start_date'],
 		'end_date' : response['end_date'],
-		'query_identifier' : response['query_identifier'],
 		'aggregate' : 'yes',
 		'children' : []
 	}

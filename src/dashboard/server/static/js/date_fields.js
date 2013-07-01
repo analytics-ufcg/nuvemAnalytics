@@ -1,4 +1,4 @@
-var lowerBound = new Date(1950, 1, 1, 0, 0, 0, 0);
+var lowerBound = new Date(2011, 6, 1, 0, 0, 0, 0);
 var now = new Date();
 var upperBound = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
 
