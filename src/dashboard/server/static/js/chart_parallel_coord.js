@@ -8,8 +8,8 @@ var x_pc = d3.scale.ordinal(),
 
 function showParallelCoord(data) {
 
-	var div_width = 700,
-		div_height = 400;
+	var div_width = $("#query_result_chart").width(),
+		div_height = $("#query_result_chart").height();
 	
 	var m = {left:40, right:40, top:20, bottom:20},
 		w = div_width - m.left - m.right,
@@ -117,5 +117,9 @@ function brush() {
       return extents[i][0] <= d[p] && d[p] <= extents[i][1];
     }) ? null : "none";
   });
+}
+
+function removeParallelCoord(){
+        d3.select("#query_result_chart").selectAll("svg").remove();
 }
 

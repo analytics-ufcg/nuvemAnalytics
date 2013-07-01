@@ -11,6 +11,9 @@ function updateTimeSeries(){
                 	var selected_index = document.getElementById("metric_type_vm").selectedIndex;
 			query += "&metric=" + metric_list[selected_index]
 			query += "&table=" + table_list[selected_index]
+			//var initial_date = new Date(selectedBubble.parent.parent.end_date);
+			//initial_date.setMonth(initial_date.getMonth() - 3);
+			// TODO: Create the date in the BD format
 			query += "&start_date=" + selectedBubble.parent.parent.start_date;
 			query += "&end_date=" + selectedBubble.parent.parent.end_date;
 	        	removeTimeSeries();
@@ -75,7 +78,7 @@ function showQueryResultParallelCoord(bubble){
         if ( bubble != null ){
                 var data = [];
                 if (bubble.type == "vm_set"){
-
+			removeParallelCoord();
                         // Select the queries and the columns
                         var queries = bubble.query_names;
                         var col_names = new Array();
@@ -85,23 +88,22 @@ function showQueryResultParallelCoord(bubble){
                                         col_names[col_names.length] = bubble.query_columns[query][j];
                                 }
                         }
-                        console.log(col_names);
 
                         var data = [];
 
                         for (var j = 0; j < bubble.children.length; j++){
                                 var vm_data = {name : bubble.children[j].name};
                                 for (var i = 0; i < col_names.length; i++){
-                                        vm_data[col_names[i]] = bubble.children[j].values[i];
+                                        vm_data[col_names[i]] = String(bubble.children[j].values[i]);
                                 }
                                 data.push(vm_data);
                         }
-                        console.log(data);
 
 			showParallelCoord(data);
 
                 }
                 if (bubble.type == "vm"){
+			removeParallelCoord();
                         var queries = bubble.parent.query_names;
                         var col_names = new Array();
                         for (var i = 0; i < queries.length; i++){
@@ -110,24 +112,23 @@ function showQueryResultParallelCoord(bubble){
                                         col_names[col_names.length] = bubble.parent.query_columns[query][j];
                                 }
                         }
-                        console.log(col_names);
 
                         var data = [];
                         var vm_data = {name : bubble.name};
                         
 			for (var i = 0; i < bubble.values.length; i++){
-                                vm_data[col_names[i]] = bubble.values[i];
+                                vm_data[col_names[i]] = String(bubble.values[i]);
                         }
                         data.push(vm_data);
-                        console.log(data);
 
 			showParallelCoord(data);
                 }
-                $("#query_result_chart").html(summary);
+        //        $("#query_result_chart").html(summary);
         }
         else{
+		removeParallelCoord();
                 summary += "Please, select a set of VMs or a VM.";
-                $("#query_result_chart").html(summary);
+        //        $("#query_result_chart").html(summary);
         }
 }
 
@@ -281,8 +282,6 @@ function showBubbleChart(data){
 
 	var legend = $("svg .legend");
 
-	console.log(legend);
-
 //	legend.style("cursor", "pointer ")
 //	  .append("<rect x='0' y='0' width='100' height='100' style='fill:blue;'></rect>");
 
@@ -353,8 +352,8 @@ function showBubbleChart(data){
 	  }
 
 	  // Update the query results chart
-	  showQueryResultChart(selectedBubble);
-	  //showQueryResultParallelCoord(selectedBubble);
+	  //showQueryResultChart(selectedBubble);
+	  showQueryResultParallelCoord(selectedBubble);
 	  // Update the metrics list
 	  showTimeSeriesChart(selectedBubble);
         }
