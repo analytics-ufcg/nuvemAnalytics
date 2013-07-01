@@ -77,7 +77,7 @@ def aggregate_problems(start_date, end_date, response):
 		query_vms_info_map[child_query['name']] = child_query['children']
 
 	response_json = { 
-		'name' : response['name'],  # Remember to add the 'subutilization' then...
+		'name' : response['name'],
 		'message' : response['message'],
 		'exit_status' : response['exit_status'],
 		'start_date' : response['start_date'],
@@ -159,7 +159,7 @@ def do_subutilization_queries():
 		aggregate = False
 
 	response = { 
-		'name' : '',  # Remember to add the 'subutilization' then...
+		'name' : ''
 	}
 
 	execute_query("vmsOverMemAlloc", start_date, end_date, response)
@@ -176,9 +176,10 @@ def do_subutilization_queries():
 	if response['exit_status'] != 0:
 		flash(response['message'].capitalize() + "!")
 
-	# see if query results should be aggregated
 	if (aggregate):
 		response = aggregate_problems(start_date, end_date, response)
+
+	response['problems'] = 'Subutilization'
 
 	quick = request.args.get("quick")
 	if (quick != None):
@@ -202,7 +203,7 @@ def do_superutilization_queries():
 		aggregate = False
 
 	response = { 
-		'name' : '',  # Remember to add the 'superutilization' then...
+		'name' : ''
 	}
 
 	execute_query("vmsNetConstrained", start_date, end_date, response)
@@ -221,9 +222,10 @@ def do_superutilization_queries():
                 flash(response['message'].capitalize() + "!")
                 return render_template("index.html", start_date=start_date, end_date=end_date)
 
-	# see if query results should be aggregated
 	if (aggregate):
 		response = aggregate_problems(start_date, end_date, response)
+
+	response['problems'] = 'Superutilization'
 
 	quick = request.args.get("quick")
 	if (quick != None):

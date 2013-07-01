@@ -2,6 +2,7 @@
 var selectedBubble = null;
 var metric_list = null;
 var table_list = null;
+var ts_jquery = null;
 
 function updateTimeSeries(){
 	if (selectedBubble != null){
@@ -19,15 +20,24 @@ function updateTimeSeries(){
 	        	removeTimeSeries();
 			
 			$("#metric_time_series").html("Loading...");
-			$.get(query, function(data){
+			ts_jquery = $.get(query, function(data){
         	              	data = JSON.parse(data);
 				$("#metric_time_series").html("");
 				showTimeSeries(data);
         	      	});
         	}else{
+			if (ts_jquery != null){
+				ts_jquery.abort();
+				ts_jquery = null;
+			}
 			removeTimeSeries();
 		}
 	}else{
+		if (ts_jquery != null){
+                	ts_jquery.abort();
+                        ts_jquery = null;
+                }
+
 		removeTimeSeries();
 	}
 }
@@ -76,6 +86,7 @@ function showTimeSeriesChart(bubble){
 function showQueryResultParallelCoord(bubble){
        var summary = "<h4>Queries Result Summary</h4>";
         if ( bubble != null ){
+		$("#query_result_chart").html(summary);
                 var data = [];
                 if (bubble.type == "vm_set"){
 			removeParallelCoord();
@@ -123,12 +134,12 @@ function showQueryResultParallelCoord(bubble){
 
 			showParallelCoord(data);
                 }
-        //        $("#query_result_chart").html(summary);
+            //    $("#query_result_chart").html(summary);
         }
         else{
 		removeParallelCoord();
                 summary += "Please, select a set of VMs or a VM.";
-        //        $("#query_result_chart").html(summary);
+                $("#query_result_chart").html(summary);
         }
 }
 
@@ -246,6 +257,29 @@ function showQueryResultChart(bubble){
 	}
 }
 
+function updateBubbleChartLegend(data){
+
+	var root = data;
+	while ( root.parent != undefined ){
+		root = root.parent;
+	}
+
+	$("#bubble_chart_legend").show();
+
+	$("#bubble_chart_legend #legend_problem").text(root.problems);
+	$("#bubble_chart_legend #legend_range").text(root.start_date+" to "+root.end_date);
+	
+	$("#bubble_chart_legend ul").empty();
+	for (var i=0; i<root.children.length; i++){
+		$("#bubble_chart_legend ul").append("<li><svg width='10' height='10' style='float:left; margin-top:5px; margin-right:5px;'><rect width='10' height='10' style='fill:"+root.children[i].color+"; stroke-width:2; stroke:rgb(0,0,0);'></rect></svg><span style='float:left;'>"+root.children[i].name+"</span></li>");
+	}
+
+}
+
+function getRandomInt (min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 function showBubbleChart(data){
 	var w = $("#bubble_chart_carousel").width(),
 	    h = $("#bubble_chart_carousel").height(),
@@ -278,22 +312,25 @@ function showBubbleChart(data){
 	    .attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")")
 	    .style("cursor", "pointer");
 
-	$("svg").append("<g class='legend'></g>");
-
-	var legend = $("svg .legend");
-
-//	legend.style("cursor", "pointer ")
-//	  .append("<rect x='0' y='0' width='100' height='100' style='fill:blue;'></rect>");
-
 	var nodes = pack.nodes(root);
+
+	for (var i=0; i<root.children.length; i++){
+		var color = "rgb(" + getRandomInt(0, 256);
+		for (var j=0; j<2; j++){
+			color += "," + getRandomInt(0, 256);
+		}
+		color += ")";
+		root.children[i].color = color;
+	}
 
 	bubble_chart.selectAll("circle")
 	    .data(nodes)
 	  .enter().append("svg:circle")
-   	 .attr("class", function(d) { return d.children ? "node " + ( d.class ? d.class : "" ) : "leaf node " + ( d.class ? d.class : "" ); })
+   	 .attr("class", function(d) { return d.children ? ( d.parent == undefined ? "root node" : "node " + ( d.class ? d.class : "" )) : "leaf node " + ( d.class ? d.class : "" ); })
  	   .attr("cx", function(d) { return d.x; })
  	   .attr("cy", function(d) { return d.y; })
  	   .attr("r", function(d) { return d.r; })
+	   .style("fill", function(d) { return d.color ? d.color : "rgb(31, 119, 180)"; })
  	   .on("click", function(d) { return zoom(node == d ? root : d); });
 
 	bubble_chart.selectAll("text")
@@ -313,6 +350,8 @@ function showBubbleChart(data){
 	d3.select("#bubble_chart_carousel_items .active").on("click", function() { zoom(root); });
 
 	function zoom(d, i) {
+
+	  updateBubbleChartLegend(d);
 
 	  if ( d == root ){
 	     selectedBubble = (root.children.length == 1)? root.children[0] : null;

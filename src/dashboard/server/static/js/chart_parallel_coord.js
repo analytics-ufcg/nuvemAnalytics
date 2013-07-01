@@ -9,9 +9,9 @@ var x_pc = d3.scale.ordinal(),
 function showParallelCoord(data) {
 
 	var div_width = $("#query_result_chart").width(),
-		div_height = $("#query_result_chart").height();
+		div_height = $("#query_result_chart").height() - 30;
 	
-	var m = {left:40, right:40, top:20, bottom:20},
+	var m = {left:70, right:70, top:20, bottom:20},
 		w = div_width - m.left - m.right,
 		h = div_height - m.top - m.bottom;
 
@@ -23,9 +23,26 @@ function showParallelCoord(data) {
 
   // Extract the list of dimensions and create a scale for each.
   x_pc.domain(dimensions = d3.keys(data[0]).filter(function(d) {
-    return d != "name" && (y_pc[d] = d3.scale.linear()
-        .domain(d3.extent(data, function(p) { return +p[d]; }))
-        .range([h, 0]));
+	  if (d != "name"){
+		  y_extent = d3.extent(data, function(p) { return +p[d]; });
+
+		  if (y_extent[0] == y_extent[1]){
+			  eq_value = y_extent[0];
+			if (eq_value == 0){
+				y_extent = [eq_value - 1, eq_value + 1];
+			}else{
+				y_extent = [eq_value - eq_value/2, eq_value + eq_value/2]; 
+			}
+		  }
+
+		  y_pc[d] = d3.scale.linear()
+				.domain(y_extent)
+				.range([h, 0]);
+			
+			return true;
+	  }else{
+			return false;
+	  }
   })).rangePoints([0, w]);
 
   // Add grey background lines for context.
@@ -56,7 +73,7 @@ function showParallelCoord(data) {
           background_pc.attr("visibility", "hidden");
         })
         .on("drag", function(d) {
-          dragging_pc[d] = Math.min(w, Math.max(0, this.__origin__ += d3.event.dx));
+          dragging_pc[d] = Math.min(w + 20, Math.max(-20, this.__origin__ += d3.event.dx));
           foreground_pc.attr("d", path);
           dimensions.sort(function(a, b) { return position(a) - position(b); });
           x_pc.domain(dimensions);

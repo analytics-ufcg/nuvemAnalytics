@@ -11,13 +11,17 @@ text {
 }
 
 circle.node{
-	fill-opacity: 0.2;
+	fill-opacity: 1;
 	stroke-opacity: 0;
-	fill: rgb(31, 119, 180);
 }
 
 circle.node.leaf{
-	fill-opacity: 1;
+	fill-opacity: 0.4;
+	fill: rgb(255, 255, 255);
+}
+
+circle.node.root{
+	fill-opacity: 0;
 }
 
 circle.no_problem{

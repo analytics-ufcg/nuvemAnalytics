@@ -1,6 +1,6 @@
 function showTimeSeries(data){
         var w = $("#metric_time_series").width(),
-            h = $("#metric_time_series").height();
+            h = $("#metric_time_series").height() - 30;
 	var margin = {top: 20, right: 80, bottom: 30, left: 50};
 	var width_axis = w - margin.left - margin.right,
 	    height_axis = h - margin.top - margin.bottom;

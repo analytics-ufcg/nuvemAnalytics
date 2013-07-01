@@ -61,6 +61,11 @@
 				</div>
 			</div>
 			<div style="width:40%; height:100%; padding:0px; float:left;" id='bubble_chart_carousel' class='carousel slide'>
+				<div id='bubble_chart_legend' style='position:fixed; top:80%; left:12%; z-index:10;'>
+					<span id='legend_problem'></span> | <span id='legend_range'></span>
+					<ul class='inline'>
+					</ul>
+				</div>
 				<div class='carousel-inner' id='bubble_chart_carousel_items'>
 				</div>
 				<a class='carousel-control left' href='#bubble_chart_carousel' data-slide='prev'>&lsaquo;</a>
@@ -134,6 +139,7 @@
 
 	{% endif %}
 
+	$("#bubble_chart_legend").hide();
 	$(".carousel-control").hide();
 	$("#bubble_chart_carousel").carousel('pause');
 
