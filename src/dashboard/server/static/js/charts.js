@@ -28,6 +28,8 @@ function updateTimeSeries(){
         	}else{
 			if (ts_jquery != null){
 				ts_jquery.abort();
+				console.log("aborted ");
+				console.log(ts_jquery);
 				ts_jquery = null;
 			}
 			removeTimeSeries();
@@ -35,6 +37,8 @@ function updateTimeSeries(){
 	}else{
 		if (ts_jquery != null){
                 	ts_jquery.abort();
+			console.log("aborted ");
+			console.log(ts_jquery);
                         ts_jquery = null;
                 }
 

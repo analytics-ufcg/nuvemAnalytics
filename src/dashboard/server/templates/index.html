@@ -66,7 +66,7 @@
 				<br>
 				<br>
 				<div id='submit_button'>
-					<button class="btn btn-large btn-info btn-block" type="button" id="go"> 
+					<button class="btn btn-large btn-info btn-block disabled" type="button" id="go"> 
 						Submit!
 					</button>
 				</div>
@@ -126,8 +126,11 @@
 		var bubble_chart_data;
 
 		$(document).ready(function(){
+			$("#submit_button button").text("Loading...");
 			bubble_chart_data = JSON.parse({{ response|tojson|safe }})
 			showBubbleChart(bubble_chart_data);
+			$("#submit_button button").removeClass("disabled").text("Submit!");
+			loading = false;
 		});
 
 		{% if start_date %}
@@ -157,7 +160,12 @@
 	{% else %}
 
 		$("#query_result_chart").hide();
-		$("#metric_time_series_chart").hide();	
+		$("#metric_time_series_chart").hide();
+
+		$(document).ready(function(){
+			$("#submit_button button").removeClass("disabled");
+			loading = false;
+		});
 
 	{% endif %}
 
@@ -165,7 +173,7 @@
 	$(".carousel-control").hide();
 	$("#bubble_chart_carousel").carousel('pause');
 
-	var loading = false;
+	var loading = true;
 
 	$("#go").click(function(){
 

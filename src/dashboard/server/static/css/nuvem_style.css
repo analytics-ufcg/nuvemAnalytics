@@ -1,12 +1,10 @@
 /*PAGE*/
 html {
-	height: 100%;
 	background-color: #F2E9CE;
 	cursor:default;
 }
 
 body #paint{
-	height: 100%;
 	background-color: #F0EDCD;
 }
 
