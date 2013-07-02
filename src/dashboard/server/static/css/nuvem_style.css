@@ -66,6 +66,15 @@ html {
 	padding: 20px;
 }
 
+#start_date, #start_time, #end_date, #end_time {
+	text-align: center;
+}
+
+#start_time, #end_time{
+	font-weight: bold;
+	font-size: 15pt;
+}
+
 /*CHARTS*/
 
 circle {
