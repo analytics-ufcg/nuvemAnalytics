@@ -3,28 +3,15 @@ html {
 	height: 100%;
 }
 
-body {
-	display: -webkit-flex;
-	display: flex;
-
-	-webkit-align-items: center;
-	align-items: center;
-
-	-webkit-justify-content: center;
-	justify-content: center;
-
-	margin: 0;
-	height: 100%;
-	width: 100%;
-}
-
-#top_bar, #bottom_bar {
-	text-align: center;
+#top_bar {
 	margin: 30px;	
 }
 
 #bottom_bar {
-	margin-bottom: 0;
+	margin: 0;
+	text-align: center;
+	padding: 5px;
+	font-size:8pt;
 }
 
 #middle_area {
@@ -39,11 +26,14 @@ body {
 	-webkit-wrap: wrap;
 	flex-wrap: wrap;
 
-	-webkit-justify-content: space-between;
-	justify-content: space-between;
+	-webkit-justify-content: space-around;
+	justify-content: space-around;
 
 	-webkit-align-items: center;
 	align-items: center;
+
+	-webkit-align-content: space-around;
+	align-content: space-around;
 }
 
 #sidebar {
@@ -62,6 +52,18 @@ body {
 #other_charts {
 	width: 45%;
 	margin: 0;
+	-webkit-align-self: flex-start;
+	align-self: flex-start;
+}
+
+#query_result_chart {
+	height: 30%;
+	padding: 20px;
+}
+
+#metric_time_series_chart {
+	height: 30%;
+	padding: 20px;
 }
 
 /*CHARTS*/

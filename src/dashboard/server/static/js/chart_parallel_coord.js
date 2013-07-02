@@ -9,7 +9,7 @@ var x_pc = d3.scale.ordinal(),
 function showParallelCoord(data) {
 
 	var div_width = $("#query_result_chart").width(),
-		div_height = $("#query_result_chart").height() - 30;
+		div_height = $("#query_result_chart").height() * 0.8;
 	
 	var m = {left:70, right:70, top:20, bottom:20},
 		w = div_width - m.left - m.right,
