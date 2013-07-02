@@ -18,41 +18,48 @@
 		<div id='middle_area'>
 			<div id='sidebar' class='well'> 
 				<div id='menu_bar'> 
-					<h4>Time interval</h4>
-                                        <em><strong>start</strong> date and time:</em>
-					<div id="start_date_time">
-						<div class="input-append date" id="start_date_wrapper" data-date data-date-format="dd/mm/yyyy">
-							<input id="start_date" class='input-block-level' type="text">
-							<span class="add-on"><i class="icon-calendar"></i></span>
-						</div>
-						<div class="bootstrap-timepicker" id="start_time_wrapper">
-							<input id="start_time" class='input-block-level' type="text">
+					<div class='menu_item'>
+						<h4>Time interval</h4>
+        	                                <em><strong>start</strong> date and time:</em>
+						<div id="start_date_time">
+							<div class="input-append date" id="start_date_wrapper" data-date data-date-format="dd/mm/yyyy">
+								<input id="start_date" type="text">
+								<span class="add-on"><i class="icon-calendar"></i></span>
+							</div>
+							<div class="bootstrap-timepicker" id="start_time_wrapper">
+								<input id="start_time" type="text">
+							</div>
 						</div>
 					</div>
-					<em><strong>end</strong> date and time:</em>
-					<div id="end_date_time">
-						<div class="input-append date date_div" id="end_date_wrapper" data-date data-date-format="dd/mm/yyyy"> 
-							<input id="end_date" class='input-block-level' type="text">
-							<span class="add-on"><i class="icon-calendar"></i></span>
-						</div>
-						<div class="bootstrap-timepicker time_div" id="end_time_wrapper">
-							<input id="end_time" class='input-block-level' type="text">
+					<div class='menu_item'>
+						<em><strong>end</strong> date and time:</em>
+						<div id="end_date_time">
+							<div class="input-append date date_div" id="end_date_wrapper" data-date data-date-format="dd/mm/yyyy"> 
+								<input id="end_date" type="text">
+								<span class="add-on"><i class="icon-calendar"></i></span>
+							</div>
+							<div class="bootstrap-timepicker time_div" id="end_time_wrapper">
+								<input id="end_time" type="text">
+							</div>
 						</div>
 					</div>
 					<br>
 					<br>
-					<h4>Query Type</h4>
-						<div class="dropdown" id="Query-Type-div">
-							<select class="combobox" id="query-type" > 
-								<option value="Sub">Subutilization</option>
-  								<option value="Sup">Superutilization</option>
-							 </select>
-						</div>
-					
-					<h4>Query View Type</h4>
-						<div class="chekbox" id="Check-Queries">
-                                                	<input type="checkbox" id="queries-agg"> Agreggated Queries
-                                             	</div>
+					<div class='menu_item'>
+						<h4>Query Type</h4>
+							<div class='dropdown' id="Query-Type-div">
+								<select id="query-type" style='width:auto;'> 
+									<option value="Sub">Subutilization</option>
+  									<option value="Sup">Superutilization</option>
+								 </select>
+							</div>
+					</div>
+					<div class='menu_item'>
+						<h4>Query View Type</h4>
+							<div class="chekbox" id="Check-Queries">
+                                	                	<input type="checkbox" id="queries-agg"> Agreggated Queries
+                                	             	</div>
+					</div>
 				</div>
 				</br>
 				<div id='submit_button'>
@@ -62,7 +69,7 @@
 				</div>
 			</div>
 			<div  id='bubble_chart_carousel' class='carousel slide'>
-				<div id='bubble_chart_legend'>
+				<div id='bubble_chart_legend' style='display:none;'>
 					<span id='legend_problem'></span> | <span id='legend_range'></span>
 					<ul class='inline'>
 					</ul>
