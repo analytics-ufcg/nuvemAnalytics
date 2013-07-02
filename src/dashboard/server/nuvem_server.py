@@ -25,7 +25,8 @@ def execute_query(query_identifier, start_date, end_date, response):
 	# Add the children conditionally just if there is any answer 
 	if len(output.rows) > 0:
 		query_results = {
-			'name' : query_identifier,
+			'id' : query_identifier,
+			'name' : '',
 			'children' : [],
 			'type' : 'vm_set',
 			'query_columns' : {},
@@ -65,16 +66,16 @@ def aggregate_problems(start_date, end_date, response):
 	query_col_map = {}
 	query_vms_info_map = {}
 	for child_query in response['children']:
-		query_names.append(child_query['name'])
+		query_names.append(child_query['id'])
 		
 		query_vms = []
 		for vm_info in child_query['children']:
 			query_vms.append(vm_info['name'])
-		query_vms_map[child_query['name']] = query_vms
+		query_vms_map[child_query['id']] = query_vms
 		
-		query_col_map[child_query['name']] = child_query['query_columns'][child_query['name']]
+		query_col_map[child_query['id']] = child_query['query_columns'][child_query['id']]
 		
-		query_vms_info_map[child_query['name']] = child_query['children']
+		query_vms_info_map[child_query['id']] = child_query['children']
 
 	response_json = { 
 		'name' : response['name'],
@@ -109,7 +110,8 @@ def aggregate_problems(start_date, end_date, response):
 		# Create the new response
 		if len(vm_comb) > 0:
 			query_results = {
-				'name' : ' - '.join(comb),
+				'id' : ' - '.join(comb),
+				'name' : '',
 				'children' : [],
 				'type' : 'vm_set',
 				'query_names' : comb,

@@ -54,7 +54,7 @@ function showTimeSeriesChart(bubble){
 	if(bubble != null){	
 		if(bubble.type == "vm"){
 			// Call the server to get the metrics and tables
-			$.get("query_metrics?query_list=" + bubble.parent.name, function (data){
+			$.get("query_metrics?query_list=" + bubble.parent.id, function (data){
 							
 				data = JSON.parse(data);
 				metric_list = data.metrics;
@@ -271,7 +271,7 @@ function updateBubbleChartLegend(data){
 	
 	$("#bubble_chart_legend ul").empty();
 	for (var i=0; i<root.children.length; i++){
-		$("#bubble_chart_legend ul").append("<li><svg width='10' height='10' style='float:left; margin-top:5px; margin-right:5px;'><rect width='10' height='10' style='fill:"+root.children[i].color+"; stroke-width:2; stroke:rgb(0,0,0);'></rect></svg><span style='float:left;'>"+root.children[i].name+"</span></li>");
+		$("#bubble_chart_legend ul").append("<li><svg width='10' height='10' style='float:left; margin-top:5px; margin-right:5px;'><rect width='10' height='10' style='fill:"+root.children[i].color+"; stroke-width:2; stroke:rgb(0,0,0);'></rect></svg><span style='float:left;'>"+root.children[i].id+"</span></li>");
 	}
 
 }
