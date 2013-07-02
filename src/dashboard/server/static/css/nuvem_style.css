@@ -1,10 +1,25 @@
 /*PAGE*/
 html {
 	height: 100%;
+	background-color: #F2E9CE;
+	cursor:default;
+}
+
+body #paint{
+	height: 100%;
+	background-color: #F0EDCD;
 }
 
 #top_bar {
 	margin: 30px;	
+	min-width: 532px;
+	text-align: center;
+	transition: color 2s;
+	-webkit-transition: color 2s;
+}
+
+#top_bar:hover {
+	color: #3a87ad;
 }
 
 #bottom_bar {
@@ -12,24 +27,31 @@ html {
 	text-align: center;
 	padding: 5px;
 	font-size:8pt;
+	min-width: 909px;
 }
 
 #middle_area {
+	display: -moz-flex;
 	display: -webkit-flex;
 	display: flex;
 
+	-moz-flex-direction: row;
 	-webkit-flex-direction: row;
 	flex-direction: row;
 
+	-moz-wrap: wrap;
 	-webkit-wrap: wrap;
 	flex-wrap: wrap;
 
+	-moz-justify-content: space-around;
 	-webkit-justify-content: space-around;
 	justify-content: space-around;
 
+	-moz-align-items: center;
 	-webkit-align-items: center;
 	align-items: center;
 
+	-moz-align-content: space-around;
 	-webkit-align-content: space-around;
 	align-content: space-around;
 }
@@ -39,7 +61,8 @@ html {
 	margin: 0;
 	margin-left: 30px;
 	padding: 0;
-	height: 75%;
+	background-color: #F2E9CE;
+	border-radius: 10px;
 }
 
 #bubble_chart_carousel {
@@ -52,6 +75,7 @@ html {
 #other_charts {
 	width: 45%;
 	margin: 0;
+	-moz-align-self: flex-start;
 	-webkit-align-self: flex-start;
 	align-self: flex-start;
 }
@@ -67,21 +91,27 @@ html {
 }
 
 #start_date_time, #end_date_time {
+	display: -moz-flex;
 	display: -webkit-flex;
 	display: flex;
 
+	-moz-flex-direction: row;
 	-webkit-flex-direction: row;
 	flex-direction: row;
 
+	-moz-wrap: nowrap;
 	-webkit-wrap: nowrap;
 	flex-wrap: nowrap;
 
+	-moz-justify-content: center;
 	-webkit-justify-content: center;
 	justify-content: center;
 
+	-moz-align-items: flex-start;
 	-webkit-align-items: flex-start;
 	align-items: flex-start;
 
+	-moz-align-content: space-around;
 	-webkit-align-content: space-around;
 	align-content: space-around;
 
@@ -98,21 +128,27 @@ html {
 }
 
 #menu_bar{
+	display: -moz-flex;
 	display: -webkit-flex;
 	display: flex;
 
+	-moz-flex-direction: column;
 	-webkit-flex-direction: column;
 	flex-direction: column;
 
+	-moz-wrap: nowrap;
 	-webkit-wrap: nowrap;
 	flex-wrap: nowrap;
 
+	-moz-justify-content: flex-start;
 	-webkit-justify-content: flex-start;
 	justify-content: flex-start;
 
+	-moz-align-items: center;
 	-webkit-align-items: center;
 	align-items: center;
 
+	-moz-align-content: space-around;
 	-webkit-align-content: space-around;
 	align-content: space-around;
 
