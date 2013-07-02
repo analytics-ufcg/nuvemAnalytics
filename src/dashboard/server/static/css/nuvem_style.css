@@ -1,3 +1,73 @@
+/*PAGE*/
+html {
+	height: 100%;
+}
+
+body {
+	display: -webkit-flex;
+	display: flex;
+
+	-webkit-align-items: center;
+	align-items: center;
+
+	-webkit-justify-content: center;
+	justify-content: center;
+
+	margin: 0;
+	height: 100%;
+	width: 100%;
+}
+
+#top_bar, #bottom_bar {
+	text-align: center;
+	margin: 30px;	
+}
+
+#bottom_bar {
+	margin-bottom: 0;
+}
+
+#middle_area {
+
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+
+	-webkit-direction: row;
+	flex-direction: row;
+
+	-webkit-wrap: wrap;
+	flex-wrap: wrap;
+
+	-webkit-justify-content: space-between;
+	justify-content: space-between;
+
+	-webkit-align-items: center;
+	align-items: center;
+}
+
+#sidebar {
+	width: 15%;
+	margin: 0;
+	padding: 0;
+}
+
+#bubble_chart_carousel {
+	width: 35%;
+	margin: 0;
+	text-align: center;
+	font-size: 10pt;
+}
+
+#other_charts {
+	width: 45%;
+	margin: 0;
+}
+
+
+
+/*CHARTS*/
+
 circle {
   fill: rgb(31, 119, 180);
   fill-opacity: .25;
@@ -44,7 +114,6 @@ circle.bad_problem_3{
   fill-opacity: 1;
 }
 
-// TIME SERIES style
 #time_series_chart {
   font: 10px sans-serif;
 }

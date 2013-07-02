@@ -307,9 +307,9 @@ function showBubbleChart(data){
 	var bubble_chart = d3.select("#bubble_chart_carousel_items .active")
 	  .insert("svg:svg", "h2")
 	    .attr("width", "100%")
-	    .attr("height", "100%")
+	    .attr("height", "60%")
 	  .append("svg:g")
-	    .attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")")
+	 //   .attr("transform", "translate(0, -" + (h - r) /2 + ")")   + (w - r) / 2 + "," + (h - r) / 2 + ")")
 	    .style("cursor", "pointer");
 
 	var nodes = pack.nodes(root);
