@@ -78,6 +78,10 @@ html {
 	height:70px;
 }
 
+#bubble_chart_legend p{
+	color: #999;
+}
+
 #sidebar {
 	width: 15%;
 /*	height: 72%;*/
