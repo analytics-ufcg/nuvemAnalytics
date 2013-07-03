@@ -3,7 +3,7 @@ html {
 	cursor:default;
 }
 
-body #main_flex{
+#main_flex{
 	display: -moz-flex;
 	display: -webkit-flex;
 	display: flex;
@@ -40,7 +40,6 @@ body #main_flex{
 
 #bottom_bar {
 	margin: 0;
-	margin-top: 20px;
 	text-align: center;
 	padding: 5px;
 	padding-bottom: 0px;
@@ -77,6 +76,7 @@ body #main_flex{
 
 #sidebar {
 	width: 15%;
+/*	height: 72%;*/
 	margin: 0;
 	margin-left: 30px;
 	padding: 0;
@@ -181,13 +181,6 @@ body #main_flex{
 
 /*CHARTS*/
 
-circle {
-  fill: rgb(31, 119, 180);
-  fill-opacity: .25;
-  stroke: rgb(31, 119, 180);
-  stroke-width: 8px;
-}
-
 text {
   font: 10px tahoma;
   font-weight: bold;
@@ -199,33 +192,13 @@ circle.node{
 }
 
 circle.node.leaf{
-	fill-opacity: 0.4;
+	fill-opacity: 0.6;
 	fill: rgb(255, 255, 255);
 }
 
 circle.node.root{
 	fill-opacity: 0;
-}
-
-circle.no_problem{
-  fill: #FFB401;
-  fill-opacity: 1;
-}
-
-circle.bad_problem_1{
-  fill: #FF7F0E;
-  fill-opacity: 1;
-}
-
-circle.bad_problem_2{
-  fill: #E84C01;
-  fill-opacity: 1;
-}
-
-circle.bad_problem_3{
-  fill: #FF2E01;
-  fill-opacity: 1;
-}
+}*/
 
 #time_series_chart {
   font: 10px sans-serif;

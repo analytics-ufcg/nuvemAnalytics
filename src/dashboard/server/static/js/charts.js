@@ -286,6 +286,34 @@ function switchBubbleChart(){
 
 }
 
+var id_to_color = {
+'lowUsageVMs' : 'rgb(141,211,199)',
+'vmsOverMemAlloc' : 'rgb(255, 255, 179)',
+'vmsOverCPU' : 'rgb(190, 186, 218)',
+'lowUsageVMs - vmsOverMemAlloc' : 'rgb(251, 128, 114)',
+'lowUsageVMs - vmsOverCPU' : 'rgb(128, 177, 211)',
+'lowUsageVMs - vmsOverCPU - vmsOverMemAlloc' : 'rgb(253, 180, 98)',
+'vmsNetConstrained' : 'rgb(179, 222, 105)',
+'highCPUQueueing' : 'rgb(252, 205, 229)',
+'vmsWithHighPagingRate' : 'rgb(217, 217, 217)',
+'highCPUQueueing - vmsNetConstrained' : 'rgb(188, 128, 189)',
+'vmsNetConstrained - vmsWithHighPagingRate' : 'rgb(204, 235, 197)',
+'highCPUQueueing - vmsNetConstrained - vmsWithHighPagingRate' : 'rgb(255, 237, 11)'
+}
+
+function getProperColor(node){
+
+	console.log('getting color of '+node.id);
+
+	var ids = node.id.split(" - ");
+	ids = ids.sort();
+	var parsed = ids.join(" - ");
+
+	var color = id_to_color[parsed];
+	console.log('parsed is: '+parsed+' which maps to '+color);
+	return color;
+}
+
 function getRandomInt (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -329,11 +357,12 @@ function showBubbleChart(data){
 	var nodes = pack.nodes(root);
 
 	for (var i=0; i<root.children.length; i++){
-		var color = "rgb(" + getRandomInt(0, 256);
+/*		var color = "rgb(" + getRandomInt(0, 256);
 		for (var j=0; j<2; j++){
 			color += "," + getRandomInt(0, 256);
 		}
-		color += ")";
+		color += ")";*/
+		var color = getProperColor(root.children[i]);
 		root.children[i].color = color;
 	}
 
@@ -344,7 +373,7 @@ function showBubbleChart(data){
  	   .attr("cx", function(d) { return d.x; })
  	   .attr("cy", function(d) { return d.y; })
  	   .attr("r", function(d) { return d.r; })
-	   .style("fill", function(d) { return d.color ? d.color : "rgb(31, 119, 180)"; })
+	   .style("fill", function(d) { return d.color ? d.color : ""; })
  	   .on("click", function(d) { return zoom(node == d ? root : d); });
 
 	bubble_chart.selectAll("text")
