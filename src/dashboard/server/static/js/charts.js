@@ -4,22 +4,27 @@ var table_list = null;
 var ts_jquery = null;
 var zoomToBubble = null;
 
+function pad(number){
+	return (number<10) ? ("0" + number) : number;
+}
+
 function updateTimeSeries(){
 	if (selectedBubble != null){
 		if(selectedBubble.type == "vm"){
         		// Prepare the query 
         	        var query = "metric_time_series?vm_name=" + selectedBubble.name;
                 	var selected_index = document.getElementById("metric_type_vm").selectedIndex;
-			query += "&metric=" + metric_list[selected_index]
-			query += "&table=" + table_list[selected_index]
-			//var initial_date = new Date(selectedBubble.parent.parent.end_date);
-			//initial_date.setMonth(initial_date.getMonth() - 3);
-			// TODO: Create the date in the BD format
-			query += "&start_date=" + selectedBubble.parent.parent.start_date;
+			query += "&metric=" + metric_list[selected_index];
+			query += "&table=" + table_list[selected_index];
+
+			var start_date = new Date(Date.parse(selectedBubble.parent.parent.end_date) - 7776000000); //3 months in millisseconds
+			start_date = start_date.getFullYear()+"-"+pad(start_date.getMonth()+1)+"-"+pad(start_date.getDay())+" "+pad(start_date.getHours())+":"+pad(start_date.getMinutes())+":"+pad(start_date.getSeconds());
+			console.log("start_date is "+start_date);
+			query += "&start_date=" + start_date;
 			query += "&end_date=" + selectedBubble.parent.parent.end_date;
 	        	removeTimeSeries();
 			
-			$("#metric_time_series").html("Loading...");
+			$("#metric_time_series").html("<img src='static/img/ajax-loader.gif'></img>");
 			ts_jquery = $.get(query, function(data){
         	              	data = JSON.parse(data);
 				$("#metric_time_series").html("");
