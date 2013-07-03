@@ -276,19 +276,10 @@ function updateBubbleChartLegend(data){
 
 }
 
-function simulateClick(elementToClick){
-	
-	var evt = document.createEvent("MouseEvents");
-	evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-	var canceled = !elementToClick.dispatchEvent(evt);
-	return canceled; //Indicate if `preventDefault` was called during handling
-}
-
 function switchBubbleChart(){
 
 	var d = JSON.parse($("#bubble_chart_carousel_items .active").attr('query_data'));
 	updateBubbleChartLegend(d);
-	//simulateClick($("#bubble_chart_carousel_items .active svg"));
 	$("#bubble_chart_carousel_items .active").trigger('click');
 }
 
@@ -322,6 +313,29 @@ function getRandomInt (min, max) {
 }
 
 function showBubbleChart(data){
+
+	if ( $("#bubble_chart_carousel_items .item").size() == 0 ){
+		$(".carousel-inner").empty();
+		$("#bubble_chart_carousel_items").prepend("<div class='item active'></div>");
+		doShowBubbleChart(data);
+	}
+	else{
+		$("#bubble_chart_carousel_items").prepend("<div class='item'></div>");
+		$("#bubble_chart_carousel").carousel(0);
+		doShowBubbleChart(data);
+	}	
+
+	if ( $("#bubble_chart_carousel_items .item").size() >= 2 ){
+		$(".carousel-control").show();
+	}
+	else{
+		$(".carousel-control").hide();
+	}
+
+}
+
+function doShowBubbleChart(data){
+
 	var w = $("#bubble_chart_carousel").width(),
 	    h = $("#bubble_chart_carousel").height(),
 	    r = $("#bubble_chart_carousel").width(),
@@ -335,21 +349,7 @@ function showBubbleChart(data){
 	    .size([r, r])
 	    .value(function(d) { return d.size; });
 
-	if ( $("#bubble_chart_carousel_items .item").size() == 0 ){
-		$(".carousel-inner").empty();
-	}
-	
-	$("#bubble_chart_carousel_items .item").removeClass("active");
-	$("#bubble_chart_carousel_items").prepend("<div class='active item'></div>");
-
-	if ( $("#bubble_chart_carousel_items .item").size() >= 2 ){
-		$(".carousel-control").show();
-	}
-	else{
-		$(".carousel-control").hide();
-	}
-
-	var bubble_chart = d3.select("#bubble_chart_carousel_items .active")
+	var bubble_chart = d3.select("#bubble_chart_carousel_items .item")
 	  .insert("svg:svg", "h2")
 	    .attr("width", "100%")
 	    .attr("height", "60%")
@@ -441,10 +441,10 @@ function showBubbleChart(data){
 	    .style("cursor", "pointer")
 	    .text(function(d) { return d.name.substring(0, d.r / 3); })
 
-	d3.select("#bubble_chart_carousel_items .active").on("click", function() { zoomToBubble(root); });
+	d3.select("#bubble_chart_carousel_items .item").on("click", function() { zoomToBubble(root); });
 	zoomToBubble(root);
 
-	$("#bubble_chart_carousel_items .active").attr("query_data", JSON.stringify(root, function(key, value){
+	$("#bubble_chart_carousel_items .item").attr("query_data", JSON.stringify(root, function(key, value){
 		if ( key == 'parent' ){
 			return '';
 		}

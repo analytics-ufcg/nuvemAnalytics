@@ -101,20 +101,22 @@ html {
 
 #other_charts {
 	width: 45%;
-	margin: 0;
-	-moz-align-self: flex-start;
+	margin: 0px;
+	padding: 20px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+/*	-moz-align-self: flex-start;
 	-webkit-align-self: flex-start;
-	align-self: flex-start;
+	align-self: flex-start;*/
+
 }
 
 #query_result_chart {
-	height: 30%;
-	padding: 20px;
+	height: 35%;
 }
 
 #metric_time_series_chart {
 	height: 30%;
-	padding: 20px;
 }
 
 #start_date_time, #end_date_time {

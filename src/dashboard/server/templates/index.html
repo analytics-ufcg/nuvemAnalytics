@@ -193,7 +193,7 @@
 
 	$("#bubble_chart_legend").hide();
 	$(".carousel-control").hide();
-	$("#bubble_chart_carousel").carousel('pause')
+	$("#bubble_chart_carousel").carousel({interval : false})
 	.on('slid', function(){
 		switchBubbleChart();
 	});
