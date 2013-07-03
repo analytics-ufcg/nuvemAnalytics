@@ -280,6 +280,12 @@ function updateBubbleChartLegend(data){
 
 }
 
+function switchBubbleChart(){
+
+	
+
+}
+
 function getRandomInt (min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -297,6 +303,10 @@ function showBubbleChart(data){
 	var pack = d3.layout.pack()
 	    .size([r, r])
 	    .value(function(d) { return d.size; });
+
+	if ( $("#bubble_chart_carousel_items .item").size() == 0 ){
+		$(".carousel-inner").empty();
+	}
 	
 	$("#bubble_chart_carousel_items .item").removeClass("active");
 	$("#bubble_chart_carousel_items").prepend("<div class='active item'></div>");

@@ -11,7 +11,7 @@
 </meta>
 </head>
 <body>
-	<div id='paint'>
+	<div id='main_flex'>
 		<div id='top_bar' class='muted'>
 			<br><span style="font-family: 'Arial'; font-size: 30pt; font-weight:bold;">Nuvem Analytics Dashboard</span>
 		</div>
@@ -72,7 +72,12 @@
 				</div>
 			</div>
 			<div  id='bubble_chart_carousel' class='carousel slide'>
-				<div class='carousel-inner' id='bubble_chart_carousel_items'></div>
+				<div class='carousel-inner' id='bubble_chart_carousel_items'>
+					<div class='hero-unit well-small'>
+						<h1>Welcome!</h1>
+						<p>Please submit a query.</p>
+					</div>
+				</div>
 				<br>
 				<br>
 				<div id='bubble_chart_legend' style='display:none;'>
@@ -80,8 +85,8 @@
 					<ul class='inline'>
 					</ul>
 				</div>
-				<a class='carousel-control left' href='#bubble_chart_carousel' data-slide='prev' style='display:none;'>&lsaquo;</a>
-				<a class='carousel-control right' href='#bubble_chart_carousel' data-slide='next' style='display:none;'>&rsaquo;</a>
+				<a class='carousel-control left' href='#bubble_chart_carousel' data-slide='prev' style='display:none;' onclick='switchBubbleChart();'>&lsaquo;</a>
+				<a class='carousel-control right' href='#bubble_chart_carousel' data-slide='next' style='display:none;' onclick='switchBubbleChart();'>&rsaquo;</a>
 			</div>
 			<div id='other_charts'>
 				<div id='query_result_chart' style='display:none;' >

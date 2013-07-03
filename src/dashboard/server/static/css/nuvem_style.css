@@ -1,11 +1,28 @@
 /*PAGE*/
 html {
-/*	background-color: #F2E9CE;*/
 	cursor:default;
 }
 
-body #paint{
-/*	background-color: #F0EDCD;*/
+body #main_flex{
+	display: -moz-flex;
+	display: -webkit-flex;
+	display: flex;
+
+	-moz-flex-direction: column;
+	-webkit-flex-direction: column;
+	flex-direction: column;
+
+	-moz-wrap: nowrap;
+	-webkit-wrap: nowrap;
+	flex-wrap: nowrap;
+
+	-moz-justify-content: space-around;
+	-webkit-justify-content: space-around;
+	justify-content: space-around;
+
+	-moz-align-items: stretch;
+	-webkit-align-items: stretch;
+	align-items: stretch;
 }
 
 #top_bar {
@@ -14,6 +31,7 @@ body #paint{
 	text-align: center;
 	transition: color 2s;
 	-webkit-transition: color 2s;
+	height: 8%;
 }
 
 #top_bar:hover {
@@ -22,10 +40,13 @@ body #paint{
 
 #bottom_bar {
 	margin: 0;
+	margin-top: 20px;
 	text-align: center;
 	padding: 5px;
+	padding-bottom: 0px;
 	font-size:8pt;
 	min-width: 909px;
+	height: 5%;
 }
 
 #middle_area {
@@ -59,7 +80,6 @@ body #paint{
 	margin: 0;
 	margin-left: 30px;
 	padding: 0;
-/*	background-color: #F2E9CE;*/
 	border-radius: 10px;
 	text-align: center;
 }
@@ -113,7 +133,6 @@ body #paint{
 	-moz-align-content: space-around;
 	-webkit-align-content: space-around;
 	align-content: space-around;
-
 }
 
 #start_date, #start_time, #end_date, #end_time {
