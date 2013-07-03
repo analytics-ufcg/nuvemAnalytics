@@ -297,7 +297,10 @@ def do_metric_time_series_query():
 		else:
 			return message
 	
-	
+
+@server.route('/old_version')
+def index_old_version():
+	return render_template("old_index.html")	
 
 if __name__ == "__main__":
 
