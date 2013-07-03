@@ -1,7 +1,7 @@
 function showTimeSeries(data){
         var w = $("#metric_time_series").width(),
             h = $("#metric_time_series").height();
-	var margin = {top: 90, right: 30, bottom: 30, left: 20};
+	var margin = {top: 90, right: 110, bottom: 30, left: 0};
 	var width_axis = w - margin.left - margin.right,
 	    height_axis = h - margin.top - margin.bottom;
 		
@@ -33,7 +33,7 @@ function showTimeSeries(data){
 		.attr("width", "100%")
 		.attr("height", "100%")
 	  .append("g")
-		.attr("transform", "translate(0, 120)");
+		.attr("transform", "translate(60, 120)");
 
 	function showChart(data) {
 	
