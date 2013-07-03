@@ -1,8 +1,8 @@
-
 var selectedBubble = null;
 var metric_list = null;
 var table_list = null;
 var ts_jquery = null;
+var zoomToBubble = null;
 
 function updateTimeSeries(){
 	if (selectedBubble != null){
@@ -28,8 +28,6 @@ function updateTimeSeries(){
         	}else{
 			if (ts_jquery != null){
 				ts_jquery.abort();
-				console.log("aborted ");
-				console.log(ts_jquery);
 				ts_jquery = null;
 			}
 			removeTimeSeries();
@@ -37,8 +35,6 @@ function updateTimeSeries(){
 	}else{
 		if (ts_jquery != null){
                 	ts_jquery.abort();
-			console.log("aborted ");
-			console.log(ts_jquery);
                         ts_jquery = null;
                 }
 
@@ -280,10 +276,20 @@ function updateBubbleChartLegend(data){
 
 }
 
+function simulateClick(elementToClick){
+	
+	var evt = document.createEvent("MouseEvents");
+	evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+	var canceled = !elementToClick.dispatchEvent(evt);
+	return canceled; //Indicate if `preventDefault` was called during handling
+}
+
 function switchBubbleChart(){
 
-	
-
+	var d = JSON.parse($("#bubble_chart_carousel_items .active").attr('query_data'));
+	updateBubbleChartLegend(d);
+	//simulateClick($("#bubble_chart_carousel_items .active svg"));
+	$("#bubble_chart_carousel_items .active").trigger('click');
 }
 
 var id_to_color = {
@@ -303,14 +309,11 @@ var id_to_color = {
 
 function getProperColor(node){
 
-	console.log('getting color of '+node.id);
-
 	var ids = node.id.split(" - ");
 	ids = ids.sort();
 	var parsed = ids.join(" - ");
 
 	var color = id_to_color[parsed];
-	console.log('parsed is: '+parsed+' which maps to '+color);
 	return color;
 }
 
@@ -351,7 +354,6 @@ function showBubbleChart(data){
 	    .attr("width", "100%")
 	    .attr("height", "60%")
 	  .append("svg:g")
-	 //   .attr("transform", "translate(0, -" + (h - r) /2 + ")")   + (w - r) / 2 + "," + (h - r) / 2 + ")")
 	    .style("cursor", "pointer");
 
 	var nodes = pack.nodes(root);
@@ -366,33 +368,7 @@ function showBubbleChart(data){
 		root.children[i].color = color;
 	}
 
-	bubble_chart.selectAll("circle")
-	    .data(nodes)
-	  .enter().append("svg:circle")
-   	 .attr("class", function(d) { return d.children ? ( d.parent == undefined ? "root node" : "node " + ( d.class ? d.class : "" )) : "leaf node " + ( d.class ? d.class : "" ); })
- 	   .attr("cx", function(d) { return d.x; })
- 	   .attr("cy", function(d) { return d.y; })
- 	   .attr("r", function(d) { return d.r; })
-	   .style("fill", function(d) { return d.color ? d.color : ""; })
- 	   .on("click", function(d) { return zoom(node == d ? root : d); });
-
-	bubble_chart.selectAll("text")
-	    .data(nodes)
-	  .enter().append("svg:text")
-	    .attr("class", function(d) { return d.children ? "node" : "leaf node"; })
-	    .attr("x", function(d) { return d.x; })
-	    .attr("y", function(d) { return d.y; })
-	    .attr("dy", ".35em")
-	    .attr("text-anchor", "middle")
-	    .style("opacity", function(d) { return d.r > 20 ? 1 : 0; })
-	  .append("svg:tspan")
-	    .style("font-size", 12)
-	    .style("cursor", "pointer")
-	    .text(function(d) { return d.name.substring(0, d.r / 3); })
-
-	d3.select("#bubble_chart_carousel_items .active").on("click", function() { zoom(root); });
-
-	function zoom(d, i) {
+	function zoomToBubble(d, i) {
 
 	  updateBubbleChartLegend(d);
 
@@ -424,13 +400,13 @@ function showBubbleChart(data){
 
 	  bubble_chart.selectAll("text")
 	     .append("svg:tspan")
-	     .style("font-size", 12)
-	     .style("cursor", "pointer")
-	     .text(function(d) { return d.name.substring(0, (k * d.r) / 3); });
+    	 .style("font-size", 12)
+   	  .style("cursor", "pointer")
+   	  .text(function(d) { return d.name.substring(0, (k * d.r) / 3); });
 
 	  node = d;
 	  if (d3.event){
-             d3.event.stopPropagation();
+	            d3.event.stopPropagation();
 	  }
 
 	  // Update the query results chart
@@ -438,6 +414,42 @@ function showBubbleChart(data){
 	  showQueryResultParallelCoord(selectedBubble);
 	  // Update the metrics list
 	  showTimeSeriesChart(selectedBubble);
-        }
-	zoom(root);
+
+	}
+
+	bubble_chart.selectAll("circle")
+	    .data(nodes)
+	  .enter().append("svg:circle")
+   	 .attr("class", function(d) { return d.children ? ( d.parent == undefined ? "root node" : "node " + ( d.class ? d.class : "" )) : "leaf node " + ( d.class ? d.class : "" ); })
+ 	   .attr("cx", function(d) { return d.x; })
+ 	   .attr("cy", function(d) { return d.y; })
+ 	   .attr("r", function(d) { return d.r; })
+	   .style("fill", function(d) { return d.color ? d.color : ""; })
+ 	   .on("click", function(d) { return zoomToBubble(node == d ? root : d); });
+
+	bubble_chart.selectAll("text")
+	    .data(nodes)
+	  .enter().append("svg:text")
+	    .attr("class", function(d) { return d.children ? "node" : "leaf node"; })
+	    .attr("x", function(d) { return d.x; })
+	    .attr("y", function(d) { return d.y; })
+	    .attr("dy", ".35em")
+	    .attr("text-anchor", "middle")
+	    .style("opacity", function(d) { return d.r > 20 ? 1 : 0; })
+	  .append("svg:tspan")
+	    .style("font-size", 12)
+	    .style("cursor", "pointer")
+	    .text(function(d) { return d.name.substring(0, d.r / 3); })
+
+	d3.select("#bubble_chart_carousel_items .active").on("click", function() { zoomToBubble(root); });
+	zoomToBubble(root);
+
+	$("#bubble_chart_carousel_items .active").attr("query_data", JSON.stringify(root, function(key, value){
+		if ( key == 'parent' ){
+			return '';
+		}
+		else{
+			return value;
+		}
+	}));
 }

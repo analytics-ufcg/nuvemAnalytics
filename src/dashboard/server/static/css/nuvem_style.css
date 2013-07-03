@@ -74,6 +74,10 @@ html {
 	align-content: space-around;
 }
 
+#bubble_chart_legend{
+	height:70px;
+}
+
 #sidebar {
 	width: 15%;
 /*	height: 72%;*/
@@ -192,8 +196,8 @@ circle.node{
 }
 
 circle.node.leaf{
-	fill-opacity: 0.6;
-	fill: rgb(255, 255, 255);
+	fill-opacity: 0.1;
+	fill: rgb(80,80,80);
 }
 
 circle.node.root{

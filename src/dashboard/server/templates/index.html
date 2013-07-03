@@ -19,7 +19,18 @@
 			<div id='sidebar' class='well'> 
 				<div id='menu_bar'>
 					<div class='menu_item'>
-						<strong>Query Definition</strong>
+						<strong><em class='muted'>Query Definition</em></strong>
+						<h4>Query Type</h4>
+						<div class='dropdown' id="Query-Type-div">
+							<select id="query-type" style='width:auto;'> 
+								<option value="Sub">Subutilization</option>
+  								<option value="Sup">Superutilization</option>
+							 </select>
+						</div>
+					</div>
+					<br>
+					<br>
+					<div class='menu_item'>
 						<h4>Time Interval</h4>
 						<em>from:</em>
 						<div id="start_date_time">
@@ -47,16 +58,6 @@
 					<br>
 					<br>
 					<div class='menu_item'>
-						<h4>Query Type</h4>
-							<div class='dropdown' id="Query-Type-div">
-								<select id="query-type" style='width:auto;'> 
-									<option value="Sub">Subutilization</option>
-  									<option value="Sup">Superutilization</option>
-								 </select>
-							</div>
-					</div>
-					<br>
-					<div class='menu_item'>
 						<h4>Query View Type</h4>
 							<div class="chekbox" id="Check-Queries">
                                 	                	<input type="checkbox" id="queries-agg"> Agreggated Queries
@@ -73,9 +74,9 @@
 			</div>
 			<div  id='bubble_chart_carousel' class='carousel slide'>
 				<div class='carousel-inner' id='bubble_chart_carousel_items'>
-					<div class='hero-unit well-small'>
+					<div class='hero-unit well-small' style='background-color: rgba(0,0,0,0);'>
 						<h1>Welcome!</h1>
-						<p>Please submit a query.</p>
+						<em class='muted'>Please submit a query on the left.</em>
 					</div>
 				</div>
 				<br>
@@ -85,8 +86,8 @@
 					<ul class='inline'>
 					</ul>
 				</div>
-				<a class='carousel-control left' href='#bubble_chart_carousel' data-slide='prev' style='display:none;' onclick='switchBubbleChart();'>&lsaquo;</a>
-				<a class='carousel-control right' href='#bubble_chart_carousel' data-slide='next' style='display:none;' onclick='switchBubbleChart();'>&rsaquo;</a>
+				<a class='carousel-control left' href='#bubble_chart_carousel' data-slide='prev' style='display:none;'>&lsaquo;</a>
+				<a class='carousel-control right' href='#bubble_chart_carousel' data-slide='next' style='display:none;'>&rsaquo;</a>
 			</div>
 			<div id='other_charts'>
 				<div id='query_result_chart' style='display:none;' >
@@ -102,12 +103,12 @@
 		</div>
 		<div class="muted"  id="bottom_bar">
   			Designed and developed by Nuvem Analytics Team:
-			<a class='text-info' target='_blank' href=''>Augusto Queiroz</a>,
-			<a class='text-info' target='_blank' href=''>Danilo Lacerda</a>,
-			Evandro Sombrio,
-			<a class='text-info' target='_blank' href=''>Fabio Morais</a>,
-			<a class='text-info' target='_blank' href='https://github.com/guilhermesgb'>Guilherme Santos</a> e
-			<a class='text-info' target='_blank' href=''>Iury Gregory</a>
+			<a class='text-info' target='_blank' href='http://lattes.cnpq.br/6907208655251013'>Augusto Queiroz</a>,
+			<a class='text-info' target='_blank' href='https://github.com/guilhermesgb'>Guilherme Santos</a>,
+			<a class='muted' target='_blank' href=''>Danilo Lacerda</a>,
+			<a class='muted' target='_blank' href=''>Iury Gregory</a>,
+			<a class='muted' target='_blank' href=''>Fabio Morais</a> (Project Coach) and
+			Evandro Sombrio (Hewlett-Packard Representative)
 			<br>
 			Powered by <a class='text-success' target='_blank' href='http://www.vertica.com/'>Vertica</a>,
 			<a class='text-success' target='_blank' href='http://twitter.github.io/bootstrap/'>Bootstrap</a>,
@@ -191,7 +192,10 @@
 
 	$("#bubble_chart_legend").hide();
 	$(".carousel-control").hide();
-	$("#bubble_chart_carousel").carousel('pause');
+	$("#bubble_chart_carousel").carousel('pause')
+	.on('slid', function(){
+		switchBubbleChart();
+	});
 
 	var loading = true;
 
