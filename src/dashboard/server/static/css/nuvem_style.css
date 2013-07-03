@@ -1,11 +1,11 @@
 /*PAGE*/
 html {
-	background-color: #F2E9CE;
+/*	background-color: #F2E9CE;*/
 	cursor:default;
 }
 
 body #paint{
-	background-color: #F0EDCD;
+/*	background-color: #F0EDCD;*/
 }
 
 #top_bar {
@@ -59,8 +59,9 @@ body #paint{
 	margin: 0;
 	margin-left: 30px;
 	padding: 0;
-	background-color: #F2E9CE;
+/*	background-color: #F2E9CE;*/
 	border-radius: 10px;
+	text-align: center;
 }
 
 #bubble_chart_carousel {
