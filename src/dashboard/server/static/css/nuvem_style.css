@@ -3,7 +3,7 @@ html {
 	cursor:default;
 }
 
-#main_flex{
+/*#main_flex{
 	display: -moz-flex;
 	display: -webkit-flex;
 	display: flex;
@@ -23,7 +23,7 @@ html {
 	-moz-align-items: stretch;
 	-webkit-align-items: stretch;
 	align-items: stretch;
-}
+}*/
 
 #top_bar {
 	margin: 30px;	
@@ -117,6 +117,27 @@ html {
 
 #metric_time_series_chart {
 	height: 30%;
+}
+
+/* Added by Augusto */
+#query_result_h4 {
+	height: 10%;
+}
+
+#query_result_parallel_coord {
+	height: 90%;
+}
+
+#time_series_h4{
+	height: 10%;
+}
+#metric_type_vm{
+	height: 15%;
+}
+
+/* The time serie occupate all this height, the width is inherited*/
+#metric_time_series {
+	height: 75%;
 }
 
 #start_date_time, #end_date_time {

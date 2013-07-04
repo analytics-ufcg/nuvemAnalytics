@@ -4,6 +4,9 @@ var table_list = null;
 var ts_jquery = null;
 var zoomToBubble = null;
 
+var start_date_ts = null;
+var end_date_ts = null;
+
 function pad(number){
 	return (number<10) ? ("0" + number) : number;
 }
@@ -27,8 +30,13 @@ function updateTimeSeries(){
 			$("#metric_time_series").html("<img src='static/img/ajax-loader.gif'></img>");
 			ts_jquery = $.get(query, function(data){
         	              	data = JSON.parse(data);
-				$("#metric_time_series").html("");
-				showTimeSeries(data);
+				console.log(data.length);
+				if (data.length > 0){
+		                	$("#metric_time_series").html("");
+        	                        showTimeSeries(data);
+				}else{
+					$("#metric_time_series").html("No data in this interval.");
+				}
         	      	});
         	}else{
 			if (ts_jquery != null){
@@ -78,20 +86,18 @@ function showTimeSeriesChart(bubble){
 			});
 			
 		}else{
-			div_text += "Please select a VM";
+			div_text += "Please select a VM.";
 			updateTimeSeries();
 		}
 	}else{
-		div_text += "Please select a VM";
+		div_text += "Please select a VM."
  		updateTimeSeries();
 	}
 	$("#metric_time_series").html(div_text);
 }	
 
 function showQueryResultParallelCoord(bubble){
-       var summary = "<h4>Queries Result Summary</h4>";
         if ( bubble != null ){
-		$("#query_result_chart").html(summary);
                 var data = [];
                 if (bubble.type == "vm_set"){
 			removeParallelCoord();
@@ -114,7 +120,7 @@ function showQueryResultParallelCoord(bubble){
                                 }
                                 data.push(vm_data);
                         }
-
+			$("#query_result_parallel_coord").html("");
 			showParallelCoord(data);
 
                 }
@@ -136,132 +142,17 @@ function showQueryResultParallelCoord(bubble){
                                 vm_data[col_names[i]] = String(bubble.values[i]);
                         }
                         data.push(vm_data);
-
+			$("#query_result_parallel_coord").html("");
 			showParallelCoord(data);
                 }
-            //    $("#query_result_chart").html(summary);
         }
         else{
 		removeParallelCoord();
-                summary += "Please, select a set of VMs or a VM.";
-                $("#query_result_chart").html(summary);
+                $("#query_result_parallel_coord").html("Please, select a set of VM or a VM.");
         }
 }
 
 	
-function showQueryResultChart(bubble){
-
-	function compareNumbers(a, b) {
- 		 return a - b;
-	}
-	var summary = "<h4>Queries Result Summary</h4>";
-	if ( bubble != null ){
-		if (bubble.type == "vm_set"){
-
-                        // Select the queries and the columns
-                        var queries = bubble.query_names;
-                        var col_names = new Array();
-                        for (var i = 0; i < queries.length; i++){
-                                query = queries[i];
-                                for (var j = 0; j < bubble.query_columns[query].length; j++){
-                                        col_names[col_names.length] = bubble.query_columns[query][j];
-                                }
-                        }
-			
-			// Matrix of (col_values x vms), we switched the axis to calculate the summary easily
-			col_values = new Array();
-			summary_values = new Array();
-
-			for (var i = 0; i < col_names.length; i++){
-				col_values[col_values.length] = new Array();
-				for (var j = 0; j < bubble.children.length; j++){
-					col_values[i][j] = bubble.children[j].values[i];
-				}
-				
-				// Calculate the summary metrics
-				col_values[i].sort(compareNumbers);
-				summary_values[i] = new Array();
-				summary_values[i][0] = d3.quantile(col_values[i], 0).toFixed(2);
-				summary_values[i][1] = d3.quantile(col_values[i], 0.25).toFixed(2);
-				summary_values[i][2] = d3.quantile(col_values[i], 0.5).toFixed(2);
-				summary_values[i][3] = d3.quantile(col_values[i], 0.75).toFixed(2);
-				summary_values[i][4] = d3.quantile(col_values[i], 1).toFixed(2);
-			}
-
-			// Print the table
-                        summary += "<table border=\"1\">";
-			summary += "<thead><tr><th></th>";
-
-			for (var i = 0; i < queries.length; i++){
-				summary += "<th scope=\"col\" colspan=\"" + bubble.query_columns[queries[i]].length;
-				summary += "\">" + queries[i] + "</th>";
-			}
-			summary += "</tr><th></th>";
-
-			for (var i = 0; i < col_names.length; i++){
-				summary += "<th>" + col_names[i] + "</th>";
-			}
-			summary += "</tr></thead><tbody>";
-
-                        summary_columns = new Array("Min", "1st Quartile", "Median", "3rd Quartile", "Max");
-			for (var i = 0; i < summary_values[0].length; i++){
-				summary += "<tr>";
-				summary += "<td><strong>" + summary_columns[i] + "</strong></td>";
-				for (var j = 0; j < summary_values.length; j++){
-					summary += "<td>" + summary_values[j][i] + "</td>"
-				}
-				summary += "</tr>";
-			}
-
-			summary += "</tbody></table>"
-		}
-		if (bubble.type == "vm"){
-
-			// Select the queries and the columns
-			var queries = bubble.parent.query_names;
-			var col_names = new Array();
-			for (var i = 0; i < queries.length; i++){
-				query = queries[i];
-				for (var j = 0; j < bubble.parent.query_columns[query].length; j++){
-					col_names[col_names.length] = bubble.parent.query_columns[query][j];
-				}
-			}
-
-                        // Print the table
-                        summary += "<table border=\"1\">";
-                        summary += "<thead><tr><th></th>";
-
-                        for (var i = 0; i < queries.length; i++){
-                                summary += "<th scope=\"col\" colspan=\"" + bubble.parent.query_columns[queries[i]].length;
-                                summary += "\">" + queries[i] + "</th>";
-                        }
-                        summary += "</tr><th></th>";
-
-                        for (var i = 0; i < col_names.length; i++){
-                                summary += "<th>" + col_names[i] + "</th>";
-                        }
-                        summary += "</tr></thead><tbody>";
-			summary += "<tr><td><strong>" + bubble.name + "</strong></td>";
-			
-                        for (var i = 0; i < bubble.values.length; i++){
-                                summary += "<td>" + bubble.values[i] + "</td>";
-                        }
-                        summary += "</tr></tbody></table>";
-
-			vm_values = ""
-			for (var i = 0; i < bubble.values.length; i++){
-				vm_values += bubble.values[i] + "\t";
-			}
-		}
-                $("#query_result_chart").html(summary);
-
-	}
-	else{
-		summary += "Please, select a set of VMs or a VM.";
-		$("#query_result_chart").html(summary);
-	}
-}
-
 function updateBubbleChartLegend(data){
 
 	var root = data;

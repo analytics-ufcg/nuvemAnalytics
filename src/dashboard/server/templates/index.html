@@ -19,8 +19,9 @@
 			<div id='sidebar' class='well'> 
 				<div id='menu_bar'>
 					<div class='menu_item'>
-						<strong><em class='muted'>Query Definition</em></strong>
-						<h4>Query Type</h4>
+						<h4>Query Definition</h4>
+						<br>
+						<font size="3"><strong>Query Type</strong></font>
 						<div class='dropdown' id="Query-Type-div">
 							<select id="query-type" style='width:auto;'> 
 								<option value="Sub">Subutilization</option>
@@ -28,10 +29,11 @@
 							 </select>
 						</div>
 					</div>
-					<br>
+					
 					<br>
 					<div class='menu_item'>
-						<h4>Time Interval</h4>
+						<font size="3"><strong>Time Interval</strong></font>
+						<br>
 						<em>from:</em>
 						<div id="start_date_time">
 							<div class="input-append date" id="start_date_wrapper" data-date data-date-format="dd/mm/yyyy">
@@ -55,10 +57,10 @@
 							</div>
 						</div>
 					</div>
-					<br>
+					
 					<br>
 					<div class='menu_item'>
-						<h4>Query View Type</h4>
+						<font size="3"><strong>Query View Type</strong></font>
 							<div class="chekbox" id="Check-Queries">
                                 	                	<input type="checkbox" id="queries-agg"> Agreggated Queries
                                 	             	</div>
@@ -68,7 +70,7 @@
 				<br>
 				<div id='submit_button'>
 					<button class="btn btn-large btn-inverse btn-block disabled" type="button" id="go"> 
-						Submit!
+						Submit
 					</button>
 				</div>
 			</div>
@@ -90,13 +92,16 @@
 				<a class='carousel-control right' href='#bubble_chart_carousel' data-slide='next' style='display:none; font-size:28pt;'>&rarr;</a>
 			</div>
 			<div id='other_charts'>
-				<div id='query_result_chart' style='display:none;' >
+				<div id='query_result_chart' style='display:none;'>
+					<h4 id="query_result_h4">Queries Result</h4>
+					<div id="query_result_parallel_coord">
+					</div>
 				</div>
 				<div id='metric_time_series_chart' style='display:none;'>
-					<h4>VM Time Series Analysis</h4>
+					<h4 id="time_series_h4">VM Time Series Analysis</h4>
                                        	<select class="dropdown" id="metric_type_vm" >
                                        	</select>
-					<div id="metric_time_series" >
+					<div id="metric_time_series">
 					</div>
 				</div>
 			</div>
@@ -104,9 +109,9 @@
 		<div class="muted"  id="bottom_bar">
   			Designed and developed by Nuvem Analytics Team:
 			<a class='text-info' target='_blank' href='http://lattes.cnpq.br/6907208655251013'>Augusto Queiroz</a>,
+			<a class='text-info' target='_blank' href='http://lattes.cnpq.br/6027095454406194 '>Danilo Lacerda</a>,
 			<a class='text-info' target='_blank' href='https://github.com/guilhermesgb'>Guilherme Santos</a>,
-			<a class='muted' target='_blank' href=''>Danilo Lacerda</a>,
-			<a class='muted' target='_blank' href=''>Iury Gregory</a>,
+			<a class='text-info' target='_blank' href='http://lattes.cnpq.br/4195265595859937'>Iury Gregory</a>,
 			<a class='muted' target='_blank' href=''>Fabio Morais</a> (Project Coach) and
 			Evandro Sombrio (Hewlett-Packard Representative)
 			<br>

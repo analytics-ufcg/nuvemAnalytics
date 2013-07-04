@@ -8,16 +8,16 @@ var x_pc = d3.scale.ordinal(),
 
 function showParallelCoord(data) {
 
-	var div_width = $("#query_result_chart").width(),
-		div_height = $("#query_result_chart").height() * 0.8;
+	var div_width = $("#query_result_parallel_coord").width(),
+		div_height = $("#query_result_parallel_coord").height();
 	
 	var m = {left:70, right:70, top:20, bottom:20},
 		w = div_width - m.left - m.right,
 		h = div_height - m.top - m.bottom;
 
-	var svg = d3.select("#query_result_chart").append("svg:svg")
-		.attr("width", div_width)
-		.attr("height", div_height)
+	var svg = d3.select("#query_result_parallel_coord").append("svg:svg")
+		.attr("width", "100%")
+		.attr("height", "100%")
 	  .append("svg:g")
 		.attr("transform", "translate(" + m.left + "," + m.top + ")");
 
@@ -73,7 +73,7 @@ function showParallelCoord(data) {
           background_pc.attr("visibility", "hidden");
         })
         .on("drag", function(d) {
-          dragging_pc[d] = Math.min(w + 20, Math.max(-20, this.__origin__ += d3.event.dx));
+          dragging_pc[d] = Math.min(w + 40, Math.max(-40, this.__origin__ += d3.event.dx));
           foreground_pc.attr("d", path);
           dimensions.sort(function(a, b) { return position(a) - position(b); });
           x_pc.domain(dimensions);

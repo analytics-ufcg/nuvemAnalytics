@@ -1,9 +1,9 @@
 function showTimeSeries(data){
         var w = $("#metric_time_series").width(),
             h = $("#metric_time_series").height();
-	var margin = {top: 90, right: 110, bottom: 30, left: 0};
-	var width_axis = w - margin.left - margin.right,
-	    height_axis = h - margin.top - margin.bottom;
+	var margin = {top: 20, right: 40, bottom: 10, left: 60};
+	var width_axis = w - (margin.left + margin.right),
+	    height_axis = h - (margin.top + margin.bottom);
 		
 	var parseDate = d3.time.format("%Y-%m-%d %H:%M:%S").parse;
 
@@ -33,7 +33,7 @@ function showTimeSeries(data){
 		.attr("width", "100%")
 		.attr("height", "100%")
 	  .append("g")
-		.attr("transform", "translate(60, 120)");
+		.attr("transform", "translate(" + margin.left + ", 0)");
 
 	function showChart(data) {
 	
@@ -69,7 +69,7 @@ function showTimeSeries(data){
 
 		svg.append("g")
 		  .attr("class", "x axis")
-//		  .attr("transform", "translate(0," + height_axis + ")")
+		  .attr("transform", "translate(0," + height_axis + ")")
 		  .call(xAxis);
 
 		svg.append("g")
