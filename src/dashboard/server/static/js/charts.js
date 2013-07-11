@@ -4,6 +4,8 @@ var table_list = null;
 var ts_jquery = null;
 var zoomToBubble = null;
 
+var start_date_all_ts = null;
+var end_date_all_ts = null;
 var start_date_ts = null;
 var end_date_ts = null;
 
@@ -20,10 +22,11 @@ function updateTimeSeries(){
 			query += "&metric=" + metric_list[selected_index];
 			query += "&table=" + table_list[selected_index];
 
-			var start_date = new Date(Date.parse(selectedBubble.parent.parent.end_date) - 7776000000); //3 months in millisseconds
-			start_date = start_date.getFullYear()+"-"+pad(start_date.getMonth()+1)+"-"+pad(start_date.getDay())+" "+pad(start_date.getHours())+":"+pad(start_date.getMinutes())+":"+pad(start_date.getSeconds());
-			console.log("start_date is "+start_date);
-			query += "&start_date=" + start_date;
+//			var start_date = new Date(Date.parse(selectedBubble.parent.parent.end_date) - 7776000000); //3 months in millisseconds
+//			start_date = start_date.getFullYear()+"-"+pad(start_date.getMonth()+1)+"-"+pad(start_date.getDay())+" "+pad(start_date.getHours())+":"+pad(start_date.getMinutes())+":"+pad(start_date.getSeconds());
+//			console.log("start_date is "+start_date);
+//			query += "&start_date=" + start_date;
+                        query += "&start_date=" + selectedBubble.parent.parent.start_date;
 			query += "&end_date=" + selectedBubble.parent.parent.end_date;
 	        	removeTimeSeries();
 			
@@ -31,9 +34,14 @@ function updateTimeSeries(){
 			ts_jquery = $.get(query, function(data){
         	              	data = JSON.parse(data);
 				console.log(data.length);
-				if (data.length > 0){
+				if (data.ts.length > 0){
+        	                        start_date_ts = Date.parse(data.ts[0].date);
+	                                end_date_ts = Date.parse(data.ts[data.ts.length-1].date);
+					start_date_all_ts = Date.parse(data.first_date);
+					end_date_all_ts = Date.parse(data.last_date);
+
 		                	$("#metric_time_series").html("");
-        	                        showTimeSeries(data);
+        	                        showTimeSeries(data.ts);
 				}else{
 					$("#metric_time_series").html("No data in this interval.");
 				}

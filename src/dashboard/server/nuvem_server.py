@@ -1,5 +1,6 @@
 import  os, sys, json, itertools
 from flask import Flask, render_template, request, flash
+from datetime import datetime
 
 sys.path.append("../client")
 from vertica_query import VerticaClientFacade
@@ -234,6 +235,7 @@ def do_superutilization_queries():
 		return json.dumps(response)
 	return render_template("index.html", response=json.dumps(response), start_date=start_date, end_date=end_date, aggregate=aggregate)
 
+
 query_metrics = {}
 query_metrics['lowUsageVMs'] = {'tables' : ["cpu", "disk", "network"], 
 				'metrics' : [ 'cpu_alloc', 'ios_per_sec', 'pkt_per_sec' ]}
@@ -269,6 +271,13 @@ def get_query_metrics():
 		
 		return json.dumps(response)
 
+# Time Series GLOBAL objects
+date_format = "%Y-%m-%d %H:%M:%S"
+ts_size_in_days = 90
+start_date_ts = None
+ent_date_ts = None
+cached_ts = None
+
 @server.route('/metric_time_series')
 def do_metric_time_series_query():
 	
@@ -286,13 +295,27 @@ def do_metric_time_series_query():
 		(exit_status, message, output) = client.check_and_query("metricTimeSeries", start_date, end_date, vm_name, table_name, metric_name)
 		if exit_status == 0:
 			# Prepare the json response object
-			response = []
-
-			for row in output.rows:
-				d = {'date': str(row[0]),
-				     vm_name : str(row[1])}
-				response.append(d)
-
+			response = {'ts' : [],
+				    'first_date' : None,
+				    'last_date' : None}
+			if len(output.rows) > 0:
+				end_date_ts = datetime.strptime(str(output.rows[len(output.rows)-1][0]), date_format)
+				
+				for i in reversed(range(len(output.rows))):
+					row = output.rows[i]
+					start_date_ts = datetime.strptime(str(row[0]), date_format)
+					if (end_date_ts - start_date_ts).days >= ts_size_in_days:
+						cached_ts = output.rows[0:i-1]
+						break
+					else:
+						d = {'date': str(row[0]),
+						    vm_name : str(row[1])}
+						response['ts'].append(d)
+				
+				response['ts'].reverse()
+				response['first_date'] = str(output.rows[0][0])
+				response['last_date'] = str(output.rows[len(output.rows)-1][0])
+			
 			return json.dumps (response)
 		else:
 			return message
