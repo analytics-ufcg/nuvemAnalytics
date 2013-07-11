@@ -2,6 +2,7 @@ var selectedBubble = null;
 var metric_list = null;
 var table_list = null;
 var ts_jquery = null;
+var ts_jquery2 = null;
 var zoomToBubble = null;
 
 var start_date_all_ts = null;
@@ -9,8 +10,46 @@ var end_date_all_ts = null;
 var start_date_ts = null;
 var end_date_ts = null;
 
+function changeTimeSeries(operator){
+	// 60 days change (before or after operator)
+       	if (selectedBubble != null){
+        	if(selectedBubble.type == "vm"){
+
+			var query = "change_time_series?ts_operator=" + operator;
+
+			removeTimeSeries();
+			$("#metric_time_series").html("<img src='static/img/ajax-loader.gif'></img>");
+			ts_jquery2 = $.get(query, function(data){
+				data = JSON.parse(data);	
+				if (data.ts.length > 0){
+					start_date_ts = Date.parse(data.ts[0].date);
+					end_date_ts = Date.parse(data.ts[data.ts.length-1].date);
+					$("#metric_time_series").html("");
+					showTimeSeries(data.ts);
+				}else{
+					// This should never occur (the button should be disabled)
+					$("#metric_time_seroes").html("No data in this interval.");
+				}
+			});
+              }else{
+                        if (ts_jquery2 != null){
+                                ts_jquery2.abort();
+                                ts_jquery2 = null;
+                        }
+                        removeTimeSeries();
+                }
+        }else{
+                if (ts_jquery2 != null){
+                        ts_jquery2.abort();
+                        ts_jquery2 = null;
+                }
+
+                removeTimeSeries();
+        }
+}
+
 function pad(number){
-	return (number<10) ? ("0" + number) : number;
+        return (number<10) ? ("0" + number) : number;
 }
 
 function updateTimeSeries(){
@@ -22,10 +61,6 @@ function updateTimeSeries(){
 			query += "&metric=" + metric_list[selected_index];
 			query += "&table=" + table_list[selected_index];
 
-//			var start_date = new Date(Date.parse(selectedBubble.parent.parent.end_date) - 7776000000); //3 months in millisseconds
-//			start_date = start_date.getFullYear()+"-"+pad(start_date.getMonth()+1)+"-"+pad(start_date.getDay())+" "+pad(start_date.getHours())+":"+pad(start_date.getMinutes())+":"+pad(start_date.getSeconds());
-//			console.log("start_date is "+start_date);
-//			query += "&start_date=" + start_date;
                         query += "&start_date=" + selectedBubble.parent.parent.start_date;
 			query += "&end_date=" + selectedBubble.parent.parent.end_date;
 	        	removeTimeSeries();
@@ -33,7 +68,6 @@ function updateTimeSeries(){
 			$("#metric_time_series").html("<img src='static/img/ajax-loader.gif'></img>");
 			ts_jquery = $.get(query, function(data){
         	              	data = JSON.parse(data);
-				console.log(data.length);
 				if (data.ts.length > 0){
         	                        start_date_ts = Date.parse(data.ts[0].date);
 	                                end_date_ts = Date.parse(data.ts[data.ts.length-1].date);

@@ -1,6 +1,6 @@
 import  os, sys, json, itertools
 from flask import Flask, render_template, request, flash
-from datetime import datetime
+import time
 
 sys.path.append("../client")
 from vertica_query import VerticaClientFacade
@@ -273,7 +273,8 @@ def get_query_metrics():
 
 # Time Series GLOBAL objects
 date_format = "%Y-%m-%d %H:%M:%S"
-ts_size_in_days = 90
+ts_size_in_sec = 60 * (24 * 60 * 60) # 60 days in seconds
+ts_change_granularity = 5 * (60) # 5 minutes
 start_date_ts = None
 ent_date_ts = None
 cached_ts = None
@@ -299,18 +300,20 @@ def do_metric_time_series_query():
 				    'first_date' : None,
 				    'last_date' : None}
 			if len(output.rows) > 0:
-				end_date_ts = datetime.strptime(str(output.rows[len(output.rows)-1][0]), date_format)
-				
+				global cached_ts, start_date_ts, end_date_ts
+				cached_ts = output.rows
+				end_date_ts = time.mktime(time.strptime(str(output.rows[len(output.rows)-1][0]), date_format))
+
 				for i in reversed(range(len(output.rows))):
 					row = output.rows[i]
-					start_date_ts = datetime.strptime(str(row[0]), date_format)
-					if (end_date_ts - start_date_ts).days >= ts_size_in_days:
-						cached_ts = output.rows[0:i-1]
+					this_date_ts = time.mktime(time.strptime(str(row[0]), date_format))
+					if (end_date_ts - this_date_ts) >= ts_size_in_sec:
 						break
 					else:
 						d = {'date': str(row[0]),
 						    vm_name : str(row[1])}
 						response['ts'].append(d)
+						start_date_ts = this_date_ts
 				
 				response['ts'].reverse()
 				response['first_date'] = str(output.rows[0][0])
@@ -320,6 +323,45 @@ def do_metric_time_series_query():
 		else:
 			return message
 	
+@server.route('/change_time_series')
+def do_change_time_series():
+
+	ts_operator = request.args.get("ts_operator")
+
+	response = {'ts' : []}
+	
+	global cached_ts, start_date_ts, end_date_ts
+	if cached_ts is not None and len(cached_ts) > 0:
+		first_date = time.mktime(time.strptime(str(cached_ts[0][0]), date_format))
+		last_date = time.mktime(time.strptime(str(cached_ts[len(cached_ts)-1][0]), date_format))
+		if ts_operator == "before" and start_date_ts > first_date:
+			end_date_ts = start_date_ts - ts_change_granularity
+			start_date_ts = start_date_ts - ts_size_in_sec
+		elif ts_operator == "after" and end_date_ts < last_date:
+                        start_date_ts = end_date_ts + ts_change_granularity
+                        end_date_ts = end_date_ts + ts_size_in_sec
+		else:
+			return json.dumps(response)
+
+		tmp_start_date_ts = None
+		for i in reversed(range(len(cached_ts))):
+	                row = cached_ts[i]
+			this_date_ts = time.mktime(time.strptime(str(row[0]), date_format))
+
+			if this_date_ts < start_date_ts:
+				break
+
+                        if this_date_ts <= end_date_ts:
+				d = {'date': str(row[0]),
+				     'vm_name' : str(row[1])}
+				response['ts'].append(d)
+				tmp_start_date_ts = this_date_ts
+			
+		# Update the real start_date_ts (the interval can be smaller than what we want)
+		start_date_ts = tmp_start_date_ts
+		response['ts'].reverse()
+
+      	return json.dumps (response)
 
 @server.route('/old_version')
 def index_old_version():
