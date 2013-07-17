@@ -33,7 +33,7 @@ function showTimeSeries(data){
 		.attr("width", "100%")
 		.attr("height", "100%")
 	  .append("g")
-		.attr("transform", "translate(" + margin.left + ", 0)");
+		.attr("transform", "translate(" + margin.left + ", 5)");
 
 	function showChart(data) {
 	

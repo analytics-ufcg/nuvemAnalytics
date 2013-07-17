@@ -11,14 +11,14 @@ var start_date_ts = null;
 var end_date_ts = null;
 
 function changeTimeSeries(operator){
-	// 60 days change (before or after operator)
+	// 30 days change (before or after operator)
        	if (selectedBubble != null){
         	if(selectedBubble.type == "vm"){
 
 			var query = "change_time_series?ts_operator=" + operator;
 
 			removeTimeSeries();
-			$("#metric_time_series").html("<img src='static/img/ajax-loader.gif'></img>");
+			$("#metric_time_series").html("<br><img src='static/img/ajax-loader.gif'></img>");
 			ts_jquery2 = $.get(query, function(data){
 				data = JSON.parse(data);	
 				if (data.ts.length > 0){
@@ -65,7 +65,7 @@ function updateTimeSeries(){
 			query += "&end_date=" + selectedBubble.parent.parent.end_date;
 	        	removeTimeSeries();
 			
-			$("#metric_time_series").html("<img src='static/img/ajax-loader.gif'></img>");
+			$("#metric_time_series").html("<br><img src='static/img/ajax-loader.gif'></img>");
 			ts_jquery = $.get(query, function(data){
         	              	data = JSON.parse(data);
 				if (data.ts.length > 0){
@@ -103,6 +103,7 @@ function showTimeSeriesChart(bubble){
 	table_list = null;
 	$("#metric_type_vm").empty();
 	$("#metric_type_vm").hide();
+	$("#time_series_pagination").hide();
 
 	var div_text = "";
 	
@@ -116,6 +117,7 @@ function showTimeSeriesChart(bubble){
 				table_list = data.tables;
 
 				$("#metric_type_vm").show();
+				$("#time_series_pagination").show();
 
 		    		for(var i = 0; i < metric_list.length; i++){
 	       				var t = document.createElement("option")

@@ -99,8 +99,14 @@
 				</div>
 				<div id='metric_time_series_chart' style='display:none;'>
 					<h4 id="time_series_h4">VM Time Series Analysis</h4>
-                                       	<select class="dropdown" id="metric_type_vm" >
+                                       	<select class="dropdown" id="metric_type_vm">
                                        	</select>
+					<div class="pagination pagination-right" id="time_series_pagination">
+						<ul>
+						    	<li><a id="prev_time_serie" href="#">&laquo 2 Months</a></li>
+							<li><a id="next_time_serie" href="#">2 Months &raquo</a></li>
+						</ul>	
+					</div>
 					<div id="metric_time_series">
 					</div>
 				</div>
@@ -108,7 +114,7 @@
 		</div>
 		<div class="muted"  id="bottom_bar">
   			Designed and developed by Nuvem Analytics Team:
-			<a class='text-info' target='_blank' href='http://lattes.cnpq.br/6907208655251013'>Augusto Queiroz</a>,
+			<a class='text-info' target='_blank' href='http://br.linkedin.com/pub/augusto-queiroz-de-macedo/22/b98/552'>Augusto Queiroz</a>,
 			<a class='text-info' target='_blank' href='http://lattes.cnpq.br/6027095454406194 '>Danilo Lacerda</a>,
 			<a class='text-info' target='_blank' href='https://github.com/guilhermesgb'>Guilherme Santos</a>,
 			<a class='text-info' target='_blank' href='http://lattes.cnpq.br/4195265595859937'>Iury Gregory</a>,
@@ -261,6 +267,8 @@
 	});	
 
 	$("#metric_type_vm").change(function(){updateTimeSeries()});
+	$("#prev_time_serie").click(function(){changeTimeSeries("before")});
+	$("#next_time_serie").click(function(){changeTimeSeries("after")});
 
 	</script>
 </body>
