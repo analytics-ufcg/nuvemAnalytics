@@ -11,24 +11,30 @@ var start_date_ts = null;
 var end_date_ts = null;
 
 function changeTimeSeries(operator){
-	// 30 days change (before or after operator)
+	// 60 days change (before or after operator)
        	if (selectedBubble != null){
         	if(selectedBubble.type == "vm"){
+
+			if (operator == "before" && start_date_ts <= start_date_all_ts ||
+			    operator == "after" && end_date_ts >= end_date_all_ts){
+//				return;
+			}
 
 			var query = "change_time_series?ts_operator=" + operator;
 
 			removeTimeSeries();
-			$("#metric_time_series").html("<br><img src='static/img/ajax-loader.gif'></img>");
+			$("#metric_time_series").html("<br><br><br><img src='static/img/ajax-loader.gif'></img>");
 			ts_jquery2 = $.get(query, function(data){
-				data = JSON.parse(data);	
+				data = JSON.parse(data);
 				if (data.ts.length > 0){
 					start_date_ts = Date.parse(data.ts[0].date);
 					end_date_ts = Date.parse(data.ts[data.ts.length-1].date);
+
 					$("#metric_time_series").html("");
 					showTimeSeries(data.ts);
 				}else{
 					// This should never occur (the button should be disabled)
-					$("#metric_time_seroes").html("No data in this interval.");
+					$("#metric_time_series").html("<br><br>No data in this interval.");
 				}
 			});
               }else{
@@ -65,7 +71,7 @@ function updateTimeSeries(){
 			query += "&end_date=" + selectedBubble.parent.parent.end_date;
 	        	removeTimeSeries();
 			
-			$("#metric_time_series").html("<br><img src='static/img/ajax-loader.gif'></img>");
+			$("#metric_time_series").html("<br><br><br><img src='static/img/ajax-loader.gif'></img>");
 			ts_jquery = $.get(query, function(data){
         	              	data = JSON.parse(data);
 				if (data.ts.length > 0){

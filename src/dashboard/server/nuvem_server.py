@@ -341,8 +341,8 @@ def do_change_time_series():
                         start_date_ts = end_date_ts + ts_change_granularity
                         end_date_ts = end_date_ts + ts_size_in_sec
 		else:
-			return json.dumps(response)
-
+			return json.dumps (response)
+		
 		tmp_start_date_ts = None
 		for i in reversed(range(len(cached_ts))):
 	                row = cached_ts[i]

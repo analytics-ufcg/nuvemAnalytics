@@ -132,7 +132,7 @@ html {
 	height: 10%;
 }
 #metric_type_vm{
-	height: 15%;
+/*	height: 15%;*/
 	padding: 0px 0px;
 	margin-bottom: 0px;
 }
@@ -140,7 +140,6 @@ html {
 	display:inline-block;
 	float:right;
 	margin: 0px;
-	height: 15%;
 }
 
 /* The time serie occupate all this height, the width is inherited*/
