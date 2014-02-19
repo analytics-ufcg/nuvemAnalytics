@@ -1,6 +1,6 @@
 import shlex, subprocess, os, glob, pyodbc, sys
 
-def executeQuery(sqlQueryFile, isLoad):
+def executeQuery(sqlQueryFile, isLoad=False):
 
     sqlFile = open(sqlQueryFile, 'r')
     sqlScript = sqlFile.read()
@@ -11,10 +11,10 @@ def executeQuery(sqlQueryFile, isLoad):
 
     # Create the cursor and the connection
     try:
-        dbConnection = pyodbc.connect("DSN=Vertica")
+        dbConnection = pyodbc.connect("DSN=NuvemDSN")
         dbCursor = dbConnection.cursor()
-    except pyodbc.Error:
-        print "error: pyodbc could not connect to Vertica database"
+    except pyodbc.Error, e:
+        print "error: pyodbc could not connect to Vertica database: " + str(e)
         exit(4)
     except Exception, e:
         print "error: something odd happened while attempting to connect to Vertica database: " + str(e)
