@@ -223,7 +223,7 @@ perc.fail.metric <- as.numeric(args[6])     # 0.05 (for example)
 # traces.dir <- "data/traces/"
 # output.dir <- "data/output/"
 # initial.vm <- 1
-# final.vm <- 2
+# final.vm <- 10
 # perc.fail.collect <- 0.01
 # perc.fail.metric <- 0.05
 
@@ -241,7 +241,7 @@ dir.create(output.dir, showWarnings=F)
 file.index <- 1
 curr.file.rows <- 0
 max.file.rows <- 10000000 # MAX = 10 million rows (50 vm's per file on average, 220 MB on average)
-base.trace.files <- paste(traces.dir, list.files(traces.dir), sep ="")
+base.trace.files <- paste(traces.dir, list.files(traces.dir), sep ="")[-1]
 
 # Create the TIME table
 time.table <- data.frame(date_time=DATE_TIME(first.start.time, last.start.time, max.trace.size))
@@ -261,7 +261,7 @@ for (vm in seq(initial.vm, final.vm)){
   trace.size <- sample(seq(from=min.trace.size, to=max.trace.size), 1) 
   cat("  VM:", vm, "- Trace size:", trace.size, "... ")
   
-  base.trace <- read.csv(base.trace.files[(vm %% length(base.trace.files)) + 1], skip=5)
+  base.trace <- read.csv(base.trace.files[(vm %% length(base.trace.files))])
   
   vm.table <- data.frame(id_vm=vm,
                          vm_name=paste("VM_", vm, sep = ""))
