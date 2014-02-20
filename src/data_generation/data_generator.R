@@ -261,7 +261,7 @@ for (vm in seq(initial.vm, final.vm)){
   trace.size <- sample(seq(from=min.trace.size, to=max.trace.size), 1) 
   cat("  VM:", vm, "- Trace size:", trace.size, "... ")
   
-  base.trace <- read.csv(base.trace.files[(vm %% length(base.trace.files)) + 1])
+  base.trace <- read.csv(base.trace.files[(vm %% length(base.trace.files)) + 1], skip=5)
   
   vm.table <- data.frame(id_vm=vm,
                          vm_name=paste("VM_", vm, sep = ""))
