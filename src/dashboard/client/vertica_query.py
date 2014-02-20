@@ -291,7 +291,7 @@ class VerticaClientFacade:
 		try:
 			if __name__ == "__main__":
 				print ">: Connecting to Vertica..."
-			DB_CONNECTION = pyodbc.connect("DSN=TestVertica")
+			DB_CONNECTION = pyodbc.connect("DSN=NuvemDSN")
 			DB_CURSOR = DB_CONNECTION.cursor()
 		except pyodbc.Error:
 			exit_status = 4
