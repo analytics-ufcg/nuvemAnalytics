@@ -4,5 +4,5 @@
 
 -- TIME table files
 COPY time_dim
-FROM local '/home/dbadmin/nuvemAnalytics/data/?/time.csv'
+FROM local '/home/dbadmin/git/nuvemAnalytics/data/?/time.csv'
 DELIMITER ',' ENCLOSED BY '"' NULL 'NA' NO COMMIT;
