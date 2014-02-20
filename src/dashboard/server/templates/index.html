@@ -258,6 +258,7 @@
 		$.get(url, function(data){
 			$("#query_result_chart").show();
 			$("#metric_time_series_chart").show();
+			console.log(data);
 			data = JSON.parse(data);
 			showBubbleChart(data);
 			$("#go").text("Submit!").removeClass("disabled");
